@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"name": "GaraiCPU",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.tcc": "cpp",
+			"iosfwd": "cpp",
+			"istream": "cpp",
+			"limits": "cpp",
+			"sstream": "cpp",
+			"streambuf": "cpp",
+			"type_traits": "cpp"
+		}
+	}
+}
