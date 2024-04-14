@@ -7,8 +7,8 @@
 #define MAIN_TASK_STACK_SIZE 32768
 
 #define I2C_SENSOR_PORT I2C_NUM_0
-#define SENSOR_SDA 20
-#define SENSOR_SCL 21
+#define SENSOR_SDA 13
+#define SENSOR_SCL 12
 
 #define I2C_MENU_PORT I2C_NUM_1
 #define MENU_SDA 11
@@ -48,8 +48,8 @@ const unsigned char KTIRChannel[]={0};
 #define MPU6050_ADDRESS 0x68
 
 
-#define PCNT_CH1 (gpio_num_t)10
-#define PCNT_CH2 (gpio_num_t)11
+#define PCNT_CH1 (gpio_num_t)1
+#define PCNT_CH2 (gpio_num_t)41
 
 // a error between measurmed yaws above which there will be only IMU reading taken to account
 #define YAW_TOLERANCE 0.25
@@ -76,10 +76,10 @@ const unsigned char KTIRChannel[]={0};
 
 #define MOTOR_FREQ 50
 
-const gpio_num_t MotorsPin[]={(gpio_num_t)18,(gpio_num_t)19,(gpio_num_t)26,(gpio_num_t)27};
+const gpio_num_t MotorsPin[]={(gpio_num_t)40,(gpio_num_t)39,(gpio_num_t)2,(gpio_num_t)42};
 
 
-#define BUZZER_PIN (gpio_num_t)15
+#define BUZZER_PIN (gpio_num_t)14
 
 
 #define POS_X_CFG_FILE "posxfilter.json"

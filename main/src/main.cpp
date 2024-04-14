@@ -51,13 +51,11 @@ void app_main()
 
     mods->audio_play->play();
 
-    while (true)
+    //while (true)
     {
         /* code */
     }
     
-
-    config::ConfigLoader* config=new config::ConfigLoader();
 
     config::SensorConfig sensor_cfg; 
 
@@ -177,7 +175,7 @@ void app_main()
 
     StackType_t *oled_stack=new StackType_t[OLED_TASK_STACK_SIZE];
 
- //   xTaskCreateStaticPinnedToCore(oled_loop,"OLED",OLED_TASK_STACK_SIZE,mods,1,oled_stack,&oled_task,!xPortGetCoreID());
+   xTaskCreateStaticPinnedToCore(oled_loop,"OLED",OLED_TASK_STACK_SIZE,mods,1,oled_stack,&oled_task,!xPortGetCoreID());
 
     StaticTask_t main_task;
 

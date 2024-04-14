@@ -1,5 +1,5 @@
 #include "MotorDriver.hpp"
-#include "config.h"
+#include "config.hpp"
 
 
 void MotorDriver::init_gpio()
@@ -21,6 +21,7 @@ void MotorDriver::init_ledc()
     timer_cfg.freq_hz=MOTOR_FREQ;
     timer_cfg.timer_num=LEDC_TIMER_0;
     timer_cfg.clk_cfg=LEDC_USE_RTC8M_CLK;
+    timer_cfg.deconfigure=false;
 
     ESP_ERROR_CHECK(ledc_timer_config(&timer_cfg));
 

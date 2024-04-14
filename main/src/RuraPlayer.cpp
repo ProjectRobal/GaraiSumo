@@ -59,7 +59,8 @@ void RuraPlayer::init_pwm()
     timer_cfg.duty_resolution=LEDC_TIMER_12_BIT;
     timer_cfg.freq_hz=1000;
     timer_cfg.timer_num=LEDC_TIMER_1;
-    timer_cfg.clk_cfg=LEDC_USE_RTC8M_CLK;
+    timer_cfg.clk_cfg=LEDC_USE_RC_FAST_CLK;
+    timer_cfg.deconfigure=false;
 
     ESP_ERROR_CHECK(ledc_timer_config(&timer_cfg));
 

@@ -3,7 +3,6 @@
 
 #include "OnlineTerminal.hpp"
 
-using namespace terminal_endpoints;
 
 esp_err_t OnlineTerminal::ws_wrapper(httpd_req_t *req)
 {
@@ -41,23 +40,63 @@ esp_err_t OnlineTerminal::rototrfilter_wrapper(httpd_req_t *req)
 }
 
 OnlineTerminal::OnlineTerminal(shared::Modules *mods)
-:ws_motors(
-    
+: ws(
+    {
+        .uri="/readings",
+        .method=HTTP_GET,
+        .handler=this->ws_wrapper,
+        .user_ctx=this,
+        .is_websocket=true
+    }
+),
+ws_motors(
+    {
+        .uri="/motors",
+        .method=HTTP_GET,
+        .handler=this->motor_wrapper,
+        .user_ctx=this,
+        .is_websocket=true
+    }
 ),
 pid(
-    
+    {
+        .uri="/pid",
+        .method=HTTP_GET,
+        .handler=this->pid_wrapper,
+        .user_ctx=this
+    }
 ),
 pid_post(
-    
+    {
+        .uri="/pid",
+        .method=HTTP_POST,
+        .handler=this->pid_wrapper,
+        .user_ctx=this
+    }
 ),
 imu(
-    
+    {
+        .uri="/imu",
+        .method=HTTP_GET,
+        .handler=this->imu_wrapper,
+        .user_ctx=this
+    }
 ),
 imu_post(
-    
+    {
+        .uri="/imu",
+        .method=HTTP_POST,
+        .handler=this->imu_wrapper,
+        .user_ctx=this
+    }
 ),
 imu_calibr(
-    
+    {
+        .uri="/calibr",
+        .method=HTTP_GET,
+        .handler=this->calibr_wrapper,
+        .user_ctx=this
+    }
 ),
 imu_calibr_post(
     {
