@@ -70,6 +70,10 @@ class MotorDriver
 
     config::MotorCFG MotorConfig();
 
+    static bool channelADirection();
+
+    static bool channelBDirection();
+
     // main drive function
     void loop(const sensors::Readings& readings);
 

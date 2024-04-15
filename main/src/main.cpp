@@ -51,12 +51,6 @@ void app_main()
 
     mods->audio_play->play();
 
-    //while (true)
-    {
-        /* code */
-    }
-    
-
     config::SensorConfig sensor_cfg; 
 
     config::MotorCFG motor_cfg;
@@ -333,13 +327,12 @@ void main_loop(void *arg)
         // sensor read step
         mods->sensors->step();
 
-        //ESP_LOGI("MAIN","Distance: %u",sensors.read().distances[0]);
-        //ESP_LOGI("MAIN","KITR 0: %s",sensors.read().floor_sensors[0] ? "true" : "false");
-
         if(!mods->sensors->read().stoped)
         {
 
             // program block step
+
+            
 
             // motor control step
             mods->driver->loop(mods->sensors->read());

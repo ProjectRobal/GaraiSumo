@@ -2,6 +2,16 @@
 #include "config.hpp"
 
 
+bool MotorDriver::channelADirection()
+{
+    return ledc_get_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0) > ledc_update_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_1);
+}
+
+bool MotorDriver::channelBDirection()
+{
+    return ledc_get_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_2) > ledc_update_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_3);
+}
+
 void MotorDriver::init_gpio()
 {
 
@@ -52,6 +62,7 @@ void MotorDriver::set_channelA(const int32_t& pwr)
     {
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,pwr);
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_1,0);
+        ledc_get_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_1);
     }
     else if(pwr<0)
     {

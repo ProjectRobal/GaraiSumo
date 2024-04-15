@@ -1,4 +1,7 @@
 {
     "idf.adapterTargetName": "esp32s3",
-    "idf.toolsPath": "/home/projectrobal/esp/esp-idf"
+    "idf.toolsPath": "/home/projectrobal/esp/esp-idf",
+    "files.associations": {
+        "compare": "cpp"
+    }
 }

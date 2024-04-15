@@ -19,6 +19,11 @@
 
 #include "RotationFilter.hpp"
 
+#include "Magnetrometer.hpp"
+
+#include "HMC5883.hpp"
+#include "QMC5883.hpp"
+
 #define TOF_CONTINOUS
 
 namespace sensors
@@ -73,6 +78,8 @@ class SensorReader
 
     MeanBuffer<Vec3Df,10> accelMean;
 
+    Vec3Df magReading;
+
     adc_oneshot_unit_handle_t hmd;
 
     uint8_t adc_result[NUM_OF_KTIRS*SOC_ADC_DIGI_RESULT_BYTES];
@@ -80,6 +87,13 @@ class SensorReader
     uint16_t KtirThreshold;
 
     bool xCycleTask;
+
+    Magnetrometer* mag;
+
+    // initialize magnetrometer
+    void init_mag();
+
+    void read_mag();
 
     void init_peripherials();
 

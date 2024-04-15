@@ -84,8 +84,8 @@ RuraPlayer::RuraPlayer(const uint8_t* audio,size_t size,uint32_t frameTime)
 : audio(audio),
 size(size)
 {
-    this->init_timer(frameTime);
     this->init_pwm();
+    this->init_timer(frameTime);
     ptr=0;
 }
 

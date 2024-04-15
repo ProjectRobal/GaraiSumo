@@ -1,6 +1,9 @@
-#include "SensorReader.hpp"
 #include <cstring>
 #include <cmath>
+
+
+#include "MotorDriver.hpp"
+#include "SensorReader.hpp"
 
 namespace sensors
 {
@@ -141,6 +144,7 @@ void SensorReader::init_sensors()
 
     this->mpu.printOffsets();
 
+    this->init_mag();
 
     this->ch1.start();
     this->ch2.start();
@@ -216,6 +220,55 @@ uint8_t SensorReader::from_angel_to_sensor_index(const float& angel) const
     return (8+(static_cast<uint8_t>(angel/SENSOR_SPACING)))%18;
 }
 
+void SensorReader::init_mag()
+{
+    HMC5883 *hmc=new HMC5883(I2C_SENSOR_PORT);
+
+    if(hmc->checkDevice())
+    {
+        ESP_LOGD("Sensors","Found HMC 5883 magnetrometer!");
+
+        hmc->setGain(HMC5883::Gain::LSB_660);
+        hmc->setDataOutputRate(HMC5883::DataOutputRate::_7500);
+        hmc->setMeasurmentMode(HMC5883::MeasurmentMode::Normal);
+        hmc->setMode(HMC5883::Mode::Continouse);
+        hmc->setSampleAveraging(HMC5883::SampleAverage::_4);
+
+        this->mag=hmc;
+        return;
+    }
+
+    delete hmc;
+
+    QMC5883 *qmc=new QMC5883(I2C_SENSOR_PORT);
+
+    if(qmc->checkChipID())
+    {
+        ESP_LOGD("Sensors","Found QMC 5883 magnetrometer!");
+
+        qmc->setFullScale(QMC5883::FullScale::G2);
+        qmc->setOutputDataRate(QMC5883::OutputDataRate::_50Hz);
+        qmc->setMode(QMC5883::Mode::Continuous);
+        qmc->setIntEnable(true);
+
+        this->mag=qmc;
+        return;
+    }
+
+    delete qmc;
+
+    this->mag=NULL;
+
+    ESP_LOGE("Sensors","No magnetrometer found!");
+}
+
+void SensorReader::read_mag()
+{
+    this->magReading.x=this->mag->readX();
+    this->magReading.y=this->mag->readY();
+    this->magReading.z=this->mag->readZ();
+}
+
 SensorReader::SensorReader()
 {
     SensorsFaulty=false;
@@ -268,36 +321,26 @@ void SensorReader::step()
     if(mpu.IntStatus()&(1<<0))
     {
 
-    /*Vec3Di gyro=this->mpu.readRawGyroscope();
-    Vec3Di accel=this->mpu.readRawAccelerometer();
+        Vec3Df _gyro=this->mpu.readGyroscope();
+        Vec3Df _accel=this->mpu.readAccelerometer();
 
-    ESP_LOGI("Sensors","Gryoscope x: %ld y: %ld z: %ld",gyro.x,gyro.y,gyro.z);
+        gyroMean.push(_gyro);
 
-    ESP_LOGI("Sensors","Accelerometer x: %ld y: %ld z: %ld",accel.x,accel.y,accel.z);
-    */
-
-    Vec3Df _gyro=this->mpu.readGyroscope();
-    Vec3Df _accel=this->mpu.readAccelerometer();
-
-    //ESP_LOGI("Sensors","Real Gryoscope x: %lf y: %lf z: %lf",_gyro.x,_gyro.y,_gyro.z);
-
-    //ESP_LOGI("Sensors","Real Accelerometer x: %lf y: %lf z: %lf",_accel.x,_accel.y,_accel.z);
-    
-
-    gyroMean.push(_gyro);
-
-    accelMean.push(_accel);
+        accelMean.push(_accel);
 
     }
 
 
-        // Cycle function
+    // Cycle function
     if(this->xCycleTask)
     {
         this->reads.IMUOnlyReading=false;
 
         int32_t step_ch1=ch1.get();
         int32_t step_ch2=ch2.get();
+
+        step_ch1 = MotorDriver::channelADirection() ? step_ch1 : -step_ch1;
+        step_ch2 = MotorDriver::channelBDirection() ? step_ch2 : -step_ch2;
 
         float dl=step_ch1/PULSE_TO_DISTANCE;
         float dr=step_ch2/PULSE_TO_DISTANCE;
@@ -359,10 +402,11 @@ void SensorReader::step()
     for(uint8_t i=0;i<NUM_OF_SENSORS;++i)
     {
         this->vl->SwitchSensor(SensorList[i]);
+
         #ifdef TOF_CONTINOUS
-        distance=this->vl->readContinous();
+            distance=this->vl->readContinous();
         #else
-        distance=this->vl->read();
+            distance=this->vl->read();
         #endif
 
         angel=SensorAngleOffset[i]+this->reads.yaw;
