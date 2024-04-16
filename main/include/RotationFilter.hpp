@@ -16,54 +16,23 @@ using dspm::Mat;
 
 class RotationFilter
 {
-    private:
+    // covariance
+    float V;
+    float W;
 
-    Mat A;
+    // current value
+    float x;    
 
-    Mat B;
+    // status variable
 
-    Mat H;
-
-    // H but transposed
-    Mat Ht;
-
-    // process noise
-    float R;
-    // measure noise
-    Mat Ex;    
-
-    Mat P;
-
-    Mat Q;
-
-    //float _x;
-
-    //float driftTolerance;
-    //float dAngleWindowThreshold;
+    float S;
+    float P;
 
     public:
 
     RotationFilter()
-    : 
-    A(2,2),
-    B(2,1),
-    H(2,1),
-    Ex(2,2),
-    P(Mat::eye(2)),
-    Q(2,1)
     {
-        B(0,0)=-1.f/SAMPLE_FREQ;
-        B(1,0)=0.f;
 
-        A(0,0)=1.f;
-        A(0,1)=-1.f/SAMPLE_FREQ;    
-        A(1,0)=0.f;
-        A(1,1)=1.f; 
-
-        H(0,0)=1.f;
-        H(1,0)=0.f;
-
-        Ht=H.t();
     }
 
     void setFromCFG(const config::RotationFilterCFG &cfg)
@@ -73,13 +42,11 @@ class RotationFilter
         // R
         // Q0_1,Q0_2
 
-        this->Ex(0,0)=cfg.Ex1;
-        this->Ex(1,1)=cfg.Ex2;
+        this->V=cfg.Ex1;
+        this->W=cfg.R;
 
-        this->R=cfg.R;
+        this->x=cfg.Q0_1;
 
-        this->Q(0,0)=cfg.Q0_1;
-        this->Q(1,0)=cfg.Q0_2;
     }
 
     config::RotationFilterCFG  getCFG()
@@ -91,48 +58,33 @@ class RotationFilter
         
         config::RotationFilterCFG filter;
 
-        filter.Ex1=this->Ex(0,0);
-        filter.Ex2=this->Ex(1,1);
+        filter.Ex1=this->V;
+        filter.R=this->W;
 
-        filter.R=this->R;
-
-        filter.Q0_1=this->Q(0,0);
-        filter.Q0_2=this->Q(1,0);
+        filter.Q0_1=this->x;
 
         return filter;
     }
 
     // x - d0 from encoders
     // u - rotation velocity from IMU
-    float step(const float& x,const float& u)
+    float step(const float& d0,const float& yaw)
     {
-        Mat Q_curr=this->A*this->Q+this->B*u;
+        float _x = this->x + d0;
 
-        this->P=this->A*this->P*this->A.t()+this->Ex;
+        float Pp = this->P + this->V;
 
-        float error= ( this->Q(0,0) + x ) - Q_curr(0,0);
+        float E = yaw - _x;
 
-        Mat S=this->H*this->P*this->Ht + this->R;
+        float S = Pp + this->W;
 
-        Mat K=this->P*this->Ht*S.inverse();
+        float K = Pp/S;
+
+        this->x = _x + K*E;
+
+        this->P = Pp - S*K*K;
         
-        this->Q=this->Q + K*error;
-
-        this->P=this->P - K*S*K.t();
-
-        while(this->Q(0,0)>2*M_PI)
-        {
-            this->Q(0,0)-=2*M_PI;
-        }
-
-        while(this->Q(0,0)<0.f)
-        {
-            this->Q(0,0)+=2*M_PI;
-        }
-
-        float deg=this->Q(0,0);
-
-        return deg;   
+        return this->x;   
     }
 
 };

@@ -4,7 +4,7 @@
 
 #define OLED_TASK_STACK_SIZE 32768
 
-#define MAIN_TASK_STACK_SIZE 65536
+#define MAIN_TASK_STACK_SIZE 32768
 
 #define I2C_SENSOR_PORT I2C_NUM_0
 #define SENSOR_SDA 13
@@ -18,10 +18,10 @@
 
 
 // specified multiplexer ports where sensors are connected
-const unsigned char SensorList[]={0};
+const unsigned char SensorList[]={};
 
 // specified an angel of each sensor
-const float SensorAngleOffset[]={0};
+const float SensorAngleOffset[]={};
 
 // angel between each sensor, in radians
 #define SENSOR_SPACING 0.3490658504

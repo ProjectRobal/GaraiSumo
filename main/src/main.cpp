@@ -49,7 +49,7 @@ void app_main()
 
     mods->audio_play=new RuraPlayer(rides_of_valkyrya,sizeof(rides_of_valkyrya)/sizeof(uint8_t),25);
 
-    mods->audio_play->play();
+    //mods->audio_play->play();
 
     config::SensorConfig sensor_cfg; 
 
@@ -66,6 +66,21 @@ void app_main()
     mods->driver=new MotorDriver();
 
     OnlineTerminal* terminal=new OnlineTerminal(mods);
+
+    
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    esp_netif_create_default_wifi_ap();
+
+    //Initialize NVS
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+
+    config::ConfigLoader::init();
 
     //load default data in case of failure in loading data
     // it cannot sace configuration
@@ -135,17 +150,6 @@ void app_main()
 
     }
 
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_create_default_wifi_ap();
-
-    //Initialize NVS
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
 
     wifi_init();
 
@@ -165,17 +169,24 @@ void app_main()
 
     // init screen task
 
-    StaticTask_t oled_task;
+    //StaticTask_t oled_task;
 
-    StackType_t *oled_stack=new StackType_t[OLED_TASK_STACK_SIZE];
+    //StackType_t *oled_stack=new StackType_t[OLED_TASK_STACK_SIZE];
 
-   xTaskCreateStaticPinnedToCore(oled_loop,"OLED",OLED_TASK_STACK_SIZE,mods,1,oled_stack,&oled_task,!xPortGetCoreID());
+    //xTaskCreateStaticPinnedToCore(oled_loop,"OLED",OLED_TASK_STACK_SIZE,mods,1,oled_stack,&oled_task,!xPortGetCoreID());
 
-    StaticTask_t main_task;
+    //TaskHandle_t main_task;
 
-    StackType_t *main_stack=new StackType_t[MAIN_TASK_STACK_SIZE];
+    //StackType_t *main_stack=(StackType_t*)heap_caps_malloc(MAIN_TASK_STACK_SIZE*sizeof(StackType_t),MALLOC_CAP_SPIRAM);
 
-    xTaskCreateStaticPinnedToCore(main_loop,"MAIN",MAIN_TASK_STACK_SIZE,mods,configMAX_PRIORITIES-1,main_stack,&main_task,xPortGetCoreID());
+    BaseType_t task_code=xTaskCreatePinnedToCore(main_loop,"MAIN",MAIN_TASK_STACK_SIZE,mods,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+
+    if(task_code!=pdPASS)
+    {
+        ESP_LOGE("MAIN","Cannot create main_task %d",task_code);
+    }
+
+    main_loop(mods);
 
 }
 
@@ -320,6 +331,7 @@ void wifi_init()
 
 void main_loop(void *arg)
 {
+    ESP_LOGI("MAIN","Entering main loop!");
     Modules* mods=(Modules*)arg;
     
     while(true)

@@ -5,6 +5,11 @@
 #include "MotorDriver.hpp"
 #include "SensorReader.hpp"
 
+extern "C"
+{
+    #include "MadgwickAHRS.h"
+}
+
 namespace sensors
 {
 
@@ -138,9 +143,9 @@ void SensorReader::init_sensors()
 
     vTaskDelay(100/portTICK_PERIOD_MS);
 
-    this->mpu.DoGyroCalibration(1000,10);
+    this->mpu.DoGyroCalibration();
 
-    this->mpu.DoAccelCalibration(1000,10);
+    this->mpu.DoAccelCalibration();
 
     this->mpu.printOffsets();
 
@@ -274,7 +279,7 @@ SensorReader::SensorReader()
     SensorsFaulty=false;
     xCycleTask=false;
     KtirThreshold=KTIR_THRESHOLD;
-    this->CalibrateIMU=false;
+    this->CalibrateIMU=true;
 
     yaw_error_tolerance=0;
     distance_error_tolerance=0;
@@ -308,8 +313,8 @@ void SensorReader::step()
         ESP_LOGI("Sensors","Starting IMU calibration");
         vTaskDelay(5000/portTICK_PERIOD_MS);
         ESP_LOGI("Sensors","Performing IMU calibration");
-        this->mpu.DoGyroCalibration(1000,10);
-        this->mpu.DoAccelCalibration(1000,10);
+        this->mpu.DoGyroCalibration();
+        this->mpu.DoAccelCalibration();
         ESP_LOGI("Sensors","IMU calibration has finished!");
 
         CalibrateIMU=false;
@@ -328,6 +333,14 @@ void SensorReader::step()
 
         accelMean.push(_accel);
 
+    }
+
+    if(this->mag!=NULL)
+    {
+        if(this->mag->checkDataReady())
+        {
+            this->read_mag();
+        }
     }
 
 
@@ -365,27 +378,23 @@ void SensorReader::step()
         // we only care about 2D projection from top view:
         // so only yaw axis from IMU
 
-       this->reads.yaw=this->rotor.step(d0,_gyroMean.z);
+        MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->magReading.x,this->magReading.y,this->magReading.z);
 
-        while(this->reads.yaw>2*M_PI)
-        {
-            this->reads.yaw-=2*M_PI;
-        }
+        float _roll=0.f;
+        float _pitch=0.f;
+        float _yaw=0.f;
 
-        while(this->reads.yaw<0.f)
-        {
-            this->reads.yaw=this->reads.yaw+2*M_PI;
-        }
+        MadgwickQuaterionToEuler(&_roll,&_pitch,&_yaw);
 
-        // think about it
-        float d=0.f;
+        this->reads.yaw=this->rotor.step(d0,_yaw);
 
-        Vec2Df dpos;
-
-        this->reads.position.x=this->posfilter_y.step(dx*cos(this->reads.yaw),_accelMean.x);
+        this->reads.position.x=this->posfilter_x.step(dx*cos(this->reads.yaw),_accelMean.x);
         this->reads.position.y=this->posfilter_y.step(dx*sin(this->reads.yaw),_accelMean.y);
 
         this->xCycleTask=false;
+
+        ESP_LOGD("Sensors","Yaw: %f",this->reads.yaw);
+        ESP_LOGD("Sensors","X: %f Y: %f",this->reads.position.x,this->reads.position.y);
     }
 
     //-------------------------------------

@@ -222,6 +222,25 @@ float invSqrt(float x) {
 	return y;
 }
 
+
+void MadgwickQuaterionToEuler(float* roll,float* pitch,float* yaw)
+{
+	// roll (x-axis rotation)
+    float sinr_cosp = 2 * (q3 * q0 + q1 * q2);
+    float cosr_cosp = 1 - 2 * (q0 * q0 + q1 * q1);
+    *roll = atan2(sinr_cosp, cosr_cosp);
+
+    // pitch (y-axis rotation)
+    float sinp = sqrt(1 + 2 * (q3 * q1 - q0 * q2));
+    float cosp = sqrt(1 - 2 * (q3 * q1 - q0 * q2));
+    *pitch = 2 * atan2(sinp, cosp) - M_PI / 2;
+
+    // yaw (z-axis rotation)
+    float siny_cosp = 2 * (q3 * q2 + q0 * q1);
+    float cosy_cosp = 1 - 2 * (q1 * q1 + q2 * q2);
+    *yaw = atan2(siny_cosp, cosy_cosp);
+}
+
 //====================================================================================================
 // END OF CODE
 //====================================================================================================

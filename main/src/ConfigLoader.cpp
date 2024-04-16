@@ -3,6 +3,8 @@
 namespace config
 {
 
+esp_vfs_littlefs_conf_t ConfigLoader::fs={0};
+
 void ConfigLoader::print_filesystem_info()
 {
 
@@ -27,14 +29,14 @@ void ConfigLoader::print_filesystem_info()
 
 void ConfigLoader::init_filesystem()
 {
-    this->fs = {
+    ConfigLoader::fs = {
             .base_path = "/littlefs",
             .partition_label = "littlefs",
             .format_if_mount_failed = true,
             .dont_mount = false
         };
 
-    esp_err_t ret= esp_vfs_littlefs_register(&this->fs);
+    esp_err_t ret= esp_vfs_littlefs_register(&ConfigLoader::fs);
 
     switch(ret)
     {
@@ -86,25 +88,20 @@ void ConfigLoader::init_filesystem()
 
 }
 
-ConfigLoader::ConfigLoader()
-{
-    print_filesystem_info();
-    init_filesystem();
-}
 
 PartitionInfo ConfigLoader::info()
 {
     PartitionInfo info;
 
-    esp_littlefs_info(fs.partition_label,&info.total,&info.used);
+    esp_littlefs_info(ConfigLoader::fs.partition_label,&info.total,&info.used);
 
     return info;
 }
 
 void ConfigLoader::init()
 {
-    print_filesystem_info();
     init_filesystem();
+    print_filesystem_info();
 }
 
 bool ConfigLoader::fromBuffer(const char* buffer,SensorConfig& cfg)

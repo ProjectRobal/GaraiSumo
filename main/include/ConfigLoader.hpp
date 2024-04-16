@@ -91,11 +91,11 @@ class ConfigLoader
 {
     public:
 
-    void init_filesystem();
+    static void init_filesystem();
 
-    void print_filesystem_info();
+    static void print_filesystem_info();
 
-    esp_vfs_littlefs_conf_t fs;
+    static esp_vfs_littlefs_conf_t fs;
 
     template<typename T>
     static cJSON* vector3d_to_json(const Vec3D<T>& vec)
@@ -227,11 +227,9 @@ class ConfigLoader
         return true;
     }
 
-    ConfigLoader();
+    static PartitionInfo info();
 
-    PartitionInfo info();
-
-    void init();
+    static void init();
 
     static bool fromBuffer(const char* buffer,SensorConfig& cfg);
 
