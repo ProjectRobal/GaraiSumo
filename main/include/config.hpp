@@ -42,6 +42,13 @@ const unsigned char KTIRChannel[]={0};
 
 #define SAMPLE_TIME 1.0/SAMPLE_FREQ
 
+#define MOTOR_UPDATE_TIME_MS 10
+
+#define MOTOR_UPDATE_TIME MOTOR_UPDATE_TIME_MS/1000.f
+
+#define MAX_ENGINE_POWER 4095.f
+
+
 #define KTIR_THRESHOLD 2048
 
 

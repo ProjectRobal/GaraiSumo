@@ -26,14 +26,16 @@ class MotorDriver
     float target_yaw;
 
     // set a max power of both engines, from 0 to 4095
-    uint16_t power;
+    uint16_t target_speed;
 
     // a power for turning
     uint16_t turning_power;
 
     PID<float> motorA;
-    PID<float> motorB;
 
+    PID<float> motorLeft;
+    PID<float> motorRight;
+    
     bool automaticMode;
 
 
@@ -41,19 +43,20 @@ class MotorDriver
 
     MotorDriver()
     : target_yaw(0.f),
-    power(0),
+    target_speed(0),
     turning_power(0),
     motorA(1.f,0.f,0.f),
-    motorB(-1.f,0.f,0.f),
+    motorLeft(1.f,0.f,0.f),
+    motorRight(1.f,0.f,0.f),
     automaticMode(true)
     {
         this->motorA.setMin(0.f);
         this->motorA.setMax(1.f);
         this->motorA.setTimeStep(SAMPLE_TIME);
 
-        this->motorB.setMin(0.f);
-        this->motorB.setMax(1.f);
-        this->motorB.setTimeStep(SAMPLE_TIME);
+        this->motorLeft.setMin(0.f);
+        this->motorLeft.setMax(1.f);
+        this->motorLeft.setTimeStep(SAMPLE_TIME);
     }
 
     void init();
@@ -77,7 +80,7 @@ class MotorDriver
     // main drive function
     void loop();
 
-    void setTargetAngel(const float& target)
+    void setTargetAngel(float target)
     {
         this->target_yaw=target;
     }
@@ -87,17 +90,17 @@ class MotorDriver
         return this->target_yaw;
     }
 
-    void setPower(const uint16_t& power)
+    void setTargetSpeed(uint16_t target_speed)
     {
-        this->power=power;
+        this->target_speed=target_speed;
     }
 
-    const uint16_t& Power() const
+    const uint16_t& TargetSpeed() const
     {
-        return this->power;
+        return this->target_speed;
     }
 
-    void setTurningPower(const uint16_t& power)
+    void setTurningPower(uint16_t power)
     {
         this->turning_power=power;
     }
@@ -118,10 +121,10 @@ class MotorDriver
     }
 
     // set motor A power and spinning direction
-    void set_channelA(const int32_t& pwr);
+    void set_channelA(int32_t pwr);
 
     // set motor B power and spinning direction
-    void set_channelB(const int32_t& pwr);
+    void set_channelB(int32_t pwr);
 
     // stop engines
     void stop();

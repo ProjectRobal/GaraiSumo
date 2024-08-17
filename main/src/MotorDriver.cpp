@@ -12,10 +12,9 @@ static void freeRTOS_task(void* arg)
 
     while(true)
     {
-
         driver->loop();
 
-        vTaskDelay(50/portTICK_PERIOD_MS);
+        vTaskDelay(MOTOR_UPDATE_TIME_MS/portTICK_PERIOD_MS);
     }
 }
 
@@ -74,7 +73,7 @@ void MotorDriver::init_ledc()
 
 }
 
-void MotorDriver::set_channelA(const int32_t& pwr)
+void MotorDriver::set_channelA(int32_t pwr)
 {
     if(pwr>0)
     {
@@ -97,7 +96,7 @@ void MotorDriver::set_channelA(const int32_t& pwr)
     ledc_update_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_1);
 }
 
-void MotorDriver::set_channelB(const int32_t& pwr)
+void MotorDriver::set_channelB(int32_t pwr)
 {
     if(pwr>0)
     {
@@ -141,7 +140,8 @@ void MotorDriver::setPIDA(const config::MotorPID& pid)
 
 void MotorDriver::setPIDB(const config::MotorPID& pid)
 {
-    this->motorB.setParams(pid.P,pid.I,pid.D);
+    this->motorLeft.setParams(pid.P,pid.I,pid.D);
+    this->motorRight.setParams(pid.P,pid.I,pid.D);
 }
 
 void MotorDriver::setMotorConfig(const config::MotorCFG& cfg)
@@ -162,9 +162,9 @@ config::MotorPID MotorDriver::PIDA()
 config::MotorPID MotorDriver::PIDB()
 {
     return {
-        .P=this->motorB.P(),
-        .I=this->motorB.I(),
-        .D=this->motorB.D()
+        .P=this->motorLeft.P(),
+        .I=this->motorLeft.I(),
+        .D=this->motorLeft.D()
     };
 }
 
@@ -178,20 +178,43 @@ config::MotorCFG MotorDriver::MotorConfig()
 
 void MotorDriver::loop()
 {
-    if(automaticMode)
-    {
-    
     const sensors::Readings& readings = mods.sensors->read();
 
+    if( readings.stoped )
+    {
+        this->stop();
+        return;
+    }
+
+    // add speed control for engines
+    if(automaticMode)
+    {
+
+    /*
+
+        PID A will set angular velocity. Which will be then translated to velocity of
+        each wheels.
+
+        Then PID Left and PID Right is going to adjust a speed on each motor.
+    
+    */
+
     // error between target angel and current angel 
-    float d0=this->target_yaw-readings.yaw;    
+    float d0 = this->target_yaw-readings.yaw;   
 
-    int32_t motorA_pwr=this->power - this->turning_power*this->motorA.step(d0);
+    float angular_speed = this->turning_power*this->motorA.step(d0);
 
-    int32_t motorB_pwr=this->power - this->turning_power*this->motorB.step(d0);;
+    float target_speed_left = this->target_speed + D_WHEELS*angular_speed;
+    float target_speed_right = this->target_speed - D_WHEELS*angular_speed;
 
-    this->set_channelA(motorA_pwr);
-    this->set_channelB(motorB_pwr);
+    float dSpeedLeft = target_speed_left - readings.motorSpeed[0]; 
+    float dSpeedRight = target_speed_right - readings.motorSpeed[1]; 
+
+    int32_t PowerLeft = this->motorLeft.step(dSpeedLeft)*MAX_ENGINE_POWER;
+    int32_t PowerRight = this->motorRight.step(dSpeedRight)*MAX_ENGINE_POWER;
+
+    this->set_channelA(PowerLeft);
+    this->set_channelB(PowerRight);
 
     }
 }

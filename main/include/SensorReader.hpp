@@ -45,6 +45,8 @@ struct Readings
 
         bool IMUOnlyReading=false;
 
+        float motorSpeed[2];
+
         Vec2Df velocity;
 
         // position in 2D space
