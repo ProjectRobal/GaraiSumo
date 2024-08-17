@@ -32,12 +32,16 @@ namespace sensors
 struct Readings
     {
         // distance for each direction
-        uint16_t distances[18]={0};
+        uint16_t distances[18] = {0};
         // current degree in yaw axis
-        float yaw=0.f;
+        float yaw = 0.f;
 
         // current degree in yaw axis, from MPU-6050
-        float gyaw=0.f;
+        float gyaw = 0.f;
+
+        // current degree in yaw axis, from encoders
+        float eyaw = 0.f;
+
         // is ktir touching black or white surface
         bool floor_sensors[NUM_OF_KTIRS]={0};
 
@@ -45,15 +49,18 @@ struct Readings
 
         bool IMUOnlyReading=false;
 
-        float motorSpeed[2];
+        float motorSpeed[2] = {0};
 
         Vec2Df velocity;
 
         // position in 2D space
-        Vec2Df position=Vec2Df(0);
+        Vec2Df position = Vec2Df(0);
 
         // position in 2D space, from MPU-6050
-        //Vec2Df gposition;
+        Vec2Df gposition = Vec2Df(0);
+
+        // position in 2D space, from encoders
+        Vec2Df epostion = Vec2Df(0);
     };
 
 
@@ -88,8 +95,6 @@ class SensorReader
 
     uint16_t KtirThreshold;
 
-    bool xCycleTask;
-
     Magnetrometer* mag;
 
     // initialize magnetrometer
@@ -101,47 +106,20 @@ class SensorReader
 
     void init_sensors();
 
+    void init_tasks();
+
     bool SensorsFaulty;
 
     bool CalibrateIMU;
 
-    void install_timer(uint32_t _dt);
-
     void install_adc();
 
-    void read_adc();
-
-    void start_timer()
-    {
-        timer_start(TIMER_GROUP_0,TIMER_0);
-    }
-
-    void stop_timer()
-    {
-        timer_pause(TIMER_GROUP_0,TIMER_0);
-    }
-
     uint8_t from_angel_to_sensor_index(const float& angel) const; 
-
-    static IRAM_ATTR bool _timer_callback_wrapper(void* arg)
-    {
-        SensorReader* reader=(SensorReader*)arg;
-
-        reader->timer_callback();
-
-        return false;
-    }
 
     float yaw_error_tolerance;
     float distance_error_tolerance;
 
     public:
-
-     // timer that will force step function to execute in each T time step
-    void timer_callback()
-    {
-        this->xCycleTask=true;
-    }
 
     SensorReader();
 
@@ -195,6 +173,14 @@ class SensorReader
 
     // perform reading
     void step();
+
+    void read_encoders();
+
+    void read_adc();
+
+    void fusion();
+
+    void tofs_read();
 
     const Readings& read() const
     {

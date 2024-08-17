@@ -66,25 +66,19 @@ class RuraPlayer
 
     const size_t size;
 
-    size_t ptr;
+    uint32_t frameTime;
 
-    void IRAM_ATTR timer_callback();
+    size_t ptr;
 
     void init_pwm();
 
-    void init_timer(uint32_t frameTime);
-
-    static IRAM_ATTR bool _timer_callback_wrapper(void* arg)
-    {
-
-        ((RuraPlayer*)arg)->timer_callback();
-
-        return false;
-    }
+    TaskHandle_t timerTask;
 
     public:
 
     RuraPlayer(const uint8_t* audio,size_t size,uint32_t frameTime);
+
+    void timer_callback();
 
     void play();
 

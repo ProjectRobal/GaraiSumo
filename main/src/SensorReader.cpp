@@ -13,6 +13,79 @@ extern "C"
 namespace sensors
 {
 
+// it will have 1kHz sampling frequency
+static void IMU_task(void* arg)
+{
+    SensorReader* reader = (SensorReader*)arg;
+
+    while(true)
+    {
+        // wait for interrupt on pin
+
+    }
+}
+
+// it will have about 50Hz sampling frequency
+static void Mag_task(void* arg)
+{
+    SensorReader* reader = (SensorReader*)arg;
+
+    while(true)
+    {
+        // wait for interrupt on pin
+
+    }
+}
+
+static void Encoders_task(void* arg)
+{
+    SensorReader* reader = (SensorReader*)arg;
+
+    while(true)
+    {
+        reader->read_encoders();
+        
+        vTaskDelay(ENCODER_UPDATE_TIME_MS/portTICK_PERIOD_MS);
+    }
+}
+
+static void TOFs_task(void* arg)
+{
+    SensorReader* reader = (SensorReader*)arg;
+
+    while(true)
+    {
+        reader->tofs_read();        
+        
+        vTaskDelay(VL_SAMPLE_TIME_MS/portTICK_PERIOD_MS);
+    }
+}
+
+static void ADC_task(void* arg)
+{
+    SensorReader* reader = (SensorReader*)arg;
+
+    while(true)
+    {
+        reader->read_adc();        
+        
+        vTaskDelay(ADC_TIME_MS/portTICK_PERIOD_MS);
+    }
+}
+
+static void Fusion_task(void* arg)
+{
+    SensorReader* reader = (SensorReader*)arg;
+
+    while(true)
+    {
+
+        reader->fusion();        
+        
+        vTaskDelay(SAMPLE_TIME_MS/portTICK_PERIOD_MS);
+    }
+}
+
 void SensorReader::init_peripherials()
 {
 //I2C for sensors
@@ -54,10 +127,6 @@ void SensorReader::init_peripherials()
     ch2.init(PCNT_CH2);
 
     //----------------------------
-    // Timer initialization
-
-    this->install_timer(SAMPLE_FREQ);
-
 
     }
 
@@ -122,33 +191,8 @@ void SensorReader::init_sensors()
 
     this->ch1.start();
     this->ch2.start();
-
-    this->start_timer();
 }
 
-
-void SensorReader::install_timer(uint32_t _dt)
-{
-    timer_config_t config{};
-
-    config.alarm_en=TIMER_ALARM_DIS;
-    config.counter_en=TIMER_PAUSE;
-    config.intr_type=TIMER_INTR_LEVEL;
-    config.counter_dir=TIMER_COUNT_UP;
-    config.auto_reload=TIMER_AUTORELOAD_EN;
-    // Timer count with 1Mhz frequency
-    config.divider=80;
-    // 80Mhz clock
-    config.clk_src=TIMER_SRC_CLK_APB;
-
-
-    timer_init(TIMER_GROUP_0,TIMER_0,&config);
-    timer_set_alarm_value(TIMER_GROUP_0,TIMER_0,1000000/_dt);
-    timer_set_alarm(TIMER_GROUP_0,TIMER_0,TIMER_ALARM_EN);
-    timer_enable_intr(TIMER_GROUP_0,TIMER_0);
-
-    timer_isr_callback_add(TIMER_GROUP_0,TIMER_0,this->_timer_callback_wrapper,this,0);
-}
 
 void SensorReader::install_adc()
 {
@@ -169,6 +213,7 @@ void SensorReader::install_adc()
     {
         ESP_ERROR_CHECK(adc_oneshot_config_channel(this->hmd, static_cast<adc_channel_t>(channel), &config));
     }
+
 }
 
 void SensorReader::read_adc()
@@ -246,13 +291,25 @@ void SensorReader::read_mag()
 SensorReader::SensorReader()
 {
     SensorsFaulty=false;
-    xCycleTask=false;
     KtirThreshold=KTIR_THRESHOLD;
     this->CalibrateIMU=false;
 
     yaw_error_tolerance=0;
     distance_error_tolerance=0;
     
+}
+
+void SensorReader::init_tasks()
+{
+    
+    xTaskCreatePinnedToCore(Encoders_task,"Encoders",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+
+    xTaskCreatePinnedToCore(TOFs_task,"TOFs",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+
+    xTaskCreatePinnedToCore(ADC_task,"ADC",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+
+    xTaskCreatePinnedToCore(Fusion_task,"Fusion",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+
 }
 
 void SensorReader::init(const config::SensorConfig& _config)
@@ -263,6 +320,111 @@ void SensorReader::init(const config::SensorConfig& _config)
     this->init_peripherials();
 
     this->init_sensors();
+
+    this->init_tasks();
+
+}
+
+void SensorReader::read_encoders()
+{
+
+    int32_t step_ch1 = ch1.get();
+    int32_t step_ch2 = ch2.get();
+
+    step_ch1 = MotorDriver::channelADirection() ? step_ch1 : -step_ch1;
+    step_ch2 = MotorDriver::channelBDirection() ? step_ch2 : -step_ch2;
+
+    float dl = step_ch1/PULSE_TO_DISTANCE;
+    float dr = step_ch2/PULSE_TO_DISTANCE;
+    
+    //distance
+    float dx = (dl+dr)/2.f;
+
+    //change of rotation
+    float d0 = (dl-dr)/(2*D_WHEELS);
+
+    this->reads.eyaw += d0;
+
+    ESP_LOGD("Sensors","PCINT 1 steps: %ld",step_ch1);
+    ESP_LOGD("Sensors","PCINT 2 steps: %ld",step_ch2);
+
+    ch1.clear();
+    ch2.clear();
+
+    this->reads.motorSpeed[0] = dl/ENCODER_UPDATE_TIME;
+    this->reads.motorSpeed[1] = dr/ENCODER_UPDATE_TIME;
+
+    this->reads.epostion.x += dx*cos(this->reads.eyaw);
+    this->reads.epostion.y += dx*sin(this->reads.eyaw);
+
+
+    //KTIR floor sensor reading
+
+    this->read_adc();
+
+}
+
+void SensorReader::fusion()
+{
+    Vec3Df _gyroMean=this->gyroMean.mean();
+    Vec3Df _accelMean=this->accelMean.mean();
+
+    // we only care about 2D projection from top view:
+    // so only yaw axis from IMU
+
+    MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->magReading.x,this->magReading.y,this->magReading.z);
+
+    float _roll=0.f;
+    float _pitch=0.f;
+    float _yaw=0.f;
+
+    MadgwickQuaterionToEuler(&_roll,&_pitch,&_yaw);
+
+    // to do:
+    //this->reads.yaw=this->rotor.step(d0,_yaw);
+
+    //this->reads.position.x=this->posfilter_x.step(dx*cos(this->reads.yaw),_accelMean.x);
+    //this->reads.position.y=this->posfilter_y.step(dx*sin(this->reads.yaw),_accelMean.y);
+
+    // leave it this way for now
+    this->reads.yaw = _yaw;
+
+    // leave it this way for now
+    this->reads.position.x = this->reads.epostion.x;
+    this->reads.position.y = this->reads.epostion.y;
+
+    ESP_LOGD("Sensors","Yaw: %f",this->reads.yaw);
+    ESP_LOGD("Sensors","X: %f Y: %f",this->reads.position.x,this->reads.position.y);
+
+}
+
+void SensorReader::tofs_read()
+{
+    // distance sensor reading
+    uint16_t distance=0;
+    float angel=0.0;
+
+    for(uint16_t& dis : this->reads.distances)
+    {
+        // out of sight
+        dis=8190;
+    }
+
+    for(uint8_t i=0;i<NUM_OF_SENSORS;++i)
+    {
+        this->vl->SwitchSensor(SensorList[i]);
+
+        #ifdef TOF_CONTINOUS
+            distance=this->vl->readContinous();
+        #else
+            distance=this->vl->read();
+        #endif
+
+        angel=SensorAngleOffset[i]+this->reads.yaw;
+
+        this->reads.distances[this->from_angel_to_sensor_index(angel)]=distance;
+
+    }
 
 }
 
@@ -314,57 +476,57 @@ void SensorReader::step()
 
 
     // Cycle function
-    if(this->xCycleTask)
-    {
-        this->reads.IMUOnlyReading=false;
+    // if(this->xCycleTask)
+    // {
+    //     this->reads.IMUOnlyReading=false;
 
-        int32_t step_ch1=ch1.get();
-        int32_t step_ch2=ch2.get();
+    //     int32_t step_ch1=ch1.get();
+    //     int32_t step_ch2=ch2.get();
 
-        step_ch1 = MotorDriver::channelADirection() ? step_ch1 : -step_ch1;
-        step_ch2 = MotorDriver::channelBDirection() ? step_ch2 : -step_ch2;
+    //     step_ch1 = MotorDriver::channelADirection() ? step_ch1 : -step_ch1;
+    //     step_ch2 = MotorDriver::channelBDirection() ? step_ch2 : -step_ch2;
 
-        float dl=step_ch1/PULSE_TO_DISTANCE;
-        float dr=step_ch2/PULSE_TO_DISTANCE;
+    //     float dl=step_ch1/PULSE_TO_DISTANCE;
+    //     float dr=step_ch2/PULSE_TO_DISTANCE;
         
-        //distance
-        float dx=(dl+dr)/2.f;
+    //     //distance
+    //     float dx=(dl+dr)/2.f;
 
-        //change of rotation
-        float d0=(dl-dr)/(2*D_WHEELS);
+    //     //change of rotation
+    //     float d0=(dl-dr)/(2*D_WHEELS);
 
-        //ESP_LOGI("Sensors","PCINT 1 steps: %ld",step_ch1);
-        //ESP_LOGI("Sensors","PCINT 2 steps: %ld",step_ch2);
+    //     //ESP_LOGI("Sensors","PCINT 1 steps: %ld",step_ch1);
+    //     //ESP_LOGI("Sensors","PCINT 2 steps: %ld",step_ch2);
 
-        ch1.clear();
-        ch2.clear();
+    //     ch1.clear();
+    //     ch2.clear();
 
-        // integral from gyroscope readings
+    //     // integral from gyroscope readings
 
-        Vec3Df _gyroMean=this->gyroMean.mean();
-        Vec3Df _accelMean=this->accelMean.mean();
+    //     Vec3Df _gyroMean=this->gyroMean.mean();
+    //     Vec3Df _accelMean=this->accelMean.mean();
 
-        // we only care about 2D projection from top view:
-        // so only yaw axis from IMU
+    //     // we only care about 2D projection from top view:
+    //     // so only yaw axis from IMU
 
-        MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->magReading.x,this->magReading.y,this->magReading.z);
+    //     MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->magReading.x,this->magReading.y,this->magReading.z);
 
-        float _roll=0.f;
-        float _pitch=0.f;
-        float _yaw=0.f;
+    //     float _roll=0.f;
+    //     float _pitch=0.f;
+    //     float _yaw=0.f;
 
-        MadgwickQuaterionToEuler(&_roll,&_pitch,&_yaw);
+    //     MadgwickQuaterionToEuler(&_roll,&_pitch,&_yaw);
 
-        this->reads.yaw=this->rotor.step(d0,_yaw);
+    //     this->reads.yaw=this->rotor.step(d0,_yaw);
 
-        this->reads.position.x=this->posfilter_x.step(dx*cos(this->reads.yaw),_accelMean.x);
-        this->reads.position.y=this->posfilter_y.step(dx*sin(this->reads.yaw),_accelMean.y);
+    //     this->reads.position.x=this->posfilter_x.step(dx*cos(this->reads.yaw),_accelMean.x);
+    //     this->reads.position.y=this->posfilter_y.step(dx*sin(this->reads.yaw),_accelMean.y);
 
-        this->xCycleTask=false;
+    //     this->xCycleTask=false;
 
-        ESP_LOGD("Sensors","Yaw: %f",this->reads.yaw);
-        ESP_LOGD("Sensors","X: %f Y: %f",this->reads.position.x,this->reads.position.y);
-    }
+    //     ESP_LOGD("Sensors","Yaw: %f",this->reads.yaw);
+    //     ESP_LOGD("Sensors","X: %f Y: %f",this->reads.position.x,this->reads.position.y);
+    // }
 
     //-------------------------------------
     // distance sensor reading
@@ -393,9 +555,6 @@ void SensorReader::step()
 
     }
     //-------------------------------------
-    //KTIR floor sensor reading
-
-    this->read_adc();
 
 }
 

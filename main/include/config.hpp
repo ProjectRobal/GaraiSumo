@@ -6,6 +6,8 @@
 
 #define MAIN_TASK_STACK_SIZE 32768
 
+#define MIN_TASK_STACK_SIZE 8196
+
 #define I2C_SENSOR_PORT I2C_NUM_0
 #define SENSOR_SDA 13
 #define SENSOR_SCL 12
@@ -37,14 +39,28 @@ const unsigned char KTIRChannel[]={0};
 
 #define NUM_OF_KTIRS 1
 
+// 50 Hz
+#define VL_SAMPLE_TIME_MS 20
 
 #define SAMPLE_FREQ 250 // In Hz
 
-#define SAMPLE_TIME 1.0/SAMPLE_FREQ
+// 1 kHz
+#define ADC_TIME_MS 1
 
-#define MOTOR_UPDATE_TIME_MS 10
+// 250 Hz
+#define SAMPLE_TIME_MS 4
 
-#define MOTOR_UPDATE_TIME MOTOR_UPDATE_TIME_MS/1000.f
+#define SAMPLE_TIME (float)SAMPLE_TIME_MS/1000.f
+
+#define MOTOR_UPDATE_TIME_MS 50
+
+#define MOTOR_UPDATE_TIME (float)MOTOR_UPDATE_TIME_MS/1000.f
+
+// 1 kHz
+#define ENCODER_UPDATE_TIME_MS 1
+
+#define ENCODER_UPDATE_TIME (float)ENCODER_UPDATE_TIME_MS/1000.f;
+
 
 #define MAX_ENGINE_POWER 4095.f
 

@@ -129,7 +129,7 @@ void MotorDriver::init()
 
     // start Motor Task
 
-    xTaskCreatePinnedToCore(freeRTOS_task,"Motors",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+    xTaskCreatePinnedToCore(freeRTOS_task,"Motors",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
 
 }
 
