@@ -1,9 +1,15 @@
 #pragma once
 
-#include "driver/timer.h"
-#include "driver/i2c.h"
-#include "esp_adc/adc_oneshot.h"
-#include "esp_log.h"
+#include <driver/i2c.h>
+
+#include <driver/gpio.h>
+
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/event_groups.h>
+
+#include <esp_adc/adc_oneshot.h>
+#include <esp_log.h>
 
 #include "config.hpp"
 
@@ -97,6 +103,8 @@ class SensorReader
 
     Magnetrometer* mag;
 
+    EventGroupHandle_t imuEvent;
+
     // initialize magnetrometer
     void init_mag();
 
@@ -171,8 +179,12 @@ class SensorReader
         return cfg;
     }
 
+    BaseType_t imu_gpio_interupt();
+
     // perform reading
     void step();
+
+    void read_imu();
 
     void read_encoders();
 

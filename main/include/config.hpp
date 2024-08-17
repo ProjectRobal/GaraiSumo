@@ -71,6 +71,9 @@ const unsigned char KTIRChannel[]={0};
 #define MPU6050_ADDRESS 0x68
 
 
+#define MPU6050_INT_PIN GPIO_NUM_21
+
+
 #define PCNT_CH1 (gpio_num_t)1
 #define PCNT_CH2 (gpio_num_t)41
 

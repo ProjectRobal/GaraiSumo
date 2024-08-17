@@ -7,6 +7,8 @@
 #include <freertos/task.h>
 #include <esp_log.h>
 
+#include <driver/gpio.h>
+
 #include "ConfigLoader.hpp"
 
 #include "config.h"
@@ -41,6 +43,9 @@ void app_main()
     esp_log_level_set("Sensors", ESP_LOG_INFO);
 
     ESP_LOGI("MAIN","Hello World!");
+
+    gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
+
 
     // for testing purpose
 //    oled_loop(NULL);

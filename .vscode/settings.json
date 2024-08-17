@@ -3,6 +3,7 @@
     "idf.toolsPath": "/home/projectrobal/esp/esp-idf",
     "files.associations": {
         "compare": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "cmath": "cpp"
     }
 }

@@ -1,6 +1,11 @@
 #include <cstring>
 #include <cmath>
 
+#include <driver/gpio.h>
+
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/event_groups.h>
 
 #include "MotorDriver.hpp"
 #include "SensorReader.hpp"
@@ -13,6 +18,13 @@ extern "C"
 namespace sensors
 {
 
+static void IRAM_ATTR gpio_isr_imu_handler(void* arg)
+{
+    SensorReader* reader = (SensorReader*)arg;
+
+    portYIELD_FROM_ISR( reader->imu_gpio_interupt() );
+}
+
 // it will have 1kHz sampling frequency
 static void IMU_task(void* arg)
 {
@@ -22,20 +34,22 @@ static void IMU_task(void* arg)
     {
         // wait for interrupt on pin
 
-    }
-}
-
-// it will have about 50Hz sampling frequency
-static void Mag_task(void* arg)
-{
-    SensorReader* reader = (SensorReader*)arg;
-
-    while(true)
-    {
-        // wait for interrupt on pin
+        reader->read_imu();
 
     }
 }
+
+// // it will have about 50Hz sampling frequency
+// static void Mag_task(void* arg)
+// {
+//     SensorReader* reader = (SensorReader*)arg;
+
+//     while(true)
+//     {
+//         // wait for interrupt on pin
+
+//     }
+// }
 
 static void Encoders_task(void* arg)
 {
@@ -132,6 +146,14 @@ void SensorReader::init_peripherials()
 
 void SensorReader::init_sensors()
 {
+
+    this->imuEvent = xEventGroupCreate();
+
+    gpio_set_direction(MPU6050_INT_PIN,GPIO_MODE_INPUT);
+
+    gpio_set_intr_type(MPU6050_INT_PIN,GPIO_INTR_NEGEDGE);
+
+    gpio_isr_handler_add(MPU6050_INT_PIN, gpio_isr_imu_handler, this);
 
     this->vl=new MultiVL(I2C_SENSOR_PORT);
 
@@ -308,6 +330,8 @@ void SensorReader::init_tasks()
 
     xTaskCreatePinnedToCore(ADC_task,"ADC",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
 
+    xTaskCreatePinnedToCore(IMU_task,"IMU",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+
     xTaskCreatePinnedToCore(Fusion_task,"Fusion",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
 
 }
@@ -424,6 +448,42 @@ void SensorReader::tofs_read()
 
         this->reads.distances[this->from_angel_to_sensor_index(angel)]=distance;
 
+    }
+
+}
+
+BaseType_t IRAM_ATTR SensorReader::imu_gpio_interupt()
+{
+    BaseType_t pxHigherPriorityTaskWoken;
+
+    xEventGroupSetBitsFromISR(this->imuEvent,1<<0,&pxHigherPriorityTaskWoken);
+
+    return pxHigherPriorityTaskWoken;
+}
+
+void SensorReader::read_imu()
+{
+
+    xEventGroupWaitBits(this->imuEvent,1<<0,true,true,portMAX_DELAY);
+
+    // if(mpu.IntStatus()&(1<<0))
+    // {
+
+    Vec3Df _gyro=this->mpu.readGyroscope();
+    Vec3Df _accel=this->mpu.readAccelerometer();
+
+    gyroMean.push(_gyro);
+
+    accelMean.push(_accel);
+
+    //}
+
+    if(this->mag!=NULL)
+    {
+        if(this->mag->checkDataReady())
+        {
+            this->read_mag();
+        }
     }
 
 }
