@@ -3,6 +3,8 @@
 
 #include "OnlineTerminal.hpp"
 
+using shared::mods;
+
 
 esp_err_t OnlineTerminal::ws_wrapper(httpd_req_t *req)
 {
@@ -39,7 +41,7 @@ esp_err_t OnlineTerminal::rototrfilter_wrapper(httpd_req_t *req)
     return ((OnlineTerminal*)req->user_ctx)->set_rotor_filter(req);
 }
 
-OnlineTerminal::OnlineTerminal(shared::Modules *mods)
+OnlineTerminal::OnlineTerminal()
 : ws(
     {
         .uri="/readings",
@@ -139,7 +141,7 @@ rotorfilter_post(
     }
 )
 {
-    this->mods=mods;
+    mods=mods;
     this->server=NULL;
 }
 
@@ -177,13 +179,13 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         json=cJSON_CreateObject();
 
-        cJSON_AddBoolToObject(json,"IMUOnly",this->mods->sensors->read().IMUOnlyReading);
+        cJSON_AddBoolToObject(json,"IMUOnly",mods.sensors->read().IMUOnlyReading);
 
         int _distances[18];
 
         for(uint8_t i=0;i<18;++i)
         {
-            _distances[i]=this->mods->sensors->read().distances[i];
+            _distances[i]=mods.sensors->read().distances[i];
         }
 
         cJSON* intarray=cJSON_CreateIntArray(_distances,18);
@@ -191,13 +193,13 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
         cJSON_AddItemToObject(json,"distances",intarray);
 
         
-        cJSON_AddNumberToObject(json,"yaw",this->mods->sensors->read().yaw);
+        cJSON_AddNumberToObject(json,"yaw",mods.sensors->read().yaw);
 
-        cJSON_AddBoolToObject(json,"stopped",this->mods->sensors->read().stoped);
+        cJSON_AddBoolToObject(json,"stopped",mods.sensors->read().stoped);
 
         cJSON* ktir_arr=cJSON_AddArrayToObject(json,"ktirs");
 
-        for(const bool& ktir : this->mods->sensors->read().floor_sensors)
+        for(const bool& ktir : mods.sensors->read().floor_sensors)
         {
             cJSON* ktir_bool=cJSON_CreateBool(ktir);
             cJSON_AddItemToArray(ktir_arr,ktir_bool);
@@ -205,8 +207,8 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         cJSON* coords=cJSON_AddObjectToObject(json,"position");
         
-        cJSON* x=cJSON_CreateNumber(this->mods->sensors->read().position.x);
-        cJSON* y=cJSON_CreateNumber(this->mods->sensors->read().position.y);
+        cJSON* x=cJSON_CreateNumber(mods.sensors->read().position.x);
+        cJSON* y=cJSON_CreateNumber(mods.sensors->read().position.y);
 
         cJSON_AddItemToObject(coords,"x",x);
         cJSON_AddItemToObject(coords,"y",y);
@@ -290,10 +292,10 @@ esp_err_t OnlineTerminal::ws_motor_control(httpd_req_t *req)
 
         ESP_LOGI("OnlineTerminal","Manual override, disabling automatic mode!");
 
-        this->mods->driver->setAutomaticMode(false);
+        mods.driver->setAutomaticMode(false);
 
-        this->mods->driver->set_channelA(motorA_pwr);
-        this->mods->driver->set_channelB(motorB_pwr);
+        mods.driver->set_channelA(motorA_pwr);
+        mods.driver->set_channelB(motorB_pwr);
 
         this->clear_buf();
 
@@ -335,7 +337,7 @@ esp_err_t OnlineTerminal::set_imu_config(httpd_req_t *req)
         {
             this->clear_buf();
 
-            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,this->mods->sensors->dump_cfg()))
+            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,mods.sensors->dump_cfg()))
             {
                 httpd_resp_set_type(req,"application/json");
 
@@ -364,7 +366,7 @@ esp_err_t OnlineTerminal::set_imu_config(httpd_req_t *req)
                 return ESP_OK;
             }
 
-            this->mods->sensors->update_cfg(config);
+            mods.sensors->update_cfg(config);
 
             config::ConfigLoader::save(config);
 
@@ -391,7 +393,7 @@ esp_err_t OnlineTerminal::set_motor_pid(httpd_req_t *req)
 
             this->clear_buf();
 
-            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,this->mods->driver->MotorConfig()))
+            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,mods.driver->MotorConfig()))
             {
                 httpd_resp_set_type(req,"application/json");
 
@@ -418,7 +420,7 @@ esp_err_t OnlineTerminal::set_motor_pid(httpd_req_t *req)
                 return ESP_OK;  
             }
 
-            this->mods->driver->setMotorConfig(cfg);
+            mods.driver->setMotorConfig(cfg);
 
             config::ConfigLoader::save(cfg);
 
@@ -437,8 +439,8 @@ esp_err_t OnlineTerminal::calibr_imu(httpd_req_t *req)
     {
         case HTTP_POST:
 
-            this->mods->driver->stop();
-            this->mods->sensors->DoIMUCalibration();
+            mods.driver->stop();
+            mods.sensors->DoIMUCalibration();
 
             httpd_resp_sendstr(req,"OK");
 
@@ -450,7 +452,7 @@ esp_err_t OnlineTerminal::calibr_imu(httpd_req_t *req)
 
             json=cJSON_CreateObject();
 
-            cJSON_AddBoolToObject(json,"done",this->mods->sensors->IMUCalibrationDone());
+            cJSON_AddBoolToObject(json,"done",mods.sensors->IMUCalibrationDone());
 
             this->clear_buf();
 
@@ -512,7 +514,7 @@ esp_err_t OnlineTerminal::set_position_filter(httpd_req_t *req)
 
                 case 'y':
 
-            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,this->mods->sensors->getPositionFilterYCFG()))
+            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,mods.sensors->getPositionFilterYCFG()))
             {
                 httpd_resp_set_type(req,"application/json");
 
@@ -526,7 +528,7 @@ esp_err_t OnlineTerminal::set_position_filter(httpd_req_t *req)
 
                 case 'x':
 
-            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,this->mods->sensors->getPositionFilterXCFG()))
+            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,mods.sensors->getPositionFilterXCFG()))
             {
                 httpd_resp_set_type(req,"application/json");
 
@@ -560,7 +562,7 @@ esp_err_t OnlineTerminal::set_position_filter(httpd_req_t *req)
                 return ESP_OK;  
             }
 
-            this->mods->sensors->updatePositionFilterXCFG(cfg);
+            mods.sensors->updatePositionFilterXCFG(cfg);
 
             config::ConfigLoader::save(cfg,POS_Y_CFG_FILE);
 
@@ -579,7 +581,7 @@ esp_err_t OnlineTerminal::set_position_filter(httpd_req_t *req)
                 return ESP_OK;  
             }
 
-            this->mods->sensors->updatePositionFilterYCFG(cfg);
+            mods.sensors->updatePositionFilterYCFG(cfg);
 
             config::ConfigLoader::save(cfg,POS_Y_CFG_FILE);
 
@@ -606,7 +608,7 @@ esp_err_t OnlineTerminal::set_rotor_filter(httpd_req_t *req)
 
             this->clear_buf();
 
-            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,this->mods->sensors->getRoationFilterCFG()))
+            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,mods.sensors->getRoationFilterCFG()))
             {
                 httpd_resp_set_type(req,"application/json");
 
@@ -635,7 +637,7 @@ esp_err_t OnlineTerminal::set_rotor_filter(httpd_req_t *req)
                 return ESP_OK;  
             }
 
-            this->mods->sensors->updateRoationFilterCFG(cfg);
+            mods.sensors->updateRoationFilterCFG(cfg);
 
             config::ConfigLoader::save(cfg);
 

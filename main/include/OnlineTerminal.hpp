@@ -24,8 +24,6 @@
 class OnlineTerminal
 {
 
-    shared::Modules *mods;
-
     httpd_handle_t server;
 
     const httpd_uri_t ws;
@@ -123,7 +121,7 @@ class OnlineTerminal
 
     public:
 
-    OnlineTerminal(shared::Modules *mods);
+    OnlineTerminal();
 
     void init();
 

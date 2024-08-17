@@ -42,37 +42,6 @@ void SensorReader::init_peripherials()
         ESP_LOGE("Sensors","%s",esp_err_to_name(err));
     }
 
-    /*
-
-    // OLED MENU I2C initialization
-
-    i2c_config_t conf1{};
-
-    conf1.mode=I2C_MODE_MASTER;
-    conf1.sda_io_num=MENU_SDA;
-    conf1.scl_io_num=MENU_SCL;
-    conf1.sda_pullup_en=GPIO_PULLUP_ENABLE;
-    conf1.scl_pullup_en=GPIO_PULLUP_ENABLE;
-    conf1.master.clk_speed=I2C_MASTER_FREQ_HZ;
-    //conf.clk_flags=0;
-
-    esp_err_t err=ESP_OK;
-    
-    err=i2c_param_config(I2C_MENU_PORT,&conf1);
-
-    if(err!=ESP_OK)
-    {
-        ESP_LOGE("Sensors","%s",esp_err_to_name(err));
-    }
-
-    err=i2c_driver_install(I2C_MENU_PORT,I2C_MODE_MASTER,0,0,0);
-
-    if(err!=ESP_OK)
-    {
-        ESP_LOGE("Sensors","%s",esp_err_to_name(err));
-    }
-
-    */
     //----------------------------
     // ADC initialization
 

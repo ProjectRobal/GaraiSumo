@@ -75,7 +75,7 @@ class MotorDriver
     static bool channelBDirection();
 
     // main drive function
-    void loop(const sensors::Readings& readings);
+    void loop();
 
     void setTargetAngel(const float& target)
     {

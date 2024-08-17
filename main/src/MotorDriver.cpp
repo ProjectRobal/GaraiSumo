@@ -1,5 +1,23 @@
 #include "MotorDriver.hpp"
+
+#include "shared.hpp"
+
 #include "config.hpp"
+
+using shared::mods;
+
+static void freeRTOS_task(void* arg)
+{
+    MotorDriver* driver = (MotorDriver*)arg;
+
+    while(true)
+    {
+
+        driver->loop();
+
+        vTaskDelay(50/portTICK_PERIOD_MS);
+    }
+}
 
 
 bool MotorDriver::channelADirection()
@@ -109,6 +127,11 @@ void MotorDriver::init()
     this->init_ledc();
 
     this->stop();
+
+    // start Motor Task
+
+    xTaskCreatePinnedToCore(freeRTOS_task,"Motors",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+
 }
 
 void MotorDriver::setPIDA(const config::MotorPID& pid)
@@ -153,11 +176,13 @@ config::MotorCFG MotorDriver::MotorConfig()
     };
 }
 
-void MotorDriver::loop(const sensors::Readings& readings)
+void MotorDriver::loop()
 {
     if(automaticMode)
     {
     
+    const sensors::Readings& readings = mods.sensors->read();
+
     // error between target angel and current angel 
     float d0=this->target_yaw-readings.yaw;    
 

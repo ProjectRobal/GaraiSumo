@@ -22,7 +22,7 @@
 extern "C"
 {
 
-using shared::Modules;
+using shared::mods;
 
 const uint8_t rides_of_valkyrya[]={30,30,0,0,30,30,0,0,0,30,30,30,30,30,30,0,0,0,27,27,27,27,27,27,27,27,0,0,30,30,30,30,30,30,30,30,30,30,0,0,0,0,
 30,30,0,0,30,30,0,0,0,30,30,30,30,30,30,0,0,0,27,27,27,27,27,27,27,27,0,0,30,30,30,30,30,30,30,30,30,30,0,0,0,0,
@@ -33,8 +33,6 @@ void wifi_init();
 void oled_loop(void *arg);
 
 void main_loop(void *arg);
-
-StaticTask_t  main_task;
 
 void app_main()
 {
@@ -47,9 +45,7 @@ void app_main()
     // for testing purpose
 //    oled_loop(NULL);
 
-    Modules *mods=new Modules();
-
-    mods->audio_play=new RuraPlayer(rides_of_valkyrya,sizeof(rides_of_valkyrya)/sizeof(uint8_t),25);
+    mods.audio_play=new RuraPlayer(rides_of_valkyrya,sizeof(rides_of_valkyrya)/sizeof(uint8_t),25);
 
     //mods->audio_play->play();
 
@@ -63,11 +59,11 @@ void app_main()
 
     config::RotationFilterCFG rotor;
 
-    mods->sensors=new sensors::SensorReader();
+    mods.sensors=new sensors::SensorReader();
 
-    mods->driver=new MotorDriver();
+    mods.driver=new MotorDriver();
 
-    OnlineTerminal* terminal=new OnlineTerminal(mods);
+    OnlineTerminal* terminal=new OnlineTerminal();
 
     
     ESP_ERROR_CHECK(esp_netif_init());
@@ -157,17 +153,17 @@ void app_main()
 
     terminal->init();
 
-    mods->driver->setMotorConfig(motor_cfg);
+    mods.driver->setMotorConfig(motor_cfg);
 
-    mods->driver->init();
+    mods.driver->init();
 
-    mods->sensors->init(sensor_cfg);
+    mods.sensors->init(sensor_cfg);
 
-    mods->sensors->updatePositionFilterXCFG(posX);
+    mods.sensors->updatePositionFilterXCFG(posX);
 
-    mods->sensors->updatePositionFilterYCFG(posY);
+    mods.sensors->updatePositionFilterYCFG(posY);
 
-    mods->sensors->updateRoationFilterCFG(rotor);
+    mods.sensors->updateRoationFilterCFG(rotor);
 
     // init screen task
 
@@ -177,30 +173,18 @@ void app_main()
 
     //xTaskCreateStaticPinnedToCore(oled_loop,"OLED",OLED_TASK_STACK_SIZE,mods,1,oled_stack,&oled_task,!xPortGetCoreID());
 
-    StackType_t *main_stack=(StackType_t*)malloc(MAIN_TASK_STACK_SIZE*sizeof(StackType_t));
+    // StackType_t *main_stack=(StackType_t*)malloc(MAIN_TASK_STACK_SIZE*sizeof(StackType_t));
 
     //StackType_t *main_stack=(StackType_t*)malloc(MAIN_TASK_STACK_SIZE*sizeof(StackType_t));
 
-    if(main_stack == NULL)
-    {
-        ESP_LOGE("MAIN","Cannot allocate stack memmory");
-    }
-
-    TaskHandle_t  task_code=xTaskCreateStaticPinnedToCore(main_loop,"MAIN",MAIN_TASK_STACK_SIZE,mods,configMAX_PRIORITIES-1,main_stack,&main_task,xPortGetCoreID());
-
-    if(task_code==NULL)
-    {
-        ESP_LOGE("MAIN","Cannot create main_task ");
-    }
+    // TaskHandle_t  task_code=xTaskCreateStaticPinnedToCore(main_loop,"MAIN",MAIN_TASK_STACK_SIZE,mods,configMAX_PRIORITIES-1,main_stack,&main_task,xPortGetCoreID());
 
     //main_loop(mods);
-
 }
 
 
 void oled_loop(void *arg)
 {
-    Modules* mods=(Modules*)arg;
 
     bool fun_button_state;
     bool mode_button_state;
@@ -276,7 +260,7 @@ void oled_loop(void *arg)
 
         screen.clear();
 
-        uint8_t ret=oled_modes::modes[page_id](screen,mods,fun_button_state,mode_button_state);
+        uint8_t ret=oled_modes::modes[page_id](screen,&mods,fun_button_state,mode_button_state);
 
         if(ret!=0)
         {
@@ -336,10 +320,10 @@ void wifi_init()
     ESP_ERROR_CHECK(esp_wifi_start());
 }
 
+// split it to other tasks
 void main_loop(void *arg)
 {
     ESP_LOGI("MAIN","Entering main loop!");
-    Modules* mods=(Modules*)arg;
 
     /*
         So something inside these functions cause panic to ariase:

@@ -17,4 +17,6 @@ struct Modules
 
 };
 
+extern Modules mods;
+
 };

@@ -37,9 +37,12 @@ class PID
     }
 
     PID(T p,T i,T d)
-    : PID(),_p(p),_i(i),_d(d)
+    : PID()
     {
-    }
+        _p = p;
+        _i = i;
+        _d = d;
+    }   
 
     void setParams(T p,T i=0,T d=0)
     {
@@ -81,17 +84,17 @@ class PID
         _d=d;
     }
 
-    const T& P() const
+    T P() const
     {
         return _p;
     }
 
-    const T& I() const
+    T I() const
     {
         return _i;
     }
 
-    const T& D() const
+    T D() const
     {
         return _d;
     }
