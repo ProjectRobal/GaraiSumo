@@ -34,6 +34,8 @@ void oled_loop(void *arg);
 
 void main_loop(void *arg);
 
+StaticTask_t  main_task;
+
 void app_main()
 {
     esp_log_level_set("*",ESP_LOG_DEBUG);
@@ -175,18 +177,23 @@ void app_main()
 
     //xTaskCreateStaticPinnedToCore(oled_loop,"OLED",OLED_TASK_STACK_SIZE,mods,1,oled_stack,&oled_task,!xPortGetCoreID());
 
-    //TaskHandle_t main_task;
+    StackType_t *main_stack=(StackType_t*)malloc(MAIN_TASK_STACK_SIZE*sizeof(StackType_t));
 
-    //StackType_t *main_stack=(StackType_t*)heap_caps_malloc(MAIN_TASK_STACK_SIZE*sizeof(StackType_t),MALLOC_CAP_SPIRAM);
+    //StackType_t *main_stack=(StackType_t*)malloc(MAIN_TASK_STACK_SIZE*sizeof(StackType_t));
 
-    BaseType_t task_code=xTaskCreatePinnedToCore(main_loop,"MAIN",MAIN_TASK_STACK_SIZE,mods,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
-
-    if(task_code!=pdPASS)
+    if(main_stack == NULL)
     {
-        ESP_LOGE("MAIN","Cannot create main_task %d",task_code);
+        ESP_LOGE("MAIN","Cannot allocate stack memmory");
     }
 
-    main_loop(mods);
+    TaskHandle_t  task_code=xTaskCreateStaticPinnedToCore(main_loop,"MAIN",MAIN_TASK_STACK_SIZE,mods,configMAX_PRIORITIES-1,main_stack,&main_task,xPortGetCoreID());
+
+    if(task_code==NULL)
+    {
+        ESP_LOGE("MAIN","Cannot create main_task ");
+    }
+
+    //main_loop(mods);
 
 }
 
@@ -333,11 +340,16 @@ void main_loop(void *arg)
 {
     ESP_LOGI("MAIN","Entering main loop!");
     Modules* mods=(Modules*)arg;
+
+    /*
+        So something inside these functions cause panic to ariase:
+
+    */
     
     while(true)
     {
         // sensor read step
-        mods->sensors->step();
+        /*mods->sensors->step();
 
         if(!mods->sensors->read().stoped)
         {
@@ -345,7 +357,6 @@ void main_loop(void *arg)
             // program block step
 
             
-
             // motor control step
             mods->driver->loop(mods->sensors->read());
 
@@ -353,7 +364,8 @@ void main_loop(void *arg)
         else
         {
             mods->driver->stop();
-        }
+        }*/
+        vTaskDelay(1000/portTICK_PERIOD_MS);
 
     }
 }

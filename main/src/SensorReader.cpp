@@ -279,7 +279,7 @@ SensorReader::SensorReader()
     SensorsFaulty=false;
     xCycleTask=false;
     KtirThreshold=KTIR_THRESHOLD;
-    this->CalibrateIMU=true;
+    this->CalibrateIMU=false;
 
     yaw_error_tolerance=0;
     distance_error_tolerance=0;
@@ -311,7 +311,7 @@ void SensorReader::step()
         this->reads.position=Vec2Df(0.f);
         this->reads.yaw=0.f;
         ESP_LOGI("Sensors","Starting IMU calibration");
-        vTaskDelay(5000/portTICK_PERIOD_MS);
+        vTaskDelay(1000/portTICK_PERIOD_MS);
         ESP_LOGI("Sensors","Performing IMU calibration");
         this->mpu.DoGyroCalibration();
         this->mpu.DoAccelCalibration();

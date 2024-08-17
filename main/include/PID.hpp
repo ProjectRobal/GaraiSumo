@@ -12,6 +12,8 @@ class PID
     T _d;
 
     T last_output;
+    T integral;
+    T max_integral;
 
     T max;
     T min;
@@ -30,14 +32,13 @@ class PID
         _d=0;
         last_output=0;
         _dt=0.f;
+        integral=0;
+        max_integral=10;
     }
 
     PID(T p,T i,T d)
-    : _p(p),_i(i),_d(d)
+    : PID(),_p(p),_i(i),_d(d)
     {
-        filtr=false;
-        last_output=0;
-        _dt=0.f;
     }
 
     void setParams(T p,T i=0,T d=0)
@@ -107,8 +108,18 @@ class PID
 
     T step(T x,double dt)
     {
+        integral += _i*x*dt;
 
-        last_output=filter(_p*x + _i*x*dt + _d*((x-last_output)/dt));
+        if( integral > max_integral )
+        {
+            integral = max_integral;
+        }
+        else if( integral < -max_integral )
+        {
+            integral = -max_integral;
+        }
+
+        last_output=filter(_p*x + integral + _d*((x-last_output)/dt));
 
         return last_output;
     }
