@@ -19,6 +19,8 @@
 #define I2C_MASTER_FREQ_HZ 100000 
 
 
+#define BATTERY_ADC_CHANNEL ADC_CHANNEL_8
+
 // specified multiplexer ports where sensors are connected
 const unsigned char SensorList[]={};
 

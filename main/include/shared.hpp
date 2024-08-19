@@ -14,7 +14,7 @@ struct Modules
     sensors::SensorReader* sensors;
     RuraPlayer* audio_play;
     MotorDriver* driver;
-
+    
 };
 
 extern Modules mods;

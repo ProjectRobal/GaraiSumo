@@ -3,12 +3,15 @@
 
 #include <driver/gpio.h>
 
+#include <esp_sleep.h>
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/event_groups.h>
 
 #include "MotorDriver.hpp"
 #include "SensorReader.hpp"
+
 
 extern "C"
 {
@@ -253,6 +256,21 @@ void SensorReader::read_adc()
         //ESP_LOGI("Sensors","ADC %x : %d",i,result);
     }
 
+    // read a battery voltage
+
+    int reading;
+
+    ESP_ERROR_CHECK(adc_oneshot_read(this->hmd,BATTERY_ADC_CHANNEL, &reading));
+
+    this->reads.battery_voltage = (reading*168)/34750;
+
+    if( this->reads.battery_voltage <= 12.8 )
+    {
+        ESP_LOGI("MAIN","Low battery voltage!!");
+
+        // do something with it
+        esp_deep_sleep_start();
+    }
 }
 
 uint8_t SensorReader::from_angel_to_sensor_index(const float& angel) const
@@ -312,6 +330,7 @@ void SensorReader::read_mag()
 
 SensorReader::SensorReader()
 {
+    this->semp = xSemaphoreCreateMutex();
     SensorsFaulty=false;
     KtirThreshold=KTIR_THRESHOLD;
     this->CalibrateIMU=false;
@@ -351,6 +370,7 @@ void SensorReader::init(const config::SensorConfig& _config)
 
 void SensorReader::read_encoders()
 {
+    this->Lock();
 
     int32_t step_ch1 = ch1.get();
     int32_t step_ch2 = ch2.get();
@@ -386,10 +406,14 @@ void SensorReader::read_encoders()
 
     this->read_adc();
 
+    this->Unlock();
+
 }
 
 void SensorReader::fusion()
 {
+    this->Lock();
+
     Vec3Df _gyroMean=this->gyroMean.mean();
     Vec3Df _accelMean=this->accelMean.mean();
 
@@ -420,10 +444,12 @@ void SensorReader::fusion()
     ESP_LOGD("Sensors","Yaw: %f",this->reads.yaw);
     ESP_LOGD("Sensors","X: %f Y: %f",this->reads.position.x,this->reads.position.y);
 
+    this->Unlock();
 }
 
 void SensorReader::tofs_read()
 {
+    this->Lock();
     // distance sensor reading
     uint16_t distance=0;
     float angel=0.0;
@@ -450,6 +476,7 @@ void SensorReader::tofs_read()
 
     }
 
+    this->Unlock();
 }
 
 BaseType_t IRAM_ATTR SensorReader::imu_gpio_interupt()
@@ -485,136 +512,6 @@ void SensorReader::read_imu()
             this->read_mag();
         }
     }
-
-}
-
-void SensorReader::step()
-{
-    if(SensorsFaulty)
-    {
-        ESP_LOGE("Sensors","Sensors general fault!");
-        this->reads.stoped=true;
-        return;
-    }
-
-    if(CalibrateIMU)
-    {   
-        this->reads.position=Vec2Df(0.f);
-        this->reads.yaw=0.f;
-        ESP_LOGI("Sensors","Starting IMU calibration");
-        vTaskDelay(1000/portTICK_PERIOD_MS);
-        ESP_LOGI("Sensors","Performing IMU calibration");
-        this->mpu.DoGyroCalibration();
-        this->mpu.DoAccelCalibration();
-        ESP_LOGI("Sensors","IMU calibration has finished!");
-
-        CalibrateIMU=false;
-    }
-
-    //-------------------------------------
-        // do every dt time
-
-    if(mpu.IntStatus()&(1<<0))
-    {
-
-        Vec3Df _gyro=this->mpu.readGyroscope();
-        Vec3Df _accel=this->mpu.readAccelerometer();
-
-        gyroMean.push(_gyro);
-
-        accelMean.push(_accel);
-
-    }
-
-    if(this->mag!=NULL)
-    {
-        if(this->mag->checkDataReady())
-        {
-            this->read_mag();
-        }
-    }
-
-
-    // Cycle function
-    // if(this->xCycleTask)
-    // {
-    //     this->reads.IMUOnlyReading=false;
-
-    //     int32_t step_ch1=ch1.get();
-    //     int32_t step_ch2=ch2.get();
-
-    //     step_ch1 = MotorDriver::channelADirection() ? step_ch1 : -step_ch1;
-    //     step_ch2 = MotorDriver::channelBDirection() ? step_ch2 : -step_ch2;
-
-    //     float dl=step_ch1/PULSE_TO_DISTANCE;
-    //     float dr=step_ch2/PULSE_TO_DISTANCE;
-        
-    //     //distance
-    //     float dx=(dl+dr)/2.f;
-
-    //     //change of rotation
-    //     float d0=(dl-dr)/(2*D_WHEELS);
-
-    //     //ESP_LOGI("Sensors","PCINT 1 steps: %ld",step_ch1);
-    //     //ESP_LOGI("Sensors","PCINT 2 steps: %ld",step_ch2);
-
-    //     ch1.clear();
-    //     ch2.clear();
-
-    //     // integral from gyroscope readings
-
-    //     Vec3Df _gyroMean=this->gyroMean.mean();
-    //     Vec3Df _accelMean=this->accelMean.mean();
-
-    //     // we only care about 2D projection from top view:
-    //     // so only yaw axis from IMU
-
-    //     MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->magReading.x,this->magReading.y,this->magReading.z);
-
-    //     float _roll=0.f;
-    //     float _pitch=0.f;
-    //     float _yaw=0.f;
-
-    //     MadgwickQuaterionToEuler(&_roll,&_pitch,&_yaw);
-
-    //     this->reads.yaw=this->rotor.step(d0,_yaw);
-
-    //     this->reads.position.x=this->posfilter_x.step(dx*cos(this->reads.yaw),_accelMean.x);
-    //     this->reads.position.y=this->posfilter_y.step(dx*sin(this->reads.yaw),_accelMean.y);
-
-    //     this->xCycleTask=false;
-
-    //     ESP_LOGD("Sensors","Yaw: %f",this->reads.yaw);
-    //     ESP_LOGD("Sensors","X: %f Y: %f",this->reads.position.x,this->reads.position.y);
-    // }
-
-    //-------------------------------------
-    // distance sensor reading
-    uint16_t distance=0;
-    float angel=0.0;
-
-    for(uint16_t& dis : this->reads.distances)
-    {
-        // out of sight
-        dis=8190;
-    }
-
-    for(uint8_t i=0;i<NUM_OF_SENSORS;++i)
-    {
-        this->vl->SwitchSensor(SensorList[i]);
-
-        #ifdef TOF_CONTINOUS
-            distance=this->vl->readContinous();
-        #else
-            distance=this->vl->read();
-        #endif
-
-        angel=SensorAngleOffset[i]+this->reads.yaw;
-
-        this->reads.distances[this->from_angel_to_sensor_index(angel)]=distance;
-
-    }
-    //-------------------------------------
 
 }
 

@@ -180,6 +180,8 @@ void MotorDriver::loop()
 {
     const sensors::Readings& readings = mods.sensors->read();
 
+    mods.sensors->Lock();
+
     if( readings.stoped )
     {
         this->stop();
@@ -190,33 +192,35 @@ void MotorDriver::loop()
     if(automaticMode)
     {
 
-    /*
+        /*
 
-        PID A will set angular velocity. Which will be then translated to velocity of
-        each wheels.
+            PID A will set angular velocity. Which will be then translated to velocity of
+            each wheels.
 
-        Then PID Left and PID Right is going to adjust a speed on each motor.
-    
-    */
+            Then PID Left and PID Right is going to adjust a speed on each motor.
+        
+        */
 
-    // error between target angel and current angel 
-    float d0 = this->target_yaw-readings.yaw;   
+        // error between target angel and current angel 
+        float d0 = this->target_yaw-readings.yaw;   
 
-    float angular_speed = this->turning_power*this->motorA.step(d0);
+        float angular_speed = this->turning_power*this->motorA.step(d0);
 
-    float target_speed_left = this->target_speed + D_WHEELS*angular_speed;
-    float target_speed_right = this->target_speed - D_WHEELS*angular_speed;
+        float target_speed_left = this->target_speed + D_WHEELS*angular_speed;
+        float target_speed_right = this->target_speed - D_WHEELS*angular_speed;
 
-    float dSpeedLeft = target_speed_left - readings.motorSpeed[0]; 
-    float dSpeedRight = target_speed_right - readings.motorSpeed[1]; 
+        float dSpeedLeft = target_speed_left - readings.motorSpeed[0]; 
+        float dSpeedRight = target_speed_right - readings.motorSpeed[1]; 
 
-    int32_t PowerLeft = this->motorLeft.step(dSpeedLeft)*MAX_ENGINE_POWER;
-    int32_t PowerRight = this->motorRight.step(dSpeedRight)*MAX_ENGINE_POWER;
+        int32_t PowerLeft = this->motorLeft.step(dSpeedLeft)*MAX_ENGINE_POWER;
+        int32_t PowerRight = this->motorRight.step(dSpeedRight)*MAX_ENGINE_POWER;
 
-    this->set_channelA(PowerLeft);
-    this->set_channelB(PowerRight);
+        this->set_channelA(PowerLeft);
+        this->set_channelB(PowerRight);
 
     }
+
+    mods.sensors->Unlock();
 }
 
 void MotorDriver::stop()

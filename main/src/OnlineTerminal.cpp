@@ -163,6 +163,8 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
             return ESP_OK;
         }
 
+        mods.sensors->Lock();
+
         httpd_ws_frame_t ws_packet={0};
         ws_packet.type=HTTPD_WS_TYPE_TEXT;
 
@@ -192,6 +194,9 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         cJSON_AddItemToObject(json,"distances",intarray);
 
+        cJSON_AddNumberToObject(json,"left_motor_speed",mods.sensors->read().motorSpeed[0]);
+
+        cJSON_AddNumberToObject(json,"right_motor_speed",mods.sensors->read().motorSpeed[0]);
         
         cJSON_AddNumberToObject(json,"yaw",mods.sensors->read().yaw);
 
@@ -216,6 +221,8 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
         this->send_ws_json(&ws_packet,req,json);
 
         cJSON_Delete(json);
+
+        mods.sensors->Unlock();
 
         return ESP_OK;
 }

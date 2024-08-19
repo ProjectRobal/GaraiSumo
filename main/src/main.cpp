@@ -170,21 +170,11 @@ void app_main()
 
     mods.sensors->updateRoationFilterCFG(rotor);
 
+    // init watchdog
+
     // init screen task
 
-    //StaticTask_t oled_task;
 
-    //StackType_t *oled_stack=new StackType_t[OLED_TASK_STACK_SIZE];
-
-    //xTaskCreateStaticPinnedToCore(oled_loop,"OLED",OLED_TASK_STACK_SIZE,mods,1,oled_stack,&oled_task,!xPortGetCoreID());
-
-    // StackType_t *main_stack=(StackType_t*)malloc(MAIN_TASK_STACK_SIZE*sizeof(StackType_t));
-
-    //StackType_t *main_stack=(StackType_t*)malloc(MAIN_TASK_STACK_SIZE*sizeof(StackType_t));
-
-    // TaskHandle_t  task_code=xTaskCreateStaticPinnedToCore(main_loop,"MAIN",MAIN_TASK_STACK_SIZE,mods,configMAX_PRIORITIES-1,main_stack,&main_task,xPortGetCoreID());
-
-    //main_loop(mods);
 }
 
 

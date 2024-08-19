@@ -37,6 +37,9 @@ namespace sensors
 
 struct Readings
     {
+        //  a voltage from battery
+        float battery_voltage = 0.f;
+
         // distance for each direction
         uint16_t distances[18] = {0};
         // current degree in yaw axis
@@ -67,6 +70,7 @@ struct Readings
 
         // position in 2D space, from encoders
         Vec2Df epostion = Vec2Df(0);
+
     };
 
 
@@ -74,6 +78,8 @@ class SensorReader
 {
 
     protected:
+
+    SemaphoreHandle_t semp;
 
     PositionFilter posfilter_x;
     PositionFilter posfilter_y;
@@ -181,9 +187,6 @@ class SensorReader
 
     BaseType_t imu_gpio_interupt();
 
-    // perform reading
-    void step();
-
     void read_imu();
 
     void read_encoders();
@@ -217,6 +220,17 @@ class SensorReader
     void DoIMUCalibration()
     {
         this->CalibrateIMU=true;   
+    }
+
+    // I don't think it is convinient
+    void Lock()
+    {
+        xSemaphoreTake(this->semp,portMAX_DELAY);
+    }
+
+    void Unlock()
+    {
+        xSemaphoreGive(this->semp);
     }
 
     ~SensorReader();
