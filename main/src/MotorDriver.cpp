@@ -129,7 +129,9 @@ void MotorDriver::init()
 
     // start Motor Task
 
-    if( xTaskCreatePinnedToCore(freeRTOS_task,"Motors",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID()) != pdPASS )
+    this->motor_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
+
+    if( xTaskCreateStaticPinnedToCore(freeRTOS_task,"Motors",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,this->motor_stack,&this->motor_task,xPortGetCoreID()) == NULL )
     {
         ESP_LOGE("MAIN","Failed to create Motor task");
     }

@@ -38,6 +38,8 @@ class MotorDriver
     
     bool automaticMode;
 
+    StackType_t* motor_stack;
+    StaticTask_t motor_task;
 
     public:
 

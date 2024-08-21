@@ -74,6 +74,9 @@ class RuraPlayer
 
     TaskHandle_t timerTask;
 
+    StackType_t* rura_stack;
+    StaticTask_t rura_task;
+
     public:
 
     RuraPlayer(const uint8_t* audio,size_t size,uint32_t frameTime);

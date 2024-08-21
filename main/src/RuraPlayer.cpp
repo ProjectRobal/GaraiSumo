@@ -1,5 +1,7 @@
 #include "RuraPlayer.hpp"
 
+#include <esp_log.h>
+
 static void timer_task(void* arg)
 {
     ((RuraPlayer*)arg)->timer_callback();
@@ -79,8 +81,18 @@ size(size)
 
     ptr=0;
 
-    xTaskCreatePinnedToCore(timer_task,"Rura",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,&this->timerTask,1-xPortGetCoreID());
-    vTaskSuspend(this->timerTask);
+    this->rura_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
+
+    this-> timerTask = xTaskCreateStaticPinnedToCore(timer_task,"Rura",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,this->rura_stack,&this->rura_task,1-xPortGetCoreID());
+
+    if( this->timerTask != NULL)
+    {
+        vTaskSuspend(this->timerTask);
+    }
+    else
+    {
+        ESP_LOGE("MAIN","Cannot create Rura task!");
+    }
 }
 
 void RuraPlayer::play()

@@ -79,6 +79,15 @@ class SensorReader
 
     protected:
     
+    StackType_t* encoder_stack;
+    StackType_t* tof_stack;
+    StackType_t* imu_stack;
+    StackType_t* fusion_stack;
+
+    StaticTask_t encoder_task;
+    StaticTask_t tof_task;
+    StaticTask_t imu_task;
+    StaticTask_t fusion_task;
 
     SemaphoreHandle_t semp;
 

@@ -9,14 +9,14 @@
 #define MIN_TASK_STACK_SIZE 8196
 
 #define I2C_SENSOR_PORT I2C_NUM_0
-#define SENSOR_SDA 13
-#define SENSOR_SCL 12
+#define SENSOR_SDA GPIO_NUM_13
+#define SENSOR_SCL GPIO_NUM_12
 
 #define I2C_MENU_PORT I2C_NUM_1
-#define MENU_SDA 11
-#define MENU_SCL 10
+#define MENU_SDA GPIO_NUM_11
+#define MENU_SCL GPIO_NUM_10
 
-#define I2C_MASTER_FREQ_HZ 100000 
+#define I2C_MASTER_FREQ_HZ 400000 
 
 
 #define BATTERY_ADC_CHANNEL ADC_CHANNEL_8
@@ -46,9 +46,6 @@ const unsigned char KTIRChannel[]={0};
 
 #define SAMPLE_FREQ 100 // In Hz
 
-// 1 kHz
-#define ADC_TIME_MS 1
-
 // 250 Hz
 #define SAMPLE_TIME_MS 10
 
@@ -59,10 +56,9 @@ const unsigned char KTIRChannel[]={0};
 #define MOTOR_UPDATE_TIME (float)MOTOR_UPDATE_TIME_MS/1000.f
 
 // 1 kHz
-#define ENCODER_UPDATE_TIME_MS 1
+#define ENCODER_UPDATE_TIME_MS 5
 
 #define ENCODER_UPDATE_TIME (float)ENCODER_UPDATE_TIME_MS/1000.f;
-
 
 #define MAX_ENGINE_POWER 4095.f
 
@@ -76,8 +72,8 @@ const unsigned char KTIRChannel[]={0};
 #define MPU6050_INT_PIN GPIO_NUM_21
 
 
-#define PCNT_CH1 (gpio_num_t)1
-#define PCNT_CH2 (gpio_num_t)41
+#define PCNT_CH1 GPIO_NUM_1
+#define PCNT_CH2 GPIO_NUM_41
 
 // a error between measurmed yaws above which there will be only IMU reading taken to account
 #define YAW_TOLERANCE 0.25
@@ -114,5 +110,5 @@ const gpio_num_t MotorsPin[]={(gpio_num_t)40,(gpio_num_t)39,(gpio_num_t)2,(gpio_
 #define POS_Y_CFG_FILE "posyfilter.json"
 
 
-#define FUN_BUTTON (gpio_num_t)17
-#define MODE_BUTTON (gpio_num_t)18
+#define FUN_BUTTON GPIO_NUM_17
+#define MODE_BUTTON GPIO_NUM_18

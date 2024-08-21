@@ -42,18 +42,6 @@ static void IMU_task(void* arg)
     }
 }
 
-// // it will have about 50Hz sampling frequency
-// static void Mag_task(void* arg)
-// {
-//     SensorReader* reader = (SensorReader*)arg;
-
-//     while(true)
-//     {
-//         // wait for interrupt on pin
-
-//     }
-// }
-
 static void Encoders_task(void* arg)
 {
     SensorReader* reader = (SensorReader*)arg;
@@ -75,18 +63,6 @@ static void TOFs_task(void* arg)
         reader->tofs_read();        
         
         vTaskDelay(VL_SAMPLE_TIME_MS/portTICK_PERIOD_MS);
-    }
-}
-
-static void ADC_task(void* arg)
-{
-    SensorReader* reader = (SensorReader*)arg;
-
-    while(true)
-    {
-        reader->read_adc();        
-        
-        vTaskDelay(ADC_TIME_MS/portTICK_PERIOD_MS);
     }
 }
 
@@ -122,14 +98,14 @@ void SensorReader::init_peripherials()
 
     if(err!=ESP_OK)
     {
-        ESP_LOGE("Sensors","%s",esp_err_to_name(err));
+        ESP_LOGE("MAIN","%s",esp_err_to_name(err));
     }
 
     err=i2c_driver_install(I2C_SENSOR_PORT,I2C_MODE_MASTER,0,0,0);
 
     if(err!=ESP_OK)
     {
-        ESP_LOGE("Sensors","%s",esp_err_to_name(err));
+        ESP_LOGE("MAIN","%s",esp_err_to_name(err));
     }
 
     //----------------------------
@@ -186,8 +162,8 @@ void SensorReader::init_sensors()
         }
         else
         {
-            ESP_LOGE("Sensors","Cannot switch to VL with id=%u",sensor);
-            ESP_LOGE("Sensors","%s",esp_err_to_name(err));
+            ESP_LOGE("MAIN","Cannot switch to VL with id=%u",sensor);
+            ESP_LOGE("MAIN","%s",esp_err_to_name(err));
             // SensorsFaulty=true;
         }
     }
@@ -195,7 +171,7 @@ void SensorReader::init_sensors()
 
     if(!this->mpu.init(true))
     {
-        ESP_LOGE("Sensors","MPU initialization failed!");
+        ESP_LOGE("MAIN","MPU initialization failed!");
         SensorsFaulty=true;
     }
 
@@ -280,7 +256,7 @@ void SensorReader::init_mag()
 
     if(hmc->checkDevice())
     {
-        ESP_LOGD("Sensors","Found HMC 5883 magnetrometer!");
+        ESP_LOGD("MAIN","Found HMC 5883 magnetrometer!");
 
         hmc->setGain(HMC5883::Gain::LSB_660);
         hmc->setDataOutputRate(HMC5883::DataOutputRate::_7500);
@@ -298,7 +274,7 @@ void SensorReader::init_mag()
 
     if(qmc->checkChipID())
     {
-        ESP_LOGD("Sensors","Found QMC 5883 magnetrometer!");
+        ESP_LOGD("MAIN","Found QMC 5883 magnetrometer!");
 
         qmc->setFullScale(QMC5883::FullScale::G2);
         qmc->setOutputDataRate(QMC5883::OutputDataRate::_50Hz);
@@ -313,7 +289,7 @@ void SensorReader::init_mag()
 
     this->mag=NULL;
 
-    ESP_LOGE("Sensors","No magnetrometer found!");
+    ESP_LOGE("MAIN","No magnetrometer found!");
 }
 
 void SensorReader::read_mag()
@@ -336,41 +312,37 @@ SensorReader::SensorReader()
     
 }
 
-static StaticTask_t encoder_task;
-static StaticTask_t tof_task;
-static StaticTask_t imu_task;
-static StaticTask_t fusion_task;
 
 void SensorReader::init_tasks()
 {
-    StackType_t* encoder_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
+    this->encoder_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
     
-    if( xTaskCreateStaticPinnedToCore(Encoders_task,"Encoders",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+1,encoder_stack,&encoder_task,xPortGetCoreID()) == NULL )
+    if( xTaskCreateStaticPinnedToCore(Encoders_task,"Encoders",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+1,this->encoder_stack,&this->encoder_task,xPortGetCoreID()) == NULL )
     {
         ESP_LOGE("MAIN","Cannot create encoder task");
     }
 
-    StackType_t* tof_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
+    this->tof_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
 
-    if( xTaskCreateStaticPinnedToCore(TOFs_task,"TOFs",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+2,tof_stack,&tof_task,xPortGetCoreID()) == NULL )
+    if( xTaskCreateStaticPinnedToCore(TOFs_task,"TOFs",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+2,this->tof_stack,&this->tof_task,xPortGetCoreID()) == NULL )
     {
         ESP_LOGE("MAIN","Cannot create TOFs task");
     }
 
     if( !SensorsFaulty )
     {
-        StackType_t* imu_stack = (StackType_t*)malloc(MAIN_TASK_STACK_SIZE);
+        this->imu_stack = (StackType_t*)malloc(MAIN_TASK_STACK_SIZE);
 
-        if( xTaskCreateStaticPinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,imu_stack,&imu_task,xPortGetCoreID()) == NULL )
+        if( xTaskCreateStaticPinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,this->imu_stack,&this->imu_task,xPortGetCoreID()) == NULL )
         {
             ESP_LOGE("MAIN","Cannot create IMU task");
         }
 
     }
 
-    StackType_t* fusion_stack = (StackType_t*)malloc(MAIN_TASK_STACK_SIZE);
+    this->fusion_stack = (StackType_t*)malloc(MAIN_TASK_STACK_SIZE);
 
-    if( xTaskCreateStaticPinnedToCore(Fusion_task,"Fusion",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,fusion_stack,&fusion_task,xPortGetCoreID()) == NULL )
+    if( xTaskCreateStaticPinnedToCore(Fusion_task,"Fusion",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,this->fusion_stack,&this->fusion_task,xPortGetCoreID()) == NULL )
     {
         ESP_LOGE("MAIN","Cannot create Fusion task");
     }
@@ -521,8 +493,6 @@ void SensorReader::read_imu()
     xEventGroupWaitBits(this->imuEvent,1<<0,true,true,portMAX_DELAY);
 
     ESP_LOGD("MAIN","IMU task!!");
-    // if(mpu.IntStatus()&(1<<0))
-    // {
 
     Vec3Df _gyro=this->mpu.readGyroscope();
     Vec3Df _accel=this->mpu.readAccelerometer();
@@ -551,15 +521,14 @@ void SensorReader::read_imu()
         }
     }
 
-    //}
 
-    // if(this->mag!=NULL)
-    // {
+    if( this->mag != NULL )
+    {
     //     if(this->mag->checkDataReady())
     //     {
-    //         this->read_mag();
+    // //        this->read_mag();
     //     }
-    // }
+    }
 
 }
 
