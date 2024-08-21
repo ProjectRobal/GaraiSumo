@@ -421,32 +421,60 @@ bool MPU6050::reset() const
     return res;
 }
 
-float MPU6050::from_raw_gyro(const int16_t& input) const
+float MPU6050::from_raw_gyro(const int16_t input) const
 {
     float ssf=(131.0/(2<<this->gyro_range));
 
     return static_cast<float>(input)/ssf;    
 }
 
-float MPU6050::from_raw_accel(const int16_t& input) const
+float MPU6050::from_raw_accel(const int16_t input) const
 {
     float ssf=(16384.0/(2<<this->accel_range));
 
     return static_cast<float>(input)/ssf; 
 }
 
-int16_t MPU6050::accel_to_raw(const float& input) const
+int16_t MPU6050::accel_to_raw(const float input) const
 {
     float ssf=((2<<this->accel_range)/16384.0);
 
     return static_cast<int16_t>(input/ssf);
 }
 
-int16_t MPU6050::gyro_to_raw(const float& input) const
+int16_t MPU6050::gyro_to_raw(const float input) const
 {
     float ssf=((2<<this->gyro_range)/131.0);
 
     return static_cast<int16_t>(input/ssf);
+}
+
+Vec3Df MPU6050::from_raw_gyro(const Vec3Di& input) const
+{
+    return Vec3Df(this->from_raw_gyro(input.x),
+    this->from_raw_gyro(input.y),
+    this->from_raw_gyro(input.z));
+}
+
+Vec3Df MPU6050::from_raw_accel(const Vec3Di& input) const
+{
+    return Vec3Df(this->from_raw_accel(input.x),
+    this->from_raw_accel(input.y),
+    this->from_raw_accel(input.z));
+}
+
+Vec3Di MPU6050::gyro_to_raw(const Vec3Df& input) const
+{
+    return Vec3Di(this->gyro_to_raw(input.x),
+    this->gyro_to_raw(input.y),
+    this->gyro_to_raw(input.z));
+}
+
+Vec3Di MPU6050::accel_to_raw(const Vec3Df& input) const
+{
+    return Vec3Di(this->accel_to_raw(input.x),
+    this->accel_to_raw(input.y),
+    this->accel_to_raw(input.z));
 }
 
 

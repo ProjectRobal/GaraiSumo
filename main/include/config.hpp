@@ -44,13 +44,13 @@ const unsigned char KTIRChannel[]={0};
 // 50 Hz
 #define VL_SAMPLE_TIME_MS 20
 
-#define SAMPLE_FREQ 250 // In Hz
+#define SAMPLE_FREQ 100 // In Hz
 
 // 1 kHz
 #define ADC_TIME_MS 1
 
 // 250 Hz
-#define SAMPLE_TIME_MS 4
+#define SAMPLE_TIME_MS 10
 
 #define SAMPLE_TIME (float)SAMPLE_TIME_MS/1000.f
 

@@ -39,7 +39,7 @@ void main_loop(void *arg);
 void app_main()
 {
     esp_log_level_set("*",ESP_LOG_DEBUG);
-    esp_log_level_set("MAIN", ESP_LOG_INFO);
+    esp_log_level_set("MAIN", ESP_LOG_DEBUG);
     esp_log_level_set("Sensors", ESP_LOG_INFO);
 
     ESP_LOGI("MAIN","Hello World!");

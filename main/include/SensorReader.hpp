@@ -126,6 +126,8 @@ class SensorReader
 
     bool CalibrateIMU;
 
+    size_t CalibrationCounter;
+
     void install_adc();
 
     uint8_t from_angel_to_sensor_index(const float& angel) const; 

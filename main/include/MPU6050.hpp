@@ -105,15 +105,23 @@ class MPU6050
     GyroscopeRange gyro_range;
     AccelerometerRange accel_range;
 
-    float from_raw_gyro(const int16_t& input) const;
-
-    float from_raw_accel(const int16_t& input) const;
-
-    int16_t gyro_to_raw(const float& input) const;
-
-    int16_t accel_to_raw(const float& input) const;
-
     public:
+
+    float from_raw_gyro(const int16_t input) const;
+
+    float from_raw_accel(const int16_t input) const;
+
+    int16_t gyro_to_raw(const float input) const;
+
+    int16_t accel_to_raw(const float input) const;
+
+    Vec3Df from_raw_gyro(const Vec3Di& input) const;
+
+    Vec3Df from_raw_accel(const Vec3Di& input) const;
+
+    Vec3Di gyro_to_raw(const Vec3Df& input) const;
+
+    Vec3Di accel_to_raw(const Vec3Df& input) const;
 
     MPU6050(i2c_port_t i2c_port = I2C_NUM_0,uint8_t i2c_address=MPU6050_ADDRESS);
 

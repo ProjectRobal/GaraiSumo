@@ -206,11 +206,11 @@ void SensorReader::init_sensors()
 
     vTaskDelay(100/portTICK_PERIOD_MS);
 
-    this->mpu.DoGyroCalibration();
+    // this->mpu.DoGyroCalibration();
 
-    this->mpu.DoAccelCalibration();
+    // this->mpu.DoAccelCalibration();
 
-    this->mpu.printOffsets();
+    // this->mpu.printOffsets();
 
     this->init_mag();
 
@@ -243,6 +243,7 @@ void SensorReader::install_adc()
 
 void SensorReader::read_adc()
 {
+    ESP_LOGD("MAIN","ADC reading!!");
     uint8_t i=0;
 
    for(uint8_t channel : KTIRChannel)
@@ -264,13 +265,13 @@ void SensorReader::read_adc()
 
     this->reads.battery_voltage = (reading*168)/34750;
 
-    if( this->reads.battery_voltage <= 12.8 )
-    {
-        ESP_LOGI("MAIN","Low battery voltage!!");
+    // if( this->reads.battery_voltage <= 12.8 )
+    // {
+    //     ESP_LOGI("MAIN","Low battery voltage!!");
 
-        // do something with it
-        esp_deep_sleep_start();
-    }
+    //     // do something with it
+    //     //esp_deep_sleep_start();
+    // }
 }
 
 uint8_t SensorReader::from_angel_to_sensor_index(const float& angel) const
@@ -333,7 +334,8 @@ SensorReader::SensorReader()
     this->semp = xSemaphoreCreateMutex();
     SensorsFaulty=false;
     KtirThreshold=KTIR_THRESHOLD;
-    this->CalibrateIMU=false;
+    this->CalibrateIMU=true;
+    this->CalibrationCounter=0;
 
     yaw_error_tolerance=0;
     distance_error_tolerance=0;
@@ -343,15 +345,30 @@ SensorReader::SensorReader()
 void SensorReader::init_tasks()
 {
     
-    xTaskCreatePinnedToCore(Encoders_task,"Encoders",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+    if( xTaskCreatePinnedToCore(Encoders_task,"Encoders",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+1,NULL,xPortGetCoreID()) != pdPASS )
+    {
+        ESP_LOGE("MAIN","Cannot create encoder task");
+    }
 
-    xTaskCreatePinnedToCore(TOFs_task,"TOFs",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+    if( xTaskCreatePinnedToCore(TOFs_task,"TOFs",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+2,NULL,xPortGetCoreID()) != pdPASS )
+    {
+        ESP_LOGE("MAIN","Cannot create TOFs task");
+    }
 
-    xTaskCreatePinnedToCore(ADC_task,"ADC",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+    if( xTaskCreatePinnedToCore(ADC_task,"ADC",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+1,NULL,xPortGetCoreID()) != pdPASS )
+    {
+        ESP_LOGE("MAIN","Cannot create ADC task");
+    }
 
-    xTaskCreatePinnedToCore(IMU_task,"IMU",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+    if( xTaskCreatePinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID()) != pdPASS )
+    {
+        ESP_LOGE("MAIN","Cannot create IMU task");
+    }
 
-    xTaskCreatePinnedToCore(Fusion_task,"Fusion",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+    if( xTaskCreatePinnedToCore(Fusion_task,"Fusion",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID()) != pdPASS )
+    {
+        ESP_LOGE("MAIN","Cannot create Fusion task");
+    }
 
 }
 
@@ -370,6 +387,7 @@ void SensorReader::init(const config::SensorConfig& _config)
 
 void SensorReader::read_encoders()
 {
+    ESP_LOGD("MAIN","Encoder reading!!");
     this->Lock();
 
     int32_t step_ch1 = ch1.get();
@@ -412,6 +430,8 @@ void SensorReader::read_encoders()
 
 void SensorReader::fusion()
 {
+    ESP_LOGD("MAIN","Fusion task!!");
+
     this->Lock();
 
     Vec3Df _gyroMean=this->gyroMean.mean();
@@ -502,6 +522,26 @@ void SensorReader::read_imu()
     gyroMean.push(_gyro);
 
     accelMean.push(_accel);
+
+    if( this->CalibrateIMU )
+    {   
+
+        CalibrationCounter++;
+
+        if( CalibrationCounter > 100 )
+        {
+            CalibrationCounter = 0;
+            this->CalibrateIMU = true;
+
+            ESP_LOGI("MAIN","IMU calibration finished!");
+
+            this->mpu.setGyroOffsets(this->mpu.gyro_to_raw(gyroMean.mean()));
+
+            this->mpu.setAccelOffsets(this->mpu.accel_to_raw(accelMean.mean()));
+
+            this->mpu.printOffsets();
+        }
+    }
 
     //}
 

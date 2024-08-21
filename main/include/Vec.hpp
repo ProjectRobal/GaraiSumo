@@ -41,7 +41,7 @@ class Vec2D
         return Vec2D(this->x*vec.x,this->y*vec.y);
     }
 
-    Vec2D operator*(const T& num)
+    Vec2D operator*(T num)
     {
         return Vec2D(this->x*num,this->y*num);
     }
@@ -51,7 +51,7 @@ class Vec2D
         return Vec2D(this->x/vec.x,this->y/vec.y);
     }
 
-    Vec2D operator/(const T& num)
+    Vec2D operator/(T num)
     {
         return Vec2D(this->x/num,this->y/num);
     }
@@ -80,7 +80,7 @@ class Vec2D
         return *this;
     }
 
-    Vec2D& operator*=(const T& num)
+    Vec2D& operator*=(T num)
     {
         this->x*=num;
         this->y*=num;
@@ -96,7 +96,7 @@ class Vec2D
         return *this;
     }
 
-    Vec2D& operator/=(const T& num)
+    Vec2D& operator/=(T num)
     {
         this->x/=num;
         this->y/=num;
@@ -154,7 +154,7 @@ class Vec3D
         return Vec3D(this->x*vec.x,this->y*vec.y,this->z*vec.z);
     }
 
-    Vec3D operator*(const T& num)
+    Vec3D operator*(T num)
     {
         return Vec3D(this->x*num,this->y*num,this->z*num);
     }
@@ -164,7 +164,7 @@ class Vec3D
         return Vec3D(this->x/vec.x,this->y/vec.y,this->z/vec.z);
     }
 
-    Vec3D operator/(const T& num)
+    Vec3D operator/(T num)
     {
         return Vec3D(this->x/num,this->y/num,this->z/num);
     }
@@ -196,7 +196,7 @@ class Vec3D
         return *this;
     }
 
-    Vec3D& operator*=(const T& num)
+    Vec3D& operator*=(T num)
     {
         this->x=this->x*num;
         this->y=this->y*num;
@@ -214,7 +214,7 @@ class Vec3D
         return *this;
     }
 
-    Vec3D& operator/=(const T& num)
+    Vec3D& operator/=(T num)
     {
         this->x=this->x/num;
         this->y=this->y/num;
@@ -288,7 +288,7 @@ class Vec4D
         return Vec4D(this->x*vec.x,this->y*vec.y,this->z*vec.z,this->w*vec.w);
     }
 
-    Vec4D operator*(const T& num)
+    Vec4D operator*(T num)
     {
         return Vec4D(this->x*num,this->y*num,this->z*num,this->w*num);
     }
@@ -298,7 +298,7 @@ class Vec4D
         return Vec4D(this->x/vec.x,this->y/vec.y,this->z/vec.z,this->w/vec.w);
     }
 
-    Vec4D operator/(const T& num)
+    Vec4D operator/(T num)
     {
         return Vec4D(this->x/num,this->y/num,this->z/num,this->w/num);
     }
@@ -333,7 +333,7 @@ class Vec4D
         return *this;
     }
 
-    Vec4D& operator*=(const T& num)
+    Vec4D& operator*=(T num)
     {
         this->x*=num;
         this->y*=num;
@@ -353,7 +353,7 @@ class Vec4D
         return *this;
     }
 
-    Vec4D& operator/=(const T& num)
+    Vec4D& operator/=(T num)
     {
         this->x/=num;
         this->y/=num;

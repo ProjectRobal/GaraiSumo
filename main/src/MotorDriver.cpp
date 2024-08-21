@@ -129,7 +129,10 @@ void MotorDriver::init()
 
     // start Motor Task
 
-    xTaskCreatePinnedToCore(freeRTOS_task,"Motors",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID());
+    if( xTaskCreatePinnedToCore(freeRTOS_task,"Motors",MIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID()) != pdPASS )
+    {
+        ESP_LOGE("MAIN","Failed to create Motor task");
+    }
 
 }
 
@@ -181,6 +184,8 @@ void MotorDriver::loop()
     const sensors::Readings& readings = mods.sensors->read();
 
     mods.sensors->Lock();
+
+    ESP_LOGD("MAIN","Motor task");
 
     if( readings.stoped )
     {
