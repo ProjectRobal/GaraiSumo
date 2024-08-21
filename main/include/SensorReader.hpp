@@ -78,6 +78,7 @@ class SensorReader
 {
 
     protected:
+    
 
     SemaphoreHandle_t semp;
 

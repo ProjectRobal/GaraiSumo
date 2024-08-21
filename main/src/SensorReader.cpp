@@ -188,7 +188,7 @@ void SensorReader::init_sensors()
         {
             ESP_LOGE("Sensors","Cannot switch to VL with id=%u",sensor);
             ESP_LOGE("Sensors","%s",esp_err_to_name(err));
-            SensorsFaulty=true;
+            // SensorsFaulty=true;
         }
     }
     
@@ -205,12 +205,6 @@ void SensorReader::init_sensors()
     this->mpu.setDLPFMode(MPU6050::DPLF_MODE::_5);
 
     vTaskDelay(100/portTICK_PERIOD_MS);
-
-    // this->mpu.DoGyroCalibration();
-
-    // this->mpu.DoAccelCalibration();
-
-    // this->mpu.printOffsets();
 
     this->init_mag();
 
@@ -342,33 +336,44 @@ SensorReader::SensorReader()
     
 }
 
+static StaticTask_t encoder_task;
+static StaticTask_t tof_task;
+static StaticTask_t imu_task;
+static StaticTask_t fusion_task;
+
 void SensorReader::init_tasks()
 {
+    StackType_t* encoder_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
     
-    if( xTaskCreatePinnedToCore(Encoders_task,"Encoders",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+1,NULL,xPortGetCoreID()) != pdPASS )
+    if( xTaskCreateStaticPinnedToCore(Encoders_task,"Encoders",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+1,encoder_stack,&encoder_task,xPortGetCoreID()) == NULL )
     {
         ESP_LOGE("MAIN","Cannot create encoder task");
     }
 
-    if( xTaskCreatePinnedToCore(TOFs_task,"TOFs",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+2,NULL,xPortGetCoreID()) != pdPASS )
+    StackType_t* tof_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
+
+    if( xTaskCreateStaticPinnedToCore(TOFs_task,"TOFs",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+2,tof_stack,&tof_task,xPortGetCoreID()) == NULL )
     {
         ESP_LOGE("MAIN","Cannot create TOFs task");
     }
 
-    // if( xTaskCreatePinnedToCore(ADC_task,"ADC",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+1,NULL,xPortGetCoreID()) != pdPASS )
-    // {
-    //     ESP_LOGE("MAIN","Cannot create ADC task");
-    // }
+    if( !SensorsFaulty )
+    {
+        StackType_t* imu_stack = (StackType_t*)malloc(MAIN_TASK_STACK_SIZE);
 
-    // if( xTaskCreatePinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID()) != pdPASS )
-    // {
-    //     ESP_LOGE("MAIN","Cannot create IMU task");
-    // }
+        if( xTaskCreateStaticPinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,imu_stack,&imu_task,xPortGetCoreID()) == NULL )
+        {
+            ESP_LOGE("MAIN","Cannot create IMU task");
+        }
 
-    // if( xTaskCreatePinnedToCore(Fusion_task,"Fusion",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID()) != pdPASS )
-    // {
-    //     ESP_LOGE("MAIN","Cannot create Fusion task");
-    // }
+    }
+
+    StackType_t* fusion_stack = (StackType_t*)malloc(MAIN_TASK_STACK_SIZE);
+
+    if( xTaskCreateStaticPinnedToCore(Fusion_task,"Fusion",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,fusion_stack,&fusion_task,xPortGetCoreID()) == NULL )
+    {
+        ESP_LOGE("MAIN","Cannot create Fusion task");
+    }
 
 }
 
@@ -469,6 +474,8 @@ void SensorReader::fusion()
 
 void SensorReader::tofs_read()
 {
+    ESP_LOGD("MAIN","TOF task!!");
+
     this->Lock();
     // distance sensor reading
     uint16_t distance=0;
@@ -513,6 +520,7 @@ void SensorReader::read_imu()
 
     xEventGroupWaitBits(this->imuEvent,1<<0,true,true,portMAX_DELAY);
 
+    ESP_LOGD("MAIN","IMU task!!");
     // if(mpu.IntStatus()&(1<<0))
     // {
 
@@ -528,10 +536,10 @@ void SensorReader::read_imu()
 
         CalibrationCounter++;
 
-        if( CalibrationCounter > 100 )
+        if( CalibrationCounter > 10 )
         {
             CalibrationCounter = 0;
-            this->CalibrateIMU = true;
+            this->CalibrateIMU = false;
 
             ESP_LOGI("MAIN","IMU calibration finished!");
 
@@ -545,13 +553,13 @@ void SensorReader::read_imu()
 
     //}
 
-    if(this->mag!=NULL)
-    {
-        if(this->mag->checkDataReady())
-        {
-            this->read_mag();
-        }
-    }
+    // if(this->mag!=NULL)
+    // {
+    //     if(this->mag->checkDataReady())
+    //     {
+    //         this->read_mag();
+    //     }
+    // }
 
 }
 
