@@ -355,20 +355,20 @@ void SensorReader::init_tasks()
         ESP_LOGE("MAIN","Cannot create TOFs task");
     }
 
-    if( xTaskCreatePinnedToCore(ADC_task,"ADC",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+1,NULL,xPortGetCoreID()) != pdPASS )
-    {
-        ESP_LOGE("MAIN","Cannot create ADC task");
-    }
+    // if( xTaskCreatePinnedToCore(ADC_task,"ADC",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+1,NULL,xPortGetCoreID()) != pdPASS )
+    // {
+    //     ESP_LOGE("MAIN","Cannot create ADC task");
+    // }
 
-    if( xTaskCreatePinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID()) != pdPASS )
-    {
-        ESP_LOGE("MAIN","Cannot create IMU task");
-    }
+    // if( xTaskCreatePinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID()) != pdPASS )
+    // {
+    //     ESP_LOGE("MAIN","Cannot create IMU task");
+    // }
 
-    if( xTaskCreatePinnedToCore(Fusion_task,"Fusion",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID()) != pdPASS )
-    {
-        ESP_LOGE("MAIN","Cannot create Fusion task");
-    }
+    // if( xTaskCreatePinnedToCore(Fusion_task,"Fusion",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,NULL,xPortGetCoreID()) != pdPASS )
+    // {
+    //     ESP_LOGE("MAIN","Cannot create Fusion task");
+    // }
 
 }
 
