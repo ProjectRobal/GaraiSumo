@@ -315,15 +315,15 @@ int16_t QMC5883::readZRaw()
 
 float QMC5883::readX()
 {
-    return this->readX()/static_cast<float>(this->LSB);
+    return this->readXRaw()/static_cast<float>(this->LSB);
 }
 
 float QMC5883::readY()
 {
-    return this->readY()/static_cast<float>(this->LSB);
+    return this->readYRaw()/static_cast<float>(this->LSB);
 }
 
 float QMC5883::readZ()
 {
-    return this->readZ()/static_cast<float>(this->LSB);
+    return this->readZRaw()/static_cast<float>(this->LSB);
 }
