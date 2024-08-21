@@ -5,13 +5,16 @@
 #include <nvs_flash.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+
 #include <esp_log.h>
 
 #include <driver/gpio.h>
 
 #include "ConfigLoader.hpp"
 
-#include "config.h"
+#include "watchdog_task.hpp"
+
+#include "config.hpp"
 
 #include "OnlineTerminal.hpp"
 #include "OLED.hpp"
@@ -19,12 +22,11 @@
 
 #include "shared.hpp"
 
-//esp_vfs_littlefs_conf_t config::ConfigLoader::fs=esp_vfs_littlefs_conf_t();
-
 extern "C"
 {
 
 using shared::mods;
+
 
 const uint8_t rides_of_valkyrya[]={30,30,0,0,30,30,0,0,0,30,30,30,30,30,30,0,0,0,27,27,27,27,27,27,27,27,0,0,30,30,30,30,30,30,30,30,30,30,0,0,0,0,
 30,30,0,0,30,30,0,0,0,30,30,30,30,30,30,0,0,0,27,27,27,27,27,27,27,27,0,0,30,30,30,30,30,30,30,30,30,30,0,0,0,0,
@@ -35,6 +37,7 @@ void wifi_init();
 void oled_loop(void *arg);
 
 void main_loop(void *arg);
+
 
 void app_main()
 {
@@ -172,10 +175,13 @@ void app_main()
 
     // init watchdog
 
+    //init_watchdog();
+
     // init screen task
 
 
 }
+
 
 
 void oled_loop(void *arg)

@@ -3,8 +3,6 @@
 
 #include <driver/gpio.h>
 
-#include <esp_sleep.h>
-
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/event_groups.h>
@@ -524,10 +522,10 @@ void SensorReader::read_imu()
 
     if( this->mag != NULL )
     {
-    //     if(this->mag->checkDataReady())
-    //     {
-    // //        this->read_mag();
-    //     }
+        if(this->mag->checkDataReady())
+        {
+           this->read_mag();
+        }
     }
 
 }

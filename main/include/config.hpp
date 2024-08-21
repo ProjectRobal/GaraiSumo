@@ -46,7 +46,7 @@ const unsigned char KTIRChannel[]={0};
 
 #define SAMPLE_FREQ 100 // In Hz
 
-// 250 Hz
+// 100 Hz
 #define SAMPLE_TIME_MS 10
 
 #define SAMPLE_TIME (float)SAMPLE_TIME_MS/1000.f
@@ -61,6 +61,9 @@ const unsigned char KTIRChannel[]={0};
 #define ENCODER_UPDATE_TIME (float)ENCODER_UPDATE_TIME_MS/1000.f;
 
 #define MAX_ENGINE_POWER 4095.f
+
+
+#define WATCHDOG_TIME_MS 100
 
 
 #define KTIR_THRESHOLD 2048
