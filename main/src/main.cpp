@@ -25,6 +25,8 @@
 extern "C"
 {
 
+#include "WiFiManager.h"
+
 using shared::mods;
 
 
@@ -77,6 +79,8 @@ void app_main()
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     esp_netif_create_default_wifi_ap();
+
+    esp_netif_create_default_wifi_sta(); 
 
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
@@ -157,7 +161,9 @@ void app_main()
     }
 
 
-    wifi_init();
+    // wifi_init();
+
+    wifi_manager_init();
 
     terminal->init();
 
@@ -293,7 +299,8 @@ void wifi_init()
 
     ESP_ERROR_CHECK(esp_wifi_init(&w_config));
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+    // both access point and wifi
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
 
     //ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_MIN_MODEM));
 

@@ -3,6 +3,11 @@
 
 #include "OnlineTerminal.hpp"
 
+extern "C"
+{
+    #include "HttpService.c"
+}
+
 using shared::mods;
 
 
@@ -33,7 +38,7 @@ esp_err_t OnlineTerminal::calibr_wrapper(httpd_req_t *req)
 
 esp_err_t OnlineTerminal::posfilter_wrapper(httpd_req_t *req)
 {
-    return ((OnlineTerminal*)req->user_ctx)->calibr_wrapper(req);
+    return ((OnlineTerminal*)req->user_ctx)->set_position_filter(req);
 }
 
 esp_err_t OnlineTerminal::rototrfilter_wrapper(httpd_req_t *req)
@@ -42,7 +47,7 @@ esp_err_t OnlineTerminal::rototrfilter_wrapper(httpd_req_t *req)
 }
 
 OnlineTerminal::OnlineTerminal()
-: ws(
+:ws(
     {
         .uri="/readings",
         .method=HTTP_GET,
@@ -148,8 +153,13 @@ rotorfilter_post(
 void OnlineTerminal::init()
 {
 
-    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STACONNECTED, &this->connect_handler, this));
-    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STADISCONNECTED, &this->disconnect_handler, this));
+    // ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STACONNECTED, &this->connect_handler, this));
+    // ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STADISCONNECTED, &this->disconnect_handler, this));
+
+    // ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_CONNECTED, &this->connect_handler, this));
+    // ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &this->disconnect_handler, this));
+
+    this->start();
 }
 
 esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
@@ -660,7 +670,15 @@ esp_err_t OnlineTerminal::set_rotor_filter(httpd_req_t *req)
 void OnlineTerminal::start()
 {
 
+    if( this->server != NULL )
+    {
+        return;
+    }
+
     httpd_config_t config= HTTPD_DEFAULT_CONFIG();
+
+    config.max_uri_handlers = 16;
+
 
     if(httpd_start(&this->server,&config) == ESP_OK)
     {
@@ -674,8 +692,12 @@ void OnlineTerminal::start()
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->pid_post));   
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->imu_post)); 
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->imu_calibr));
-        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->imu_calibr_post));         
+        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->imu_calibr_post));    
+
+        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&set_ssid_cfg));  
+        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&home_cfg));       
         
+        // this crash online terminal:
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->accelfilter));
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->accelfilter_post)); 
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->rotorfilter));
@@ -694,6 +716,7 @@ void OnlineTerminal::stop()
     if(this->server)
     {
         httpd_stop(this->server);
+        this->server=NULL;
     }
 
 }

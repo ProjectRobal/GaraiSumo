@@ -58,9 +58,14 @@ class PositionFilter
         (*this->A)(1,1)=1.f;
 
         (*this->B)(0,0)=(SAMPLE_TIME*SAMPLE_TIME)/2;
-        (*this->B)(1,0)=1.f;
+        (*this->B)(1,0)=SAMPLE_TIME;
 
         this->Ht= new Mat(this->H->t());
+    }
+
+    void reset()
+    {
+        this->Q->clear();
     }
 
     void setFromCFG(const config::PositionFilterCFG& cfg)
@@ -80,15 +85,16 @@ class PositionFilter
         };
     }
 
-
-    float step(const float& x,const float& u)
+    // x - an current positions from encoders
+    // u - an current accelerations from IMU
+    float step(float x,float u)
     {
 
-        Mat Q_curr=(*this->A)*(*this->Q)+(*this->B)*x;
+        Mat Q_curr=(*this->A)*(*this->Q)+(*this->B)*u;
 
         (*this->P)=(*this->A)*(*this->P)*this->A->t()+(*this->Ex);
         
-        float error=((*this->Q)(0,0)+u) - Q_curr(0,0);
+        float error = x - Q_curr(0,0);
 
         Mat S=(*this->H)*(*this->P)*(*this->Ht) + this->R;
 

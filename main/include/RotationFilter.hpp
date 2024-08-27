@@ -35,6 +35,12 @@ class RotationFilter
 
     }
 
+    void reset()
+    {
+        this->S = 0; 
+        this->P = 0;
+    }
+
     void setFromCFG(const config::RotationFilterCFG &cfg)
     {
         // Params we need:
@@ -66,21 +72,19 @@ class RotationFilter
         return filter;
     }
 
-    // x - d0 from encoders
-    // u - rotation velocity from IMU
-    float step(const float& d0,const float& yaw)
+    // eyaw - yaw from encoders
+    // yaw - yaw from IMU
+    float step(float eyaw,float yaw)
     {
-        float _x = this->x + d0;
-
         float Pp = this->P + this->V;
 
-        float E = yaw - _x;
+        float E = yaw - eyaw;
 
         float S = Pp + this->W;
 
         float K = Pp/S;
 
-        this->x = _x + K*E;
+        this->x = eyaw + K*E;
 
         this->P = Pp - S*K*K;
         

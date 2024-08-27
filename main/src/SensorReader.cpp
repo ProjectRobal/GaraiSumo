@@ -409,6 +409,12 @@ void SensorReader::fusion()
 
     this->Lock();
 
+    if( this->CalibrateIMU )
+    {
+        this->Unlock();
+        return;
+    } 
+
     Vec3Df _gyroMean=this->gyroMean.mean();
     Vec3Df _accelMean=this->accelMean.mean();
 
@@ -424,10 +430,10 @@ void SensorReader::fusion()
     MadgwickQuaterionToEuler(&_roll,&_pitch,&_yaw);
 
     // to do:
-    //this->reads.yaw=this->rotor.step(d0,_yaw);
+    this->reads.yaw=this->rotor.step(this->reads.eyaw,_yaw);
 
-    //this->reads.position.x=this->posfilter_x.step(dx*cos(this->reads.yaw),_accelMean.x);
-    //this->reads.position.y=this->posfilter_y.step(dx*sin(this->reads.yaw),_accelMean.y);
+    this->reads.position.x=this->posfilter_x.step(this->reads.epostion.x,_accelMean.x);
+    this->reads.position.y=this->posfilter_y.step(this->reads.epostion.y,_accelMean.y);
 
     // leave it this way for now
     this->reads.yaw = _yaw;
