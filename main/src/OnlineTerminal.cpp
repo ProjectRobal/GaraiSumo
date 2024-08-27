@@ -37,6 +37,11 @@ esp_err_t OnlineTerminal::calibr_wrapper(httpd_req_t *req)
     return ((OnlineTerminal*)req->user_ctx)->calibr_imu(req);
 }
 
+esp_err_t OnlineTerminal::mag_wrapper(httpd_req_t *req)
+{
+    return ((OnlineTerminal*)req->user_ctx)->set_mag_config(req);
+}
+
 esp_err_t OnlineTerminal::posfilter_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->set_position_filter(req);
@@ -111,6 +116,22 @@ imu_calibr_post(
         .uri="/calibr",
         .method=HTTP_POST,
         .handler=this->calibr_wrapper,
+        .user_ctx=this
+    }
+),
+mag_cfg(
+    {
+        .uri="/mag",
+        .method=HTTP_GET,
+        .handler=this->mag_wrapper,
+        .user_ctx=this
+    }
+),
+mag_cfg_post(
+    {
+        .uri="/mag",
+        .method=HTTP_POST,
+        .handler=this->mag_wrapper,
         .user_ctx=this
     }
 ),

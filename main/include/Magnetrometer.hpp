@@ -10,11 +10,11 @@ using dspm::Mat;
 
 class Magnetrometer
 {
-
+    // transformation matrix for magentrometer calibration
     Mat c_matrix;
-
+    // 3 elements vector for magnetrometer readings
     Mat readings;
-
+    // 3 elements vector with magnetrometer offsets
     Mat offsets;
 
     public:

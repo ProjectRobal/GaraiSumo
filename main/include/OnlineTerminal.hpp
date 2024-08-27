@@ -34,6 +34,8 @@ class OnlineTerminal
     const httpd_uri_t imu_post;
     const httpd_uri_t imu_calibr;
     const httpd_uri_t imu_calibr_post;
+    const httpd_uri_t mag_cfg;
+    const httpd_uri_t mag_cfg_post;
 
     const httpd_uri_t accelfilter;
     const httpd_uri_t accelfilter_post;
@@ -102,6 +104,8 @@ class OnlineTerminal
     static esp_err_t pid_wrapper(httpd_req_t *req);
 
     static esp_err_t calibr_wrapper(httpd_req_t *req);
+
+    static esp_err_t mag_wrapper(httpd_req_t *req);
 
     static esp_err_t posfilter_wrapper(httpd_req_t *req);
 
