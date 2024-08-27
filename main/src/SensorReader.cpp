@@ -293,9 +293,7 @@ void SensorReader::init_mag()
 
 void SensorReader::read_mag()
 {
-    this->reads.magReading.x=this->mag->readX();
-    this->reads.magReading.y=this->mag->readY();
-    this->reads.magReading.z=this->mag->readZ();
+    this->reads.magReading = this->mag->read();
 }
 
 SensorReader::SensorReader()
@@ -499,28 +497,76 @@ void SensorReader::read_imu()
 
     ESP_LOGD("MAIN","IMU task!!");
 
-    Vec3Df _gyro=this->mpu.readGyroscope();
-    Vec3Df _accel=this->mpu.readAccelerometer();
+    Vec3Di _raw_gryo = this->mpu.readRawGyroscope();
+    Vec3Di _raw_accel = this->mpu.readRawAccelerometer();
 
-    gyroMean.push(_gyro);
+    Vec3Df _gyro=this->mpu.from_raw_gyro(_raw_gryo);
+    Vec3Df _accel=this->mpu.from_raw_accel(_raw_accel);
 
-    accelMean.push(_accel);
+    this->gyroMean.push(_gyro);
+    this->accelMean.push(_accel);
 
     if( this->CalibrateIMU )
     {   
+        this->gyroCalibrMean.push(_raw_gryo);
+        this->accelCalibrMean.push(_raw_accel);
 
         if( this->CalibrationCounter > this->CalbirationSteps )
         {
             this->CalibrationCounter = 0;
-            this->CalibrateIMU = false;
 
-            ESP_LOGI("MAIN","IMU calibration finished!");
+            Vec3Df gyro_calibr = this->gyroMean.mean();
+            Vec3Df accel_calibr = this->accelMean.mean();
 
-            this->mpu.setGyroOffsets(this->mpu.gyro_to_raw(gyroMean.mean()));
+            float gyro_variance = gyro_calibr.variance();
+            float accel_mean = accel_calibr.mean();
 
-            this->mpu.setAccelOffsets(this->mpu.accel_to_raw(accelMean.mean()));
+            if(( gyro_variance < 0.01f ) && ( accel_mean <= 0.375f ))
+            {
+                this->CalibrateIMU = false;
 
-            this->mpu.printOffsets();
+                ESP_LOGI("MAIN","IMU calibration finished!");  
+
+            }
+            else
+            {          
+
+                this->mpu.setGyroOffsets(this->mpu.getGyroOffsets()+this->gyroCalibrMean.mean());
+
+                // we have to take into account a g force!!!
+
+                // find two axis with the biggest values:
+
+                if( ( accel_calibr.x < accel_calibr.y ) && ( accel_calibr.x < accel_calibr.z ))
+                {
+                    accel_calibr.x = 0.f;
+                }
+                else if( ( accel_calibr.y < accel_calibr.z ) && ( accel_calibr.y < accel_calibr.x ))
+                {
+                    accel_calibr.y = 0.f;
+                }
+                else if( ( accel_calibr.z < accel_calibr.x ) && ( accel_calibr.z < accel_calibr.y ))
+                {
+                    accel_calibr.z = 0.f;
+                }
+
+                Vec3Df accel_coff = accel_calibr / accel_calibr.sum();
+
+                Vec3Di accel_offset = this->mpu.getAccelOffsets()+this->accelCalibrMean.mean();
+                
+                accel_offset -= this->mpu.accel_to_raw(accel_coff);
+
+                this->mpu.setAccelOffsets(accel_offset);
+
+                this->mpu.printOffsets();
+
+                this->gyroMean.reset();
+                this->accelMean.reset();
+
+                this->gyroCalibrMean.reset();
+                this->accelCalibrMean.reset();
+
+            }
         }
 
         this->CalibrationCounter++;

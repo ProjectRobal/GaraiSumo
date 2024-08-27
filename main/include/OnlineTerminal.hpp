@@ -87,6 +87,8 @@ class OnlineTerminal
 
     esp_err_t set_rotor_filter(httpd_req_t *req);
 
+    esp_err_t set_mag_config(httpd_req_t *req);
+
     void start();
 
     void stop();

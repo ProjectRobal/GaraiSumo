@@ -81,6 +81,7 @@ class SensorReader
 {
 
     protected:
+
     
     StackType_t* encoder_stack;
     StackType_t* tof_stack;
@@ -113,6 +114,10 @@ class SensorReader
     MeanBuffer<Vec3Df,10> gyroMean;
 
     MeanBuffer<Vec3Df,10> accelMean;
+
+    MeanBuffer<Vec3Di,100> gyroCalibrMean;
+
+    MeanBuffer<Vec3Di,100> accelCalibrMean;
 
 
     adc_oneshot_unit_handle_t hmd;
@@ -201,6 +206,26 @@ class SensorReader
         return cfg;
     }
 
+    config::MagConfig dump_mag_cfg()
+    {
+        if( this->mag == NULL)
+        {
+            return config::ConfigLoader::mag_default();
+        }
+
+        return this->mag->getCFG();
+    }
+
+    void update_mag_cfg(const config::MagConfig& cfg)
+    {
+        if( this->mag == NULL)
+        {
+            return;
+        }
+
+        this->mag->updateCFG(cfg);
+    }
+
     const MeanBuffer<Vec3Df,10>& getGyroscopeBuffer()
     {
         return this->gyroMean;
@@ -253,6 +278,11 @@ class SensorReader
 
     size_t StepsLeftUntilCalibration()
     {
+        if(! this->CalibrateIMU )
+        {
+            return 0;
+        }
+
         return this->CalbirationSteps - this->CalibrationCounter;
     }
 

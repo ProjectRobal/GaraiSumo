@@ -19,18 +19,6 @@ class MeanBuffer
     T buffer;
     uint16_t iter;
 
-    void move()
-    {
-        if(this->iter<Size)
-        {
-            ++this->iter;
-        }
-        else
-        {
-            this->iter=0;
-        }
-    }
-
     public:
 
     MeanBuffer()

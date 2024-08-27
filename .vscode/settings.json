@@ -4,6 +4,9 @@
     "files.associations": {
         "compare": "cpp",
         "*.tcc": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "complex": "cpp",
+        "chrono": "cpp",
+        "*.ipp": "cpp"
     }
 }

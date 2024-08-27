@@ -157,7 +157,7 @@ bool ConfigLoader::fromBuffer(const char* buffer,SensorConfig& cfg)
 
 }
 
-bool ConfigLoader::toBuffer(char* buffer,const size_t& size,const SensorConfig& cfg)
+bool ConfigLoader::toBuffer(char* buffer,size_t size,const SensorConfig& cfg)
 {
 
     cJSON *json= cJSON_CreateObject();
@@ -171,6 +171,78 @@ bool ConfigLoader::toBuffer(char* buffer,const size_t& size,const SensorConfig& 
 
     cJSON_AddNumberToObject(json,"yerror",cfg.yaw_error_tolerance);
     cJSON_AddNumberToObject(json,"derror",cfg.distance_error_tolerance);
+
+    if(!cJSON_PrintPreallocated(json,buffer,size,true))
+    {
+        cJSON_Delete(json);
+        return false;
+    } 
+
+    cJSON_Delete(json);
+    return true;
+
+}
+
+
+bool ConfigLoader::fromBuffer(const char* buffer,MagConfig& cfg)
+{
+
+    cJSON* json=cJSON_Parse(buffer);
+
+    if(!json)
+    {
+        ESP_LOGE("Config","Cannot parse sensor config json: %s",cJSON_GetErrorPtr());
+        return false;
+    }
+
+    if(!ConfigLoader::json_to_vector3d<float>(cJSON_GetObjectItemCaseSensitive(json,"offset"),cfg.offsets))
+    {
+        cJSON_Delete(json);
+        return false;
+    }   
+
+
+    cJSON *matrix=cJSON_GetObjectItemCaseSensitive(json,"matrix");
+
+    if(!cJSON_IsArray(matrix))
+    {
+        cJSON_Delete(json);
+        return false;
+    }
+    else
+    {
+        for(uint8_t i=0;i<9;++i)
+        {
+            cJSON* number = cJSON_GetArrayItem(matrix,i);
+
+            if(!cJSON_IsNumber(number))
+            {
+                cJSON_Delete(json);
+                return false;
+            }
+
+            cfg.c_matrix[i] = number->valuedouble;
+        }   
+    }
+
+    cJSON_Delete(json);
+
+    return true;
+
+}
+
+bool ConfigLoader::toBuffer(char* buffer,size_t size,const MagConfig& cfg)
+{
+
+    cJSON *json= cJSON_CreateObject();
+
+    cJSON* offsets=ConfigLoader::vector3d_to_json<float>(cfg.offsets);
+
+    cJSON_AddItemToObject(json,"offsets",offsets);
+
+    cJSON* c_matrix = cJSON_CreateDoubleArray(cfg.c_matrix,9);
+
+    cJSON_AddItemToObject(json,"matrix",c_matrix);
 
     if(!cJSON_PrintPreallocated(json,buffer,size,true))
     {
@@ -212,7 +284,7 @@ bool ConfigLoader::fromBuffer(const char* buffer,MotorCFG& cfg)
 
 }
 
-bool ConfigLoader::toBuffer(char* buffer,const size_t& size,const MotorCFG& cfg)
+bool ConfigLoader::toBuffer(char* buffer,size_t size,const MotorCFG& cfg)
 {
     cJSON *json= cJSON_CreateObject();
 
@@ -279,7 +351,7 @@ bool ConfigLoader::fromBuffer(const char* buffer,PositionFilterCFG& cfg)
     return true;
 }
 
-bool ConfigLoader::toBuffer(char* buffer,const size_t& size,const PositionFilterCFG& cfg)
+bool ConfigLoader::toBuffer(char* buffer,size_t size,const PositionFilterCFG& cfg)
 {
     cJSON *json= cJSON_CreateObject();
 
@@ -364,7 +436,7 @@ bool ConfigLoader::fromBuffer(const char* buffer,RotationFilterCFG& cfg)
 
 }
 
-bool ConfigLoader::toBuffer(char* buffer,const size_t& size,const RotationFilterCFG& cfg)
+bool ConfigLoader::toBuffer(char* buffer,size_t size,const RotationFilterCFG& cfg)
 {
 
     cJSON* json=cJSON_CreateObject();
@@ -419,6 +491,59 @@ bool ConfigLoader::load(SensorConfig& cfg)
     char filename[255]={0};
 
     sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,SENSOR_CFG_FILENAME);
+
+    FILE *file= fopen(filename,"r");
+
+    if(!file)
+    {
+        ESP_LOGE("Config","Cannot open sensor config for loading!");
+        return false;
+    }
+
+    char buffer[512]={0};
+
+    fread(buffer,sizeof(char),512,file);
+
+    fclose(file);
+
+    return ConfigLoader::fromBuffer(buffer,cfg);
+}
+
+bool ConfigLoader::save(const MagConfig& cfg)
+{
+
+    char filename[255]={0};
+
+    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,MAG_CFG_FILENAME);
+
+    FILE *file= fopen(filename,"w");
+
+    if(!file)
+    {
+        ESP_LOGE("Config","Cannot open sensor config for saving!");
+        return false;
+    }
+
+    char buffer[512]={0};
+
+    if(!ConfigLoader::toBuffer(buffer,512,cfg))
+    {
+        fclose(file);
+        return false;
+    }
+
+    fwrite(buffer,sizeof(char),512,file);
+
+    fclose(file);
+
+    return true;
+}
+
+bool ConfigLoader::load(MagConfig& cfg)
+{
+    char filename[255]={0};
+
+    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,MAG_CFG_FILENAME);
 
     FILE *file= fopen(filename,"r");
 

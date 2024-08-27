@@ -69,6 +69,8 @@ void app_main()
 
     config::RotationFilterCFG rotor;
 
+    config::MagConfig mag;
+
     mods.sensors=new sensors::SensorReader();
 
     mods.driver=new MotorDriver();
@@ -119,6 +121,14 @@ void app_main()
         };
 
         config::ConfigLoader::save(motor_cfg);
+
+    }
+
+    if(!config::ConfigLoader::load(mag))
+    {
+        mag = config::ConfigLoader::mag_default();
+
+        config::ConfigLoader::save(mag);
 
     }
 

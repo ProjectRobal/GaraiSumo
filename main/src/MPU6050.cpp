@@ -114,6 +114,9 @@ void MPU6050::DoAccelCalibration(uint16_t n,uint16_t steps,Vec3Df gravity)
 
 void MPU6050::printOffsets() const
 {
+    Vec3Di gyro = this->getGyroOffsets();
+    Vec3Di accel = this->getAccelOffsets();
+    
     ESP_LOGI("Sensors","Gyroscope offsets: X: %ld Y: %ld Z: %ld ",this->calibr_data.gyroscope.x,this->calibr_data.gyroscope.y,this->calibr_data.gyroscope.z);
     ESP_LOGI("Sensors","Accelerometer offsets: X: %ld Y: %ld Z: %ld ",this->calibr_data.accelerometer.x,this->calibr_data.accelerometer.y,this->calibr_data.accelerometer.z);
 }
@@ -834,52 +837,88 @@ Vec3Df MPU6050::readAccelerometer() const
 }
 
 
-bool MPU6050::setGyroOffsets(const Vec3Di& offsets) const
+void MPU6050::setGyroOffsets(const Vec3Di& offsets)
 {
-    return this->setGyroOffsetX(offsets.x)
-        &this->setGyroOffsetY(offsets.y)
-        &this->setGyroOffsetZ(offsets.z);
+    this->calibr_data.gyroscope = offsets;
 }
 
-bool MPU6050::setAccelOffsets(const Vec3Di& offsets) const
+void MPU6050::setAccelOffsets(const Vec3Di& offsets)
 {
-    return this->setAccelOffsetX(offsets.x)
-        &this->setAccelOffsetY(offsets.y)
-        &this->setAccelOffsetZ(offsets.z);
+    this->calibr_data.accelerometer = offsets;
 }
 
-bool MPU6050::setGyroOffsetX(uint16_t offset) const
+void MPU6050::setGyroOffsetX(uint16_t offset)
 {
 
-    return i2c_write16(this->i2c_port,this->i2c_addres,MPU6050_RA_XG_OFFS_USRH,offset);
+    this->calibr_data.gyroscope.x = offset;
 
 }
 
-bool MPU6050::setGyroOffsetY(uint16_t offset) const
+void MPU6050::setGyroOffsetY(uint16_t offset)
 {
 
-    return i2c_write16(this->i2c_port,this->i2c_addres,MPU6050_RA_YG_OFFS_USRH,offset);
+    this->calibr_data.gyroscope.y = offset;
 
 }
 
-bool MPU6050::setGyroOffsetZ(uint16_t offset) const
+void MPU6050::setGyroOffsetZ(uint16_t offset)
 {
 
-    return i2c_write16(this->i2c_port,this->i2c_addres,MPU6050_RA_ZG_OFFS_USRH,offset);
+    this->calibr_data.gyroscope.z = offset;
 
 }
 
-bool MPU6050::setAccelOffsetX(uint16_t offset) const
+void MPU6050::setAccelOffsetX(uint16_t offset)
 {
-    return i2c_write16(this->i2c_port,this->i2c_addres,MPU6050_RA_XA_OFFS_H,offset);
+    this->calibr_data.accelerometer.x = offset;
 }
 
-bool MPU6050::setAccelOffsetY(uint16_t offset) const
+void MPU6050::setAccelOffsetY(uint16_t offset)
 {
-    return i2c_write16(this->i2c_port,this->i2c_addres,MPU6050_RA_YA_OFFS_H,offset);
+    this->calibr_data.accelerometer.x = offset;
 }
 
-bool MPU6050::setAccelOffsetZ(uint16_t offset) const
+void MPU6050::setAccelOffsetZ(uint16_t offset)
 {
-    return i2c_write16(this->i2c_port,this->i2c_addres,MPU6050_RA_ZA_OFFS_H,offset);
+    this->calibr_data.accelerometer.x = offset;
+}
+
+const Vec3Di& MPU6050::getGyroOffsets() const
+{
+    return this->calibr_data.gyroscope;
+}
+
+uint16_t MPU6050::getGyroOffsetX() const
+{
+    return this->calibr_data.gyroscope.x;
+}
+
+uint16_t MPU6050::getGyroOffsetY() const
+{
+    return this->calibr_data.gyroscope.y;
+}
+
+uint16_t MPU6050::getGyroOffsetZ() const
+{
+    return this->calibr_data.gyroscope.z;
+}
+
+const Vec3Di& MPU6050::getAccelOffsets() const
+{
+    return this->calibr_data.accelerometer;
+}
+
+uint16_t MPU6050::getAccelOffsetX() const
+{
+    return this->calibr_data.accelerometer.x;
+}
+
+uint16_t MPU6050::getAccelOffsetY() const
+{
+    return this->calibr_data.accelerometer.y;
+}
+
+uint16_t MPU6050::getAccelOffsetZ() const
+{
+    return this->calibr_data.accelerometer.z;
 }

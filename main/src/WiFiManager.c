@@ -21,6 +21,10 @@ static EventGroupHandle_t xWiFiStatus;
 
 static TaskHandle_t xWifiHandle = NULL;
 
+static StackType_t* xWifiStack = NULL;
+
+static StaticTask_t xWifiTask;
+
 static uint8_t ConnectionAttempts = 0;
 
 void wifi_manager_wifi_event_hadler(void* arg, esp_event_base_t event_base,
@@ -170,7 +174,9 @@ void wifi_manager_init()
 
     xWiFiStatus=xEventGroupCreate();
 
-    if( xTaskCreatePinnedToCore(wifi_manager_loop,"WiFiManager",MIN_TASK_STACK_SIZE,NULL,configMAX_PRIORITIES-1,&xWifiHandle,WIFIM_TASK_CORE_ID) != pdPASS )
+    xWifiStack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
+
+    if( ( xWifiHandle = xTaskCreateStaticPinnedToCore(wifi_manager_loop,"WiFiManager",MIN_TASK_STACK_SIZE,NULL,configMAX_PRIORITIES-1,xWifiStack,&xWifiTask,WIFIM_TASK_CORE_ID) ) == NULL )
     {
         ESP_LOGE("MAIN","Cannot start wifi manager task!");
     }

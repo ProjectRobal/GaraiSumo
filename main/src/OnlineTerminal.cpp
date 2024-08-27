@@ -12,7 +12,6 @@ extern "C"
 
 using shared::mods;
 
-
 esp_err_t OnlineTerminal::ws_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->ws_sensors_reading(req);
@@ -148,7 +147,6 @@ rotorfilter_post(
     }
 )
 {
-    mods=mods;
     this->server=NULL;
 }
 
@@ -413,6 +411,61 @@ esp_err_t OnlineTerminal::set_imu_config(httpd_req_t *req)
             }
 
             mods.sensors->update_cfg(config);
+
+            config::ConfigLoader::save(config);
+
+            httpd_resp_sendstr(req,"OK");
+
+        }
+        break;
+    }
+    return ESP_OK;
+}
+
+esp_err_t OnlineTerminal::set_mag_config(httpd_req_t *req)
+{
+    if(req->content_len>WS_MAX_PAYLOAD_SIZE)
+    {   
+        ESP_LOGE("OnlineTerminal","Incoming body is too big!");
+        return ESP_FAIL;
+    }
+
+    switch(req->method)
+    {
+        case HTTP_GET:
+        {
+            this->clear_buf();
+
+            if(config::ConfigLoader::toBuffer(this->buffer,WS_MAX_PAYLOAD_SIZE,mods.sensors->dump_mag_cfg()))
+            {
+                httpd_resp_set_type(req,"application/json");
+
+                httpd_resp_send(req,this->buffer,strlen(this->buffer));
+            }
+            else
+            {
+                httpd_resp_send_500(req);
+            }
+            
+        }
+        break;
+        case HTTP_POST:
+        {
+
+            this->clear_buf();
+
+            httpd_req_recv(req,this->buffer,req->content_len);
+
+            config::MagConfig config;
+
+            if(!config::ConfigLoader::fromBuffer(this->buffer,config))
+            {
+                ESP_LOGE("OnlineTerminal","Failed to parse MAG offsets from body");
+                httpd_resp_send_500(req);   
+                return ESP_OK;
+            }
+
+            mods.sensors->update_mag_cfg(config);
 
             config::ConfigLoader::save(config);
 

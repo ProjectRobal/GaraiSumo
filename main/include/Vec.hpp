@@ -235,6 +235,27 @@ class Vec3D
         this->y=p.y;
         this->z=p.z;
     }
+
+    T variance() const
+    {
+        T mean = this->mean();
+
+        T _x = this->x - mean;
+        T _y = this->y - mean;
+        T _z = this->z - mean;
+
+        return ( _x*_x + _y*_y + _z*_z )/3.f;
+    }
+
+    T mean() const
+    {
+        return ( this->x + this->y + this->z ) / 3.f;
+    }
+
+    T sum() const
+    {
+        return this->x + this->y + this->z;
+    }
 };
 
 typedef Vec3D<float> Vec3Df;

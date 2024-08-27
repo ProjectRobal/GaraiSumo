@@ -226,21 +226,37 @@ class MPU6050
 
     Vec3Df readAccelerometer() const;
 
-    bool setGyroOffsets(const Vec3Di& offsets) const;
+    void setGyroOffsets(const Vec3Di& offsets);
 
-    bool setAccelOffsets(const Vec3Di& offsets) const;
+    void setAccelOffsets(const Vec3Di& offsets);
 
-    bool setGyroOffsetX(uint16_t offset) const;
+    void setGyroOffsetX(uint16_t offset);
 
-    bool setGyroOffsetY(uint16_t offset) const;
+    void setGyroOffsetY(uint16_t offset);
 
-    bool setGyroOffsetZ(uint16_t offset) const;
+    void setGyroOffsetZ(uint16_t offset);
 
-    bool setAccelOffsetX(uint16_t offset) const;
+    void setAccelOffsetX(uint16_t offset);
 
-    bool setAccelOffsetY(uint16_t offset) const;
+    void setAccelOffsetY(uint16_t offset);
 
-    bool setAccelOffsetZ(uint16_t offset) const;
+    void setAccelOffsetZ(uint16_t offset);
+
+    const Vec3Di& getGyroOffsets() const;
+
+    uint16_t getGyroOffsetX() const;
+
+    uint16_t getGyroOffsetY() const;
+
+    uint16_t getGyroOffsetZ() const;
+
+    const Vec3Di& getAccelOffsets() const;
+
+    uint16_t getAccelOffsetX() const;
+
+    uint16_t getAccelOffsetY() const;
+
+    uint16_t getAccelOffsetZ() const;
 
 };
 
