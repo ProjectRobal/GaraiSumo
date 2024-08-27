@@ -49,8 +49,7 @@ namespace config
     struct SensorConfig
     {
         MPU6050::calibr_data_t calibr;
-        float yaw_error_tolerance;
-        float distance_error_tolerance;
+        float beta;
     };
 
     struct MagConfig

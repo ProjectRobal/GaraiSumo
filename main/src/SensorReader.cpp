@@ -537,8 +537,7 @@ void SensorReader::read_imu()
                 ESP_LOGI("MAIN","IMU calibration finished!");  
 
             }
-            else
-            {          
+                 
 
                 this->mpu.setGyroOffsets(this->mpu.getGyroOffsets()+this->gyroCalibrMean.mean());
 
@@ -562,7 +561,7 @@ void SensorReader::read_imu()
                 this->gyroCalibrMean.reset();
                 this->accelCalibrMean.reset();
 
-            }
+            
         }
 
         this->CalibrationCounter++;

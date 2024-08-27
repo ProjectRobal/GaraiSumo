@@ -127,28 +127,16 @@ bool ConfigLoader::fromBuffer(const char* buffer,SensorConfig& cfg)
         return false;
     }
 
-    cJSON *error=cJSON_GetObjectItemCaseSensitive(json,"yerror");
+    cJSON *beta=cJSON_GetObjectItemCaseSensitive(json,"beta");
 
-    if(!cJSON_IsNumber(error))
+    if(!cJSON_IsNumber(beta))
     {
         cJSON_Delete(json);
         return false;
     }
     else
     {
-        cfg.yaw_error_tolerance=error->valuedouble;
-    }
-
-    error=cJSON_GetObjectItemCaseSensitive(json,"derror");
-
-    if(!cJSON_IsNumber(error))
-    {
-        cJSON_Delete(json);
-        return false;
-    }
-    else
-    {
-        cfg.distance_error_tolerance=error->valuedouble;
+        cfg.beta=beta->valuedouble;
     }
 
     cJSON_Delete(json);
@@ -169,8 +157,7 @@ bool ConfigLoader::toBuffer(char* buffer,size_t size,const SensorConfig& cfg)
     cJSON_AddItemToObject(json,"gyro",gyroOffset);
     cJSON_AddItemToObject(json,"accel",accelOffset);
 
-    cJSON_AddNumberToObject(json,"yerror",cfg.yaw_error_tolerance);
-    cJSON_AddNumberToObject(json,"derror",cfg.distance_error_tolerance);
+    cJSON_AddNumberToObject(json,"beta",cfg.beta);
 
     if(!cJSON_PrintPreallocated(json,buffer,size,true))
     {

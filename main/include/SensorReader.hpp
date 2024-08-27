@@ -30,6 +30,11 @@
 #include "HMC5883.hpp"
 #include "QMC5883.hpp"
 
+extern "C"
+{
+    #include "MadgwickAHRS.h"
+}
+
 #define TOF_CONTINOUS
 
 namespace sensors
@@ -164,8 +169,8 @@ class SensorReader
     void update_cfg(const config::SensorConfig& _config)
     {
         this->mpu.setCalibrationData(_config.calibr);
-        this->yaw_error_tolerance=_config.yaw_error_tolerance;
-        this->distance_error_tolerance=_config.distance_error_tolerance;
+
+        MadgwickSetBeta(_config.beta);
     }
 
     void updatePositionFilterYCFG(const config::PositionFilterCFG& _config)
@@ -202,6 +207,7 @@ class SensorReader
     {
         config::SensorConfig cfg;
         cfg.calibr=this->mpu.getCalibrationData();
+        cfg.beta = MadgwickGetBeta();
 
         return cfg;
     }

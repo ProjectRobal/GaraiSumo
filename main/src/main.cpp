@@ -25,6 +25,7 @@
 extern "C"
 {
 
+#include "MadgwickAHRS.h"
 #include "WiFiManager.h"
 
 using shared::mods;
@@ -100,8 +101,7 @@ void app_main()
     {
         sensor_cfg.calibr.accelerometer=Vec3Di(0);
         sensor_cfg.calibr.gyroscope=Vec3Di(0);  
-        sensor_cfg.distance_error_tolerance=DISTANCE_TOLERANCE;
-        sensor_cfg.yaw_error_tolerance=YAW_TOLERANCE; 
+        sensor_cfg.beta = Madgwick_betaDef;
 
         config::ConfigLoader::save(sensor_cfg);
 

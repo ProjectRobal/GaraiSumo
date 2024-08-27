@@ -13,6 +13,8 @@
 #ifndef MadgwickAHRS_h
 #define MadgwickAHRS_h
 
+#define Madgwick_betaDef		0.05f		// 2 * proportional gain
+
 //----------------------------------------------------------------------------------------------------
 // Variable declaration
 
@@ -28,6 +30,10 @@ void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, flo
 void MadgwickQuaterionToEuler(float* roll,float* pitch,float* yaw);
 
 void MadgwickReset();
+
+void MadgwickSetBeta(float _beta);
+
+float MadgwickGetBeta();
 
 #endif
 //=====================================================================================================

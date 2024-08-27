@@ -21,13 +21,14 @@
 //---------------------------------------------------------------------------------------------------
 // Definitions
 
-#define sampleFreq	1024.0f		// sample frequency in Hz
-#define betaDef		0.1f		// 2 * proportional gain
+#define sampleFreq	100.0f		// sample frequency in Hz
 
 //---------------------------------------------------------------------------------------------------
 // Variable definitions
 
-volatile float beta = betaDef;								// 2 * proportional gain (Kp)
+volatile float betaDefault = Madgwick_betaDef;
+
+volatile float beta = Madgwick_betaDef;								// 2 * proportional gain (Kp)
 volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
 
 //---------------------------------------------------------------------------------------------------
@@ -243,12 +244,25 @@ void MadgwickQuaterionToEuler(float* roll,float* pitch,float* yaw)
 
 void MadgwickReset()
 {
-	beta = betaDef;
+	beta = betaDefault;
 	q0 = 1.0f;
 	q1 = 0.0f;
 	q2 = 0.0f;
 	q3 = 0.0f;
 }
+
+void MadgwickSetBeta(float _beta)
+{
+	betaDefault = _beta;
+
+	MadgwickReset();
+}
+
+float MadgwickGetBeta()
+{
+	return betaDefault;
+}
+
 
 //====================================================================================================
 // END OF CODE
