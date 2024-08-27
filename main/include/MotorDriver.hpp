@@ -41,6 +41,9 @@ class MotorDriver
     StackType_t* motor_stack;
     StaticTask_t motor_task;
 
+    bool last_A_direction;
+    bool last_B_direction;
+
     public:
 
     MotorDriver()
@@ -59,6 +62,9 @@ class MotorDriver
         this->motorLeft.setMin(0.f);
         this->motorLeft.setMax(1.f);
         this->motorLeft.setTimeStep(SAMPLE_TIME);
+
+        this->last_A_direction = false;
+        this->last_B_direction = false;
     }
 
     void init();
@@ -75,9 +81,9 @@ class MotorDriver
 
     config::MotorCFG MotorConfig();
 
-    static bool channelADirection();
+    bool channelADirection();
 
-    static bool channelBDirection();
+    bool channelBDirection();
 
     // main drive function
     void loop();
@@ -87,7 +93,7 @@ class MotorDriver
         this->target_yaw=target;
     }
 
-    const float& TargetAngel() const
+    float TargetAngel() const
     {
         return this->target_yaw;
     }
@@ -97,7 +103,7 @@ class MotorDriver
         this->target_speed=target_speed;
     }
 
-    const uint16_t& TargetSpeed() const
+    uint16_t TargetSpeed() const
     {
         return this->target_speed;
     }
@@ -107,7 +113,7 @@ class MotorDriver
         this->turning_power=power;
     }
 
-    const uint16_t& TurningPower() const
+    uint16_t TurningPower() const
     {
         return this->turning_power;
     }
@@ -117,7 +123,7 @@ class MotorDriver
         this->automaticMode=mode;
     }
 
-    const bool& AutomaticMode()
+    bool AutomaticMode()
     {
         return this->automaticMode;
     }

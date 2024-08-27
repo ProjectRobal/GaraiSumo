@@ -88,6 +88,9 @@ void wifi_manager_connect_to_ssid(const char* ssid,const char* pass)
     strncpy((char*)wifi_sta_config.sta.ssid,ssid,32);
     strncpy((char*)wifi_sta_config.sta.password,pass,64);
 
+    ESP_LOGI("MAIN","Got a new SSID: %s",ssid);
+    ESP_LOGI("MAIN","Got a new password: %s",pass);
+
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA,&wifi_sta_config));
 }
 
@@ -102,22 +105,23 @@ void wifi_manager_loop(void* arg)
 
     while(1)
     {
+        ESP_LOGI("MAIN","WiFi manager task!");
 
-    uxBits=xEventGroupGetBits(xWiFiStatus);
+        uxBits=xEventGroupGetBits(xWiFiStatus);
 
-    if(((uxBits & EVENT_BITS_WIFI_DISCONNECTED)||(uxBits & EVENT_BITS_NEW_SSID )) && (ConnectionAttempts < WIFI_CONNECTION_ATTEMPTS))
-    {
+        if(((uxBits & EVENT_BITS_WIFI_DISCONNECTED)||(uxBits & EVENT_BITS_NEW_SSID )) && (ConnectionAttempts < WIFI_CONNECTION_ATTEMPTS))
+        {
 
-    esp_wifi_connect();
+            esp_wifi_connect();
 
-    ConnectionAttempts++;
+            ConnectionAttempts++;
 
-    xEventGroupClearBits(xWiFiStatus,EVENT_BITS_NEW_SSID);
+            xEventGroupClearBits(xWiFiStatus,EVENT_BITS_NEW_SSID);
 
-    }
+        }
 
-    // call for each 5 seconds
-    vTaskDelay(5000/portTICK_PERIOD_MS);
+        // call for each 20 seconds
+        vTaskDelay(20000/portTICK_PERIOD_MS);
 
     }
 }
@@ -166,7 +170,10 @@ void wifi_manager_init()
 
     xWiFiStatus=xEventGroupCreate();
 
-    xTaskCreatePinnedToCore(wifi_manager_loop,"WiFiManager",WIFI_TASK_STACK_SIZE,NULL,tskIDLE_PRIORITY,&xWifiHandle,WIFIM_TASK_CORE_ID);
+    if( xTaskCreatePinnedToCore(wifi_manager_loop,"WiFiManager",MIN_TASK_STACK_SIZE,NULL,configMAX_PRIORITIES-1,&xWifiHandle,WIFIM_TASK_CORE_ID) != pdPASS )
+    {
+        ESP_LOGE("MAIN","Cannot start wifi manager task!");
+    }
 
     // esp_netif_create_default_wifi_sta(); 
 

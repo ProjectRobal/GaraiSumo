@@ -37,6 +37,9 @@ namespace sensors
 
 struct Readings
     {
+        //  magnetrometer readings
+        Vec3Df magReading;
+
         //  a voltage from battery
         float battery_voltage = 0.f;
 
@@ -96,6 +99,8 @@ class SensorReader
 
     RotationFilter rotor;
 
+    size_t CalbirationSteps;
+
     MultiVL *vl;
 
     MPU6050 mpu;
@@ -109,7 +114,6 @@ class SensorReader
 
     MeanBuffer<Vec3Df,10> accelMean;
 
-    Vec3Df magReading;
 
     adc_oneshot_unit_handle_t hmd;
 
@@ -197,6 +201,16 @@ class SensorReader
         return cfg;
     }
 
+    const MeanBuffer<Vec3Df,10>& getGyroscopeBuffer()
+    {
+        return this->gyroMean;
+    }
+
+    const MeanBuffer<Vec3Df,10>& getAccelerometerBuffer()
+    {
+        return this->accelMean;
+    }
+
     BaseType_t imu_gpio_interupt();
 
     void read_imu();
@@ -224,14 +238,22 @@ class SensorReader
         SensorsFaulty=false;
     }
 
-    const bool& IMUCalibrationDone()
+    bool IMUCalibrationDone()
     {
         return this->CalibrateIMU;
     }
 
-    void DoIMUCalibration()
+    void DoIMUCalibration(size_t N=10)
     {
+        ESP_LOGI("MAIN","IMU calibration begin, with steps: %u",N);
+        this->CalbirationSteps=N;
         this->CalibrateIMU=true;   
+        this->CalibrationCounter=0;
+    }
+
+    size_t StepsLeftUntilCalibration()
+    {
+        return this->CalbirationSteps - this->CalibrationCounter;
     }
 
     // I don't think it is convinient

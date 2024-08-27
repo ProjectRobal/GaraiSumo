@@ -21,12 +21,12 @@ static void freeRTOS_task(void* arg)
 
 bool MotorDriver::channelADirection()
 {
-    return ledc_get_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0) > ledc_update_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_1);
+    return this->last_A_direction;
 }
 
 bool MotorDriver::channelBDirection()
 {
-    return ledc_get_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_2) > ledc_update_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_3);
+    return this->last_B_direction;
 }
 
 void MotorDriver::init_gpio()
@@ -79,12 +79,13 @@ void MotorDriver::set_channelA(int32_t pwr)
     {
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,pwr);
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_1,0);
-        ledc_get_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_1);
+        this->last_A_direction = false;
     }
     else if(pwr<0)
     {
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,0);
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_1,-pwr);
+        this->last_A_direction = true;
     }
     else
     {
@@ -102,11 +103,13 @@ void MotorDriver::set_channelB(int32_t pwr)
     {
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_2,pwr);
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_3,0);
+        this->last_B_direction = false;
     }
     else if(pwr<0)
     {
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_2,0);
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_3,-pwr);
+        this->last_B_direction = true;
     }
     else
     {

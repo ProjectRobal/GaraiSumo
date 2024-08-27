@@ -26,32 +26,32 @@ class Vec2D
     y(y)
     {}
 
-    Vec2D operator+(const Vec2D& vec)
+    Vec2D operator+(const Vec2D& vec) const
     {
         return Vec2D(this->x+vec.x,this->y+vec.y);
     }
 
-    Vec2D operator-(const Vec2D& vec)
+    Vec2D operator-(const Vec2D& vec) const
     {
         return Vec2D(this->x-vec.x,this->y-vec.y);
     }
 
-    Vec2D operator*(const Vec2D& vec)
+    Vec2D operator*(const Vec2D& vec) const
     {
         return Vec2D(this->x*vec.x,this->y*vec.y);
     }
 
-    Vec2D operator*(T num)
+    Vec2D operator*(T num) const
     {
         return Vec2D(this->x*num,this->y*num);
     }
 
-    Vec2D operator/(const Vec2D& vec)
+    Vec2D operator/(const Vec2D& vec) const
     {
         return Vec2D(this->x/vec.x,this->y/vec.y);
     }
 
-    Vec2D operator/(T num)
+    Vec2D operator/(T num) const
     {
         return Vec2D(this->x/num,this->y/num);
     }
@@ -139,32 +139,32 @@ class Vec3D
     z(z)
     {}
 
-    Vec3D operator+(const Vec3D& vec)
+    Vec3D operator+(const Vec3D& vec) const
     {
         return Vec3D(this->x+vec.x,this->y+vec.y,this->z+vec.z);
     }
 
-    Vec3D operator-(const Vec3D& vec)
+    Vec3D operator-(const Vec3D& vec) const
     {
         return Vec3D(this->x-vec.x,this->y-vec.y,this->z-vec.z);
     }
 
-    Vec3D operator*(const Vec3D& vec)
+    Vec3D operator*(const Vec3D& vec) const
     {
         return Vec3D(this->x*vec.x,this->y*vec.y,this->z*vec.z);
     }
 
-    Vec3D operator*(T num)
+    Vec3D operator*(T num) const
     {
         return Vec3D(this->x*num,this->y*num,this->z*num);
     }
 
-    Vec3D operator/(const Vec3D& vec)
+    Vec3D operator/(const Vec3D& vec) const
     {
         return Vec3D(this->x/vec.x,this->y/vec.y,this->z/vec.z);
     }
 
-    Vec3D operator/(T num)
+    Vec3D operator/(T num) const
     {
         return Vec3D(this->x/num,this->y/num,this->z/num);
     }
@@ -273,32 +273,32 @@ class Vec4D
     w(w)
     {}
 
-    Vec4D operator+(const Vec4D& vec)
+    Vec4D operator+(const Vec4D& vec) const
     {
         return Vec4D(this->x+vec.x,this->y+vec.y,this->z+vec.z,this->w+vec.w);
     }
 
-    Vec4D operator-(const Vec4D& vec)
+    Vec4D operator-(const Vec4D& vec) const
     {
         return Vec4D(this->x-vec.x,this->y-vec.y,this->z-vec.z,this->w-vec.w);
     }
 
-    Vec4D operator*(const Vec4D& vec)
+    Vec4D operator*(const Vec4D& vec) const
     {
         return Vec4D(this->x*vec.x,this->y*vec.y,this->z*vec.z,this->w*vec.w);
     }
 
-    Vec4D operator*(T num)
+    Vec4D operator*(T num) const
     {
         return Vec4D(this->x*num,this->y*num,this->z*num,this->w*num);
     }
 
-    Vec4D operator/(const Vec4D& vec)
+    Vec4D operator/(const Vec4D& vec) const
     {
         return Vec4D(this->x/vec.x,this->y/vec.y,this->z/vec.z,this->w/vec.w);
     }
 
-    Vec4D operator/(T num)
+    Vec4D operator/(T num) const
     {
         return Vec4D(this->x/num,this->y/num,this->z/num,this->w/num);
     }

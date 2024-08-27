@@ -1,3 +1,5 @@
+#include <ctime>
+
 #include <esp_wifi.h>
 #include <esp_event.h>
 
@@ -191,6 +193,8 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         json=cJSON_CreateObject();
 
+        cJSON_AddNumberToObject(json,"T",static_cast<double>(clock())/CLOCKS_PER_SEC);
+
         cJSON_AddBoolToObject(json,"IMUOnly",mods.sensors->read().IMUOnlyReading);
 
         int _distances[18];
@@ -203,6 +207,31 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
         cJSON* intarray=cJSON_CreateIntArray(_distances,18);
 
         cJSON_AddItemToObject(json,"distances",intarray);
+
+        cJSON* raw_gyroscope=cJSON_AddObjectToObject(json,"raw_gyroscope");
+
+        Vec3Df raw_gyro=mods.sensors->getGyroscopeBuffer().mean();
+
+        cJSON_AddNumberToObject(raw_gyroscope,"x",raw_gyro.x);
+        cJSON_AddNumberToObject(raw_gyroscope,"y",raw_gyro.y);
+        cJSON_AddNumberToObject(raw_gyroscope,"z",raw_gyro.z);
+
+        cJSON* raw_accelerometer=cJSON_AddObjectToObject(json,"raw_accelerometer");
+
+        Vec3Df raw_accel=mods.sensors->getAccelerometerBuffer().mean();
+
+        cJSON_AddNumberToObject(raw_accelerometer,"x",raw_accel.x);
+        cJSON_AddNumberToObject(raw_accelerometer,"y",raw_accel.y);
+        cJSON_AddNumberToObject(raw_accelerometer,"z",raw_accel.z);
+
+        cJSON* raw_magnetrometer=cJSON_AddObjectToObject(json,"raw_magentrometer");
+
+        const Vec3Df& raw_mag=mods.sensors->read().magReading;
+
+        cJSON_AddNumberToObject(raw_magnetrometer,"x",raw_mag.x);
+        cJSON_AddNumberToObject(raw_magnetrometer,"y",raw_mag.y);
+        cJSON_AddNumberToObject(raw_magnetrometer,"z",raw_mag.z);
+
 
         cJSON_AddNumberToObject(json,"left_motor_speed",mods.sensors->read().motorSpeed[0]);
 
@@ -455,12 +484,33 @@ esp_err_t OnlineTerminal::calibr_imu(httpd_req_t *req)
     switch(req->method)
     {
         case HTTP_POST:
+        {
+
+            size_t N = 10;
+
+            httpd_req_recv(req,this->buffer,req->content_len);
+
+            cJSON* json = cJSON_Parse(this->buffer);
+
+            if( json != NULL )
+            {
+                cJSON *steps=cJSON_GetObjectItem(json,"steps");
+
+                if( steps != NULL )
+                {
+                    if(cJSON_IsNumber(steps))
+                    {
+                        N = steps->valueint;
+                    }
+                }
+            }
 
             mods.driver->stop();
-            mods.sensors->DoIMUCalibration();
+            mods.sensors->DoIMUCalibration(N);
 
             httpd_resp_sendstr(req,"OK");
 
+        }
         break;
 
         case HTTP_GET:
@@ -470,6 +520,7 @@ esp_err_t OnlineTerminal::calibr_imu(httpd_req_t *req)
             json=cJSON_CreateObject();
 
             cJSON_AddBoolToObject(json,"done",mods.sensors->IMUCalibrationDone());
+            cJSON_AddNumberToObject(json,"steps_left",mods.sensors->StepsLeftUntilCalibration());
 
             this->clear_buf();
 

@@ -12,10 +12,6 @@ extern const httpd_uri_t set_ssid_cfg;
 
 extern const httpd_uri_t home_cfg;
 
-void start_http(void);
-
-void stop_http(void);
-
 
 //----Endpoints
 

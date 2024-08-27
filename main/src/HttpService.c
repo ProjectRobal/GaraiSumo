@@ -7,8 +7,6 @@
 
 #include "index.h"
 
-static httpd_handle_t http_server;
-
 const httpd_uri_t set_ssid_cfg={
     .uri="/ssid",
     .method=HTTP_POST,
@@ -22,29 +20,6 @@ const httpd_uri_t home_cfg={
     .handler=home,
     .user_ctx=NULL
 };
-
-void start_http(void)
-{
-    httpd_config_t config= HTTPD_DEFAULT_CONFIG();
-
-    if(httpd_start(&http_server,&config) == ESP_OK)
-    {
-
-        ESP_LOGI("WiFiManager","Starting http server");
-
-        ESP_ERROR_CHECK(httpd_register_uri_handler(http_server,&home_cfg));
-        ESP_ERROR_CHECK(httpd_register_uri_handler(http_server,&set_ssid_cfg)); 
-    }
-    else
-    {
-        ESP_LOGE("WiFiManager","Error starting server");
-    }
-}
-
-void stop_http(void)
-{
-    httpd_stop(&http_server);
-}
 
 esp_err_t home(httpd_req_t *req)
 {
@@ -67,15 +42,15 @@ esp_err_t set_ssid(httpd_req_t *req)
         return ESP_FAIL;   
     }
 
-    char ssid[33];
-    char password[65];
+    char ssid[33]={0};
+    char password[65]={0};
 
     if(!req->content_len)
     {
         return ESP_FAIL;
     }
 
-    char content[req->content_len];
+    char content[512]={0};
 
     int ret = httpd_req_recv(req, content, req->content_len);
 

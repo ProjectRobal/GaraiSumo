@@ -49,6 +49,8 @@ class MeanBuffer
         }
         else
         {
+            this->reset();
+
             T mean=this->mean();
             this->push(mean);
             this->push(element);
@@ -62,21 +64,19 @@ class MeanBuffer
         this->buffer=0;
     }
 
-    bool isFull()
+    bool isFull() const
     {
         return this->iter == Size;
     }
 
-    T mean()
+    T mean() const
     {
         if(this->iter==0)
         {
             return 0;
         }
 
-        T out=buffer/std::min(this->iter,Size);
-
-        this->reset();
+        T out=this->buffer/this->iter;
 
         return out;
     }

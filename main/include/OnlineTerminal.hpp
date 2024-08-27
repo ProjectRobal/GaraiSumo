@@ -9,7 +9,7 @@
 
 #pragma once
 
-#define WS_MAX_PAYLOAD_SIZE 4096
+#define WS_MAX_PAYLOAD_SIZE 8192
 
 #include <cstdlib>
 #include <cJSON.h>

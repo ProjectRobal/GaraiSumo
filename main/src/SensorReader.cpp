@@ -10,6 +10,7 @@
 #include "MotorDriver.hpp"
 #include "SensorReader.hpp"
 
+#include "shared.hpp"
 
 extern "C"
 {
@@ -292,9 +293,9 @@ void SensorReader::init_mag()
 
 void SensorReader::read_mag()
 {
-    this->magReading.x=this->mag->readX();
-    this->magReading.y=this->mag->readY();
-    this->magReading.z=this->mag->readZ();
+    this->reads.magReading.x=this->mag->readX();
+    this->reads.magReading.y=this->mag->readY();
+    this->reads.magReading.z=this->mag->readZ();
 }
 
 SensorReader::SensorReader()
@@ -302,7 +303,7 @@ SensorReader::SensorReader()
     this->semp = xSemaphoreCreateMutex();
     SensorsFaulty=false;
     KtirThreshold=KTIR_THRESHOLD;
-    this->CalibrateIMU=true;
+    this->CalibrateIMU=false;
     this->CalibrationCounter=0;
 
     yaw_error_tolerance=0;
@@ -368,8 +369,8 @@ void SensorReader::read_encoders()
     int32_t step_ch1 = ch1.get();
     int32_t step_ch2 = ch2.get();
 
-    step_ch1 = MotorDriver::channelADirection() ? step_ch1 : -step_ch1;
-    step_ch2 = MotorDriver::channelBDirection() ? step_ch2 : -step_ch2;
+    step_ch1 = shared::mods.driver->channelADirection() ? step_ch1 : -step_ch1;
+    step_ch2 = shared::mods.driver->channelBDirection() ? step_ch2 : -step_ch2;
 
     float dl = step_ch1/PULSE_TO_DISTANCE;
     float dr = step_ch2/PULSE_TO_DISTANCE;
@@ -421,7 +422,7 @@ void SensorReader::fusion()
     // we only care about 2D projection from top view:
     // so only yaw axis from IMU
 
-    MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->magReading.x,this->magReading.y,this->magReading.z);
+    MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->reads.magReading.x,this->reads.magReading.y,this->reads.magReading.z);
 
     float _roll=0.f;
     float _pitch=0.f;
@@ -508,11 +509,9 @@ void SensorReader::read_imu()
     if( this->CalibrateIMU )
     {   
 
-        CalibrationCounter++;
-
-        if( CalibrationCounter > 10 )
+        if( this->CalibrationCounter > this->CalbirationSteps )
         {
-            CalibrationCounter = 0;
+            this->CalibrationCounter = 0;
             this->CalibrateIMU = false;
 
             ESP_LOGI("MAIN","IMU calibration finished!");
@@ -523,6 +522,9 @@ void SensorReader::read_imu()
 
             this->mpu.printOffsets();
         }
+
+        this->CalibrationCounter++;
+
     }
 
 
