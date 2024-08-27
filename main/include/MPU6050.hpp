@@ -41,16 +41,16 @@ class MPU6050
     {
         G250=0,
         G500=1,
-        G1000,
-        G2000
+        G1000=2,
+        G2000=3
     };
 
     enum AccelerometerRange
     {
         G2=0,
         G4=1,
-        G8,
-        G16
+        G8=2,
+        G16=3
     };
 
     enum FSYNC_SIGNAL_SRC

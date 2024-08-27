@@ -27,6 +27,8 @@ void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, flo
 
 void MadgwickQuaterionToEuler(float* roll,float* pitch,float* yaw);
 
+void MadgwickReset();
+
 #endif
 //=====================================================================================================
 // End of file

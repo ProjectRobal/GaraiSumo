@@ -21,7 +21,7 @@
 //---------------------------------------------------------------------------------------------------
 // Definitions
 
-#define sampleFreq	512.0f		// sample frequency in Hz
+#define sampleFreq	1024.0f		// sample frequency in Hz
 #define betaDef		0.1f		// 2 * proportional gain
 
 //---------------------------------------------------------------------------------------------------
@@ -239,6 +239,15 @@ void MadgwickQuaterionToEuler(float* roll,float* pitch,float* yaw)
     float siny_cosp = 2 * (q3 * q2 + q0 * q1);
     float cosy_cosp = 1 - 2 * (q1 * q1 + q2 * q2);
     *yaw = atan2(siny_cosp, cosy_cosp);
+}
+
+void MadgwickReset()
+{
+	beta = betaDef;
+	q0 = 1.0f;
+	q1 = 0.0f;
+	q2 = 0.0f;
+	q3 = 0.0f;
 }
 
 //====================================================================================================

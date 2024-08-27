@@ -426,28 +426,28 @@ bool MPU6050::reset() const
 
 float MPU6050::from_raw_gyro(const int16_t input) const
 {
-    float ssf=(131.0/(2<<this->gyro_range));
+    float ssf=(131.0/(1<<this->gyro_range));
 
     return static_cast<float>(input)/ssf;    
 }
 
 float MPU6050::from_raw_accel(const int16_t input) const
 {
-    float ssf=(16384.0/(2<<this->accel_range));
+    float ssf=(16384.0/(1<<this->accel_range));
 
     return static_cast<float>(input)/ssf; 
 }
 
 int16_t MPU6050::accel_to_raw(const float input) const
 {
-    float ssf=((2<<this->accel_range)/16384.0);
+    float ssf=((1<<this->accel_range)/16384.0);
 
     return static_cast<int16_t>(input/ssf);
 }
 
 int16_t MPU6050::gyro_to_raw(const float input) const
 {
-    float ssf=((2<<this->gyro_range)/131.0);
+    float ssf=((1<<this->gyro_range)/131.0);
 
     return static_cast<int16_t>(input/ssf);
 }

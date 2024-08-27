@@ -288,6 +288,8 @@ void SensorReader::init_mag()
 
     this->mag=NULL;
 
+    this->reads.IMUOnlyReading = true;
+
     ESP_LOGE("MAIN","No magnetrometer found!");
 }
 
@@ -410,6 +412,7 @@ void SensorReader::fusion()
 
     if( this->CalibrateIMU )
     {
+        MadgwickReset();
         this->Unlock();
         return;
     } 
@@ -419,8 +422,14 @@ void SensorReader::fusion()
 
     // we only care about 2D projection from top view:
     // so only yaw axis from IMU
-
-    MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->reads.magReading.x,this->reads.magReading.y,this->reads.magReading.z);
+    if( !this->reads.IMUOnlyReading )
+    {
+        MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->reads.magReading.x,this->reads.magReading.y,this->reads.magReading.z);
+    }
+    else
+    {
+        MadgwickAHRSupdateIMU(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z);
+    }
 
     float _roll=0.f;
     float _pitch=0.f;
@@ -521,7 +530,7 @@ void SensorReader::read_imu()
             float gyro_variance = gyro_calibr.variance();
             float accel_mean = accel_calibr.mean();
 
-            if(( gyro_variance < 0.01f ) && ( accel_mean <= 0.375f ))
+            if(( gyro_variance < 0.01f ) && ( abs(accel_mean) <= 0.375f ))
             {
                 this->CalibrateIMU = false;
 
@@ -537,24 +546,11 @@ void SensorReader::read_imu()
 
                 // find two axis with the biggest values:
 
-                if( ( accel_calibr.x < accel_calibr.y ) && ( accel_calibr.x < accel_calibr.z ))
-                {
-                    accel_calibr.x = 0.f;
-                }
-                else if( ( accel_calibr.y < accel_calibr.z ) && ( accel_calibr.y < accel_calibr.x ))
-                {
-                    accel_calibr.y = 0.f;
-                }
-                else if( ( accel_calibr.z < accel_calibr.x ) && ( accel_calibr.z < accel_calibr.y ))
-                {
-                    accel_calibr.z = 0.f;
-                }
+                Vec3Di accel_offset = this->accelCalibrMean.mean();
 
-                Vec3Df accel_coff = accel_calibr / accel_calibr.sum();
+                accel_offset.z -= this->mpu.accel_to_raw(1.f);
 
-                Vec3Di accel_offset = this->mpu.getAccelOffsets()+this->accelCalibrMean.mean();
-                
-                accel_offset -= this->mpu.accel_to_raw(accel_coff);
+                accel_offset += this->mpu.getAccelOffsets();              
 
                 this->mpu.setAccelOffsets(accel_offset);
 
