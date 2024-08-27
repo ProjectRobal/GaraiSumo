@@ -3,6 +3,11 @@
 #include <esp_wifi.h>
 #include <esp_event.h>
 
+#include <esp_ota_ops.h>
+#include <esp_app_format.h>
+#include <esp_flash_partitions.h>
+#include <esp_partition.h>
+
 #include "OnlineTerminal.hpp"
 
 extern "C"
@@ -15,6 +20,11 @@ using shared::mods;
 esp_err_t OnlineTerminal::ws_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->ws_sensors_reading(req);
+}
+
+esp_err_t OnlineTerminal::ota_wrapper(httpd_req_t *req)
+{
+    return ((OnlineTerminal*)req->user_ctx)->ws_ota_handler(req);
 }
 
 esp_err_t OnlineTerminal::motor_wrapper(httpd_req_t *req)
@@ -58,6 +68,15 @@ OnlineTerminal::OnlineTerminal()
         .uri="/readings",
         .method=HTTP_GET,
         .handler=this->ws_wrapper,
+        .user_ctx=this,
+        .is_websocket=true
+    }
+),
+ws_ota(
+    {
+        .uri="/ota",
+        .method=HTTP_GET,
+        .handler=this->ota_wrapper,
         .user_ctx=this,
         .is_websocket=true
     }
@@ -168,6 +187,7 @@ rotorfilter_post(
     }
 )
 {
+    this->ota_handle=NULL;
     this->server=NULL;
 }
 
@@ -367,6 +387,7 @@ esp_err_t OnlineTerminal::ws_motor_control(httpd_req_t *req)
         sprintf(this->buffer,"A: %ld B: %ld",motorA_pwr,motorB_pwr);
 
         ws_packet.len=strlen(this->buffer);
+        
     }
     else
     {
@@ -382,6 +403,219 @@ esp_err_t OnlineTerminal::ws_motor_control(httpd_req_t *req)
     }
 
     cJSON_Delete(json);
+
+    httpd_ws_send_frame(req,&ws_packet);
+
+    return ESP_OK;
+}
+
+// handle ota update
+esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
+{
+
+    if(req->method == HTTP_GET)
+    {
+        //handshake
+        ESP_LOGI("OnlineTerminal", "Handshake done, the new connection was opened for motor control");
+
+        return ESP_OK;
+    }
+
+    httpd_ws_frame_t ws_packet={0};
+    ws_packet.type=HTTPD_WS_TYPE_TEXT;
+
+    esp_err_t ret=httpd_ws_recv_frame(req,&ws_packet,0);
+
+    if(ret != ESP_OK)
+    {
+        return ret;
+    }
+
+    if(ws_packet.len>WS_MAX_PAYLOAD_SIZE)
+    {   
+        ESP_LOGE("OnlineTerminal","Incoming body is too big!");
+        return ESP_FAIL;
+    }
+    
+    if(ws_packet.len==0)
+    {
+        this->send_ws_error(&ws_packet,req,"Body is empty!");
+
+        return ESP_OK;
+    }
+
+    ws_packet.payload=(uint8_t*)this->buffer;
+
+    // We are going to use frames with format:
+    // < 1 bytes - id >< 4 bytes - length >< length bytes - data >
+
+    const esp_partition_t* running_partition = esp_ota_get_running_partition();
+
+    const esp_partition_t* update_partition = esp_ota_get_next_update_partition(running_partition);
+
+    ret=httpd_ws_recv_frame(req,&ws_packet,ws_packet.len);
+
+    switch(this->buffer[0])
+    {
+        case OnlineTerminal::OTAStage::OTA_BEGIN:
+        {
+
+            memmove((uint8_t*)&this->ota_sectors_left,this->buffer+1,4);
+
+            ESP_LOGI("MAIN","Starting OTA update");
+
+            this->clear_buf();
+
+            if( update_partition == NULL )
+            {
+                ESP_LOGE("MAIN","Cannot select partition!");
+
+                sprintf(this->buffer,"ERR");
+
+                ws_packet.len=strlen(this->buffer);
+
+                ws_packet.final = true;
+            }
+            else
+            {
+
+                if( esp_ota_begin(update_partition,OTA_SIZE_UNKNOWN,&ota_handle) != ESP_OK )
+                {
+                    ESP_LOGE("MAIN","Cannot start OTA!");
+
+                    sprintf(this->buffer,"ERR");
+
+                    ws_packet.len=strlen(this->buffer);
+
+                    ws_packet.final = true;
+                }
+                else
+                {
+                    ESP_LOGI("MAIN","OTA started!");
+                    sprintf(this->buffer,"OK");
+
+                    ws_packet.len=strlen(this->buffer);
+                }
+            }
+            
+        }
+        break;
+
+        case OnlineTerminal::OTAStage::OTA_FLASHING:
+        {
+            if( this->ota_handle == NULL )
+            {
+                ESP_LOGE("MAIN","OTA not started!");
+
+                sprintf(this->buffer,"ERR");
+
+                ws_packet.len=strlen(this->buffer);
+
+                break;
+            }
+
+            if(ws_packet.len<4096)
+            {
+                ESP_LOGE("MAIN","Packet to small!");
+
+                ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_abort(this->ota_handle));
+
+                this->ota_handle = 0;
+
+                sprintf(this->buffer,"ERR");
+
+                ws_packet.len=strlen(this->buffer);
+
+                break;
+
+            }
+
+            size_t offset;
+
+            memcpy((uint8_t*)&offset,this->buffer+1,4);
+
+            // image header checking
+            if( offset == 0 )
+            {
+                esp_app_desc_t new_app_info;
+
+                memcpy(&new_app_info, this->buffer+4+sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t), sizeof(esp_app_desc_t));
+                ESP_LOGI("MAIN", "New firmware version: %s", new_app_info.version);
+
+                esp_app_desc_t running_app_info;
+                if (esp_ota_get_partition_description(esp_ota_get_running_partition(), &running_app_info) == ESP_OK) {
+                    ESP_LOGI("MAIN", "Running firmware version: %s", running_app_info.version);
+                }
+
+                if (memcmp(new_app_info.version, running_app_info.version, sizeof(new_app_info.version)) == 0) {
+                    ESP_LOGE("MAIN","The incoming version is the same as current version, abort");
+
+                    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_abort(this->ota_handle));
+
+                    this->ota_handle = 0;
+
+                    sprintf(this->buffer,"ERR");
+
+                    ws_packet.len=strlen(this->buffer);
+
+                    break;
+                }
+            }
+
+            if( esp_ota_write_with_offset(this->ota_handle,this->buffer+4,4096,offset*4096) == ESP_OK )
+            {
+                this->clear_buf();
+
+                this->ota_sectors_left--;
+
+                if(this->ota_sectors_left==0)
+                {
+                    ESP_LOGI("MAIN","Image has been written!");
+
+                    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_end(this->ota_handle));
+
+                    this->ota_handle = 0;
+
+                    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_set_boot_partition(update_partition));
+
+                    sprintf(this->buffer,"END");
+
+                    ws_packet.len=strlen(this->buffer);
+                }
+                else
+                {
+                    sprintf(this->buffer,"OK");
+
+                    ws_packet.len=strlen(this->buffer);
+                }
+            }
+            else
+            {
+                ESP_LOGE("MAIN","Cannot write sector %u",offset*4096);
+
+                ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_abort(this->ota_handle));
+
+                this->ota_handle = 0;
+
+                sprintf(this->buffer,"ERR");
+
+                ws_packet.len=strlen(this->buffer);
+
+                ws_packet.final = true;
+            }
+        }
+        break;
+
+        default:
+
+            this->clear_buf();
+
+            sprintf(this->buffer,"Wrong options");
+
+            ws_packet.len=strlen(this->buffer);
+
+        break;
+    }
 
     httpd_ws_send_frame(req,&ws_packet);
 

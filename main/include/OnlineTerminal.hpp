@@ -16,6 +16,8 @@
 #include <esp_http_server.h>
 #include <esp_log.h>
 
+#include <esp_ota_ops.h>
+
 #include "ConfigLoader.hpp"
 
 #include "shared.hpp"
@@ -27,6 +29,7 @@ class OnlineTerminal
     httpd_handle_t server;
 
     const httpd_uri_t ws;
+    const httpd_uri_t ws_ota;
     const httpd_uri_t ws_motors;
     const httpd_uri_t pid;
     const httpd_uri_t pid_post;
@@ -44,6 +47,16 @@ class OnlineTerminal
     const httpd_uri_t rotorfilter_post;
 
     char buffer[WS_MAX_PAYLOAD_SIZE];
+
+    size_t ota_sectors_left;
+
+    esp_ota_handle_t ota_handle;
+
+    enum OTAStage
+    {
+        OTA_BEGIN=0,
+        OTA_FLASHING=1
+    };
 
     void clear_buf()
     {
@@ -91,11 +104,15 @@ class OnlineTerminal
 
     esp_err_t set_mag_config(httpd_req_t *req);
 
+    esp_err_t ws_ota_handler(httpd_req_t *req);
+
     void start();
 
     void stop();
 
     static esp_err_t ws_wrapper(httpd_req_t *req);
+
+    static esp_err_t ota_wrapper(httpd_req_t *req);
 
     static esp_err_t motor_wrapper(httpd_req_t *req);
 
