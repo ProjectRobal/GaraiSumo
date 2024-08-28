@@ -18,6 +18,8 @@
 
 #define I2C_MASTER_FREQ_HZ 400000 
 
+// in seconds
+#define OTA_WS_TIMEOUT 10
 
 #define BATTERY_ADC_CHANNEL ADC_CHANNEL_8
 

@@ -513,6 +513,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                     ws_packet.len=strlen(this->buffer);
 
                     mods.driver->stop();
+
+                    ota_timeout_counter = clock();
                 }
             }
             
@@ -532,6 +534,19 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                 ws_packet.len=strlen(this->buffer);
 
                 break;
+            }
+
+            if( ( ( clock() - ota_timeout_counter )/CLOCKS_PER_SEC ) >= OTA_WS_TIMEOUT )
+            {
+                ESP_LOGE("OTA","Websocket timeout!");
+
+                ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_abort(this->ota_handle));
+
+                this->clear_buf();
+
+                this->ota_handle = 0;
+
+                this->ota_timeout_counter=0;
             }
 
             if(ws_packet.len<5)
@@ -555,6 +570,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
             size_t offset;
 
             memcpy((uint8_t*)&offset,this->buffer+1,4);
+
+            ota_timeout_counter = clock();
 
             ESP_LOGI("OTA","Writing sector at offset: %u",offset);
 

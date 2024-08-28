@@ -11,6 +11,7 @@
 
 #define WS_MAX_PAYLOAD_SIZE 8192
 
+#include <ctime>
 #include <cstdlib>
 #include <cJSON.h>
 #include <esp_http_server.h>
@@ -21,6 +22,7 @@
 #include "ConfigLoader.hpp"
 
 #include "shared.hpp"
+
 
 
 class OnlineTerminal
@@ -49,6 +51,8 @@ class OnlineTerminal
     const httpd_uri_t rotorfilter_post;
 
     char buffer[WS_MAX_PAYLOAD_SIZE];
+
+    clock_t ota_timeout_counter;
 
     size_t ota_sectors_left;
 
