@@ -524,6 +524,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
             if( this->ota_handle == 0 )
             {
                 ESP_LOGE("MAIN","OTA not started!");
+                
+                this->clear_buf();
                 // OTA not started
                 sprintf(this->buffer,"QTA");
 
@@ -532,11 +534,13 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                 break;
             }
 
-            if(ws_packet.len<4096)
+            if(ws_packet.len<5)
             {
                 ESP_LOGE("MAIN","Packet to small!");
 
                 ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_abort(this->ota_handle));
+
+                this->clear_buf();
 
                 this->ota_handle = 0;
                 // Packet to small
@@ -572,6 +576,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
 
                     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_abort(this->ota_handle));
 
+                    this->clear_buf();
+
                     this->ota_handle = 0;
                     // Incoming verision is the same as on the microcontroller
                     sprintf(this->buffer,"OUT");
@@ -582,10 +588,9 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                 }
             }
 
-            if( esp_ota_write_with_offset(this->ota_handle,this->buffer+5,4096,offset*4096) == ESP_OK )
+            if( esp_ota_write_with_offset(this->ota_handle,this->buffer+5,ws_packet.len-5,offset*4096) == ESP_OK )
             {
                 this->clear_buf();
-
 
                 if(this->ota_sectors_left==0)
                 {
@@ -616,12 +621,12 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                 }
                 else
                 {
+                    this->ota_sectors_left--;
+
                     sprintf(this->buffer,"OK");
 
                     ws_packet.len=strlen(this->buffer);
                 }
-
-                this->ota_sectors_left--;
 
             }
             else

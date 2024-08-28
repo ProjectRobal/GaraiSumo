@@ -23,10 +23,10 @@ def prepare_flash_frame(id:int,data:bytes):
     
     arr.extend(id.to_bytes(4,'little'))
     
-    if len(data)<4096:
-        to_fill:int = 4096 - len(data)
+    # if len(data)<4096:
+    #     to_fill:int = 4096 - len(data)
         
-        arr.extend(bytes([0x00]*to_fill))
+    #     arr.extend(bytes([0x00]*to_fill))
     
     arr.extend(data)
     
@@ -72,6 +72,8 @@ def main():
     
     print("Chunk size: ",chunk_count)
     
+    chunk_count = chunk_count - 1
+    
     try:
         with connect("ws://{}".format(address)) as websocket:
             
@@ -89,12 +91,16 @@ def main():
                 
                 while True:
                     chunk = file.read(4096)
+                    print(len(chunk))
                     
-                    if chunk is None:
+                    if len(chunk)==0:
                         break
                     
+                    frame = prepare_flash_frame(chunk_id,chunk)
+                    print(len(frame))
                     print("Flashing chunk {} out of {} chunks".format(chunk_id,chunk_count))
-                    websocket.send(prepare_flash_frame(chunk_id,chunk))
+
+                    websocket.send(frame)
                     
                     chunk_id += 1
                     

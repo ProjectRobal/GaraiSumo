@@ -18,7 +18,7 @@ bool i2c_writeBytes(uint8_t port,uint8_t address,uint8_t _register,const uint8_t
 
     i2c_master_stop(cmd);
 
-    err=i2c_master_cmd_begin((i2c_port_t)port,cmd,100/portTICK_PERIOD_MS);
+    err=i2c_master_cmd_begin((i2c_port_t)port,cmd,1000/portTICK_PERIOD_MS);
 
     i2c_cmd_link_delete(cmd);
 
@@ -80,7 +80,7 @@ bool i2c_readBytes(uint8_t port,uint8_t address,uint8_t _register,uint8_t *data,
 
     i2c_master_stop(cmd);
 
-    err=i2c_master_cmd_begin((i2c_port_t)port,cmd,100/portTICK_PERIOD_MS);
+    err=i2c_master_cmd_begin((i2c_port_t)port,cmd,1000/portTICK_PERIOD_MS);
 
     i2c_cmd_link_delete(cmd);
 
