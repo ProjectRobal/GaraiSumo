@@ -598,16 +598,23 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
 
                     esp_err_t err = esp_ota_end(this->ota_handle);
 
-                    ESP_LOGE("OTA","Cannot end OTA %s",esp_err_to_name(err));
+                    if( err != ESP_OK )
+                    {
+                        ESP_LOGE("OTA","Cannot end OTA %s",esp_err_to_name(err));
+                    }
 
                     this->ota_handle = 0;
 
                     err = esp_ota_set_boot_partition(update_partition);
 
-                    ESP_LOGE("OTA","Cannot select new boot partition %s",esp_err_to_name(err));
+                    if( err!= ESP_OK )
+                    {
+                        ESP_LOGE("OTA","Cannot select new boot partition %s",esp_err_to_name(err));
+                    }
 
                     if( err == ESP_OK)
                     {
+                        ESP_LOGI("OTA","Image flashed successfully");
                         sprintf(this->buffer,"END");
 
                         ws_packet.len=strlen(this->buffer);

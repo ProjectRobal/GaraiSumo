@@ -48,6 +48,23 @@ void app_main()
     esp_log_level_set("MAIN", ESP_LOG_INFO);
     esp_log_level_set("Sensors", ESP_LOG_INFO);
 
+    const esp_partition_t *running = esp_ota_get_running_partition();
+    esp_ota_img_states_t ota_state;
+    if (esp_ota_get_state_partition(running, &ota_state) == ESP_OK) {
+        if (ota_state == ESP_OTA_IMG_PENDING_VERIFY) {
+            // run diagnostic function ...
+            // maybe in the future we would implement some tests
+            bool diagnostic_is_ok = true;//diagnostic();
+            if (diagnostic_is_ok) {
+                ESP_LOGI("OTA", "Diagnostics completed successfully! Continuing execution ...");
+                esp_ota_mark_app_valid_cancel_rollback();
+            } else {
+                ESP_LOGE("OTA", "Diagnostics failed! Start rollback to the previous version ...");
+                esp_ota_mark_app_invalid_rollback_and_reboot();
+            }
+        }
+    }
+
     ESP_LOGI("MAIN","Hello World!");
 
     gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
@@ -188,6 +205,8 @@ void app_main()
     mods.sensors->updatePositionFilterYCFG(posY);
 
     mods.sensors->updateRoationFilterCFG(rotor);
+
+    ESP_LOGI("MAIN","Hau hau watchdog is watching...");
 
     // init watchdog
 
