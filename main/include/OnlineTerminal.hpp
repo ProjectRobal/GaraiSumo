@@ -40,6 +40,8 @@ class OnlineTerminal
     const httpd_uri_t mag_cfg;
     const httpd_uri_t mag_cfg_post;
 
+    const httpd_uri_t esp_rst_post;
+
     const httpd_uri_t accelfilter;
     const httpd_uri_t accelfilter_post;
 
@@ -106,6 +108,8 @@ class OnlineTerminal
 
     esp_err_t ws_ota_handler(httpd_req_t *req);
 
+    esp_err_t reset_handler(httpd_req_t *req);
+
     void start();
 
     void stop();
@@ -127,6 +131,8 @@ class OnlineTerminal
     static esp_err_t posfilter_wrapper(httpd_req_t *req);
 
     static esp_err_t rototrfilter_wrapper(httpd_req_t *req);
+
+    static esp_err_t reset_wrapper(httpd_req_t *req);
 
     static void connect_handler(void* arg, esp_event_base_t event_base,
                             int32_t event_id, void* event_data)

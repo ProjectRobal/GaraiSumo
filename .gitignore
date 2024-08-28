@@ -1,1 +1,6 @@
 build
+ota/bin
+ota/include
+ota/lib
+ota/lib64
+ota/pyvenv.cfg

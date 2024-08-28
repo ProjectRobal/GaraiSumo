@@ -22,6 +22,11 @@ def prepare_flash_frame(id:int,data:bytes):
     
     arr.extend(id.to_bytes(4,'big'))
     
+    if len(data)<4096:
+        to_fill:int = 4096 - len(data)
+        
+        arr.extend(bytes([0x00]*to_fill))
+    
     arr.extend(data)
     
     return arr
@@ -38,20 +43,26 @@ def main():
     
     address = args.address
     directory = args.directory
-    filename = args.name + ".bin"
+    filename = directory+"/"+args.name + ".bin"
     
     if not os.path.exists(directory):
         print("Directroy doesn't exits")
         exit(-1)
         
-    file_size:int = os.path.getsize(directory)
+    print("Found a file: ",filename)
+        
+    file_size:int = os.path.getsize(filename)
     
+    print("File size: ",file_size," B")
+
     chunk_count:int = int(file_size/4096)
     
+    print("Chunk size: ",chunk_count)
+    
     try:
-        with connect("ws://{}:443".format(address)) as websocket:
+        with connect("ws://{}".format(address)) as websocket:
             
-            with open("{}/{}".format(directory,filename),"rb") as file:
+            with open(filename,"rb") as file:
                 
                 websocket.send(prepare_hello_frame(file_size))
                 
@@ -76,11 +87,13 @@ def main():
                     
                     msg:str = websocket.recv(timeout=25)
                     
-                    if msg == b"ERR":
+                    # print("Recv: ",msg)
+                    
+                    if msg == b'ERR':
                         print("Error during flashing!")
                         exit(-4)
                 
-                    if msg != b"OK" or msg != b"END":
+                    if msg != b'OK' and msg != b'END':
                         print("Websocket timeout during flashing")
                         exit(-3)
                         

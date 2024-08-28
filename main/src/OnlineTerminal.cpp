@@ -62,6 +62,11 @@ esp_err_t OnlineTerminal::rototrfilter_wrapper(httpd_req_t *req)
     return ((OnlineTerminal*)req->user_ctx)->set_rotor_filter(req);
 }
 
+esp_err_t OnlineTerminal::reset_wrapper(httpd_req_t *req)
+{
+    return ((OnlineTerminal*)req->user_ctx)->reset_handler(req);
+}
+
 OnlineTerminal::OnlineTerminal()
 :ws(
     {
@@ -151,6 +156,14 @@ mag_cfg_post(
         .uri="/mag",
         .method=HTTP_POST,
         .handler=this->mag_wrapper,
+        .user_ctx=this
+    }
+),
+esp_rst_post(
+    {
+        .uri="/reset",
+        .method=HTTP_POST,
+        .handler=this->reset_wrapper,
         .user_ctx=this
     }
 ),
@@ -495,6 +508,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                     sprintf(this->buffer,"OK");
 
                     ws_packet.len=strlen(this->buffer);
+
+                    mods.driver->stop();
                 }
             }
             
@@ -534,12 +549,14 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
 
             memcpy((uint8_t*)&offset,this->buffer+1,4);
 
+            ESP_LOGI("OTA","Writing sector at offset: %u",offset);
+
             // image header checking
             if( offset == 0 )
             {
                 esp_app_desc_t new_app_info;
 
-                memcpy(&new_app_info, this->buffer+4+sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t), sizeof(esp_app_desc_t));
+                memcpy(&new_app_info, this->buffer+5+sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t), sizeof(esp_app_desc_t));
                 ESP_LOGI("MAIN", "New firmware version: %s", new_app_info.version);
 
                 esp_app_desc_t running_app_info;
@@ -562,7 +579,7 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                 }
             }
 
-            if( esp_ota_write_with_offset(this->ota_handle,this->buffer+4,4096,offset*4096) == ESP_OK )
+            if( esp_ota_write_with_offset(this->ota_handle,this->buffer+5,4096,offset*4096) == ESP_OK )
             {
                 this->clear_buf();
 
@@ -674,6 +691,27 @@ esp_err_t OnlineTerminal::set_imu_config(httpd_req_t *req)
         }
         break;
     }
+    return ESP_OK;
+}
+
+esp_err_t OnlineTerminal::reset_handler(httpd_req_t *req)
+{
+    if(req->content_len>WS_MAX_PAYLOAD_SIZE)
+    {   
+        ESP_LOGE("OnlineTerminal","Incoming body is too big!");
+        return ESP_FAIL;
+    }
+
+    if( req->method != HTTP_POST )
+    {
+        httpd_resp_send_500(req);
+        return ESP_FAIL;
+    }
+
+    ESP_LOGI("MAIN","Reseting device...");
+
+    esp_restart();
+
     return ESP_OK;
 }
 
@@ -1034,9 +1072,11 @@ void OnlineTerminal::start()
         return;
     }
 
+    // ESP_LOGI("MAIN","Starting HTTP server");
+
     httpd_config_t config= HTTPD_DEFAULT_CONFIG();
 
-    config.max_uri_handlers = 16;
+    config.max_uri_handlers = 19;
 
 
     if(httpd_start(&this->server,&config) == ESP_OK)
@@ -1045,13 +1085,17 @@ void OnlineTerminal::start()
         ESP_LOGI("OnlineTerminal","Starting online terminal");
 
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->ws)); 
+        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->ws_ota));
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->ws_motors));   
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->pid));   
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->imu));
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->pid_post));   
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->imu_post)); 
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->imu_calibr));
-        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->imu_calibr_post));    
+        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->imu_calibr_post));   
+        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->mag_cfg));
+        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->mag_cfg_post)); 
+        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->esp_rst_post)); 
 
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&set_ssid_cfg));  
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&home_cfg));       
