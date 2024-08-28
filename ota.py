@@ -3,6 +3,7 @@ from websockets.sync.client import connect
 import argparse
 
 import os
+import math
 
 def prepare_hello_frame(file_size:int):
     
@@ -30,7 +31,19 @@ def prepare_flash_frame(id:int,data:bytes):
     arr.extend(data)
     
     return arr
-    
+
+
+ERROR_MESSAGES={
+    b"PRT":"Cannot select boot partition!",
+    b"OTA":"Cannot start OTA",
+    b"QTA":"OTA not started",
+    b"TSL":"Packet too small",
+    b"OUT":"Version on the device is the same as incoming",
+    b"ERR":"Cannot write sector!",
+    b"OPT":"Wrong option",
+    b"FUK":"OTA process failed, corrupted image"
+}
+
 
 def main():
     parser = argparse.ArgumentParser(description='A script for updating Garai over the WiFi')
@@ -55,7 +68,7 @@ def main():
     
     print("File size: ",file_size," B")
 
-    chunk_count:int = int(file_size/4096)
+    chunk_count:int = math.ceil(file_size/4096)
     
     print("Chunk size: ",chunk_count)
     
@@ -88,6 +101,10 @@ def main():
                     msg:str = websocket.recv(timeout=25)
                     
                     # print("Recv: ",msg)
+                    
+                    if msg in ERROR_MESSAGES.keys():
+                        print(ERROR_MESSAGES[msg])
+                        exit(-4)
                     
                     if msg == b'ERR':
                         print("Error during flashing!")

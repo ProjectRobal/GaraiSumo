@@ -483,7 +483,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
             {
                 ESP_LOGE("MAIN","Cannot select partition!");
 
-                sprintf(this->buffer,"ERR");
+                // Cannot select partition
+                sprintf(this->buffer,"PRT");
 
                 ws_packet.len=strlen(this->buffer);
 
@@ -496,7 +497,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                 {
                     ESP_LOGE("MAIN","Cannot start OTA!");
 
-                    sprintf(this->buffer,"ERR");
+                    // Cannot start OTA
+                    sprintf(this->buffer,"OTA");
 
                     ws_packet.len=strlen(this->buffer);
 
@@ -522,8 +524,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
             if( this->ota_handle == 0 )
             {
                 ESP_LOGE("MAIN","OTA not started!");
-
-                sprintf(this->buffer,"ERR");
+                // OTA not started
+                sprintf(this->buffer,"QTA");
 
                 ws_packet.len=strlen(this->buffer);
 
@@ -537,8 +539,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                 ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_abort(this->ota_handle));
 
                 this->ota_handle = 0;
-
-                sprintf(this->buffer,"ERR");
+                // Packet to small
+                sprintf(this->buffer,"TSL");
 
                 ws_packet.len=strlen(this->buffer);
 
@@ -571,8 +573,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_abort(this->ota_handle));
 
                     this->ota_handle = 0;
-
-                    sprintf(this->buffer,"ERR");
+                    // Incoming verision is the same as on the microcontroller
+                    sprintf(this->buffer,"OUT");
 
                     ws_packet.len=strlen(this->buffer);
 
@@ -589,15 +591,28 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                 {
                     ESP_LOGI("MAIN","Image has been written!");
 
-                    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_end(this->ota_handle));
+                    esp_err_t err = esp_ota_end(this->ota_handle);
+
+                    ESP_LOGE("OTA","Cannot end OTA %s",esp_err_to_name(err));
 
                     this->ota_handle = 0;
 
-                    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_set_boot_partition(update_partition));
+                    err = esp_ota_set_boot_partition(update_partition);
 
-                    sprintf(this->buffer,"END");
+                    ESP_LOGE("OTA","Cannot select new boot partition %s",esp_err_to_name(err));
 
-                    ws_packet.len=strlen(this->buffer);
+                    if( err == ESP_OK)
+                    {
+                        sprintf(this->buffer,"END");
+
+                        ws_packet.len=strlen(this->buffer);
+                    }
+                    else
+                    {
+                        sprintf(this->buffer,"FUK");
+
+                        ws_packet.len=strlen(this->buffer);
+                    }
                 }
                 else
                 {
@@ -629,8 +644,8 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
         default:
 
             this->clear_buf();
-
-            sprintf(this->buffer,"Wrong options");
+            // Wrong option
+            sprintf(this->buffer,"OPT");
 
             ws_packet.len=strlen(this->buffer);
 
