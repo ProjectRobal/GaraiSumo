@@ -97,6 +97,9 @@ def main():
                         print("Websocket timeout during flashing")
                         exit(-3)
                         
+                    if msg == b'END':
+                        break
+                        
         print("Finished flashing!")
                 
     

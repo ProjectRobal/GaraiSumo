@@ -519,7 +519,7 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
 
         case OnlineTerminal::OTAStage::OTA_FLASHING:
         {
-            if( this->ota_handle == NULL )
+            if( this->ota_handle == 0 )
             {
                 ESP_LOGE("MAIN","OTA not started!");
 
@@ -584,7 +584,6 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
             {
                 this->clear_buf();
 
-                this->ota_sectors_left--;
 
                 if(this->ota_sectors_left==0)
                 {
@@ -606,6 +605,9 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
 
                     ws_packet.len=strlen(this->buffer);
                 }
+
+                this->ota_sectors_left--;
+
             }
             else
             {
