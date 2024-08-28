@@ -65,7 +65,7 @@ void app_main()
         }
     }
 
-    ESP_LOGI("MAIN","Hello World!");
+    ESP_LOGI("MAIN","Hello Word!");
 
     gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
 
