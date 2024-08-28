@@ -203,9 +203,9 @@ void SensorReader::install_adc()
     config.bitwidth = ADC_BITWIDTH_DEFAULT;
     config.atten = ADC_ATTEN_DB_11;
 
-    for(uint8_t channel : KTIRChannel)
+    for(adc_channel_t channel : KTIRChannel)
     {
-        ESP_ERROR_CHECK(adc_oneshot_config_channel(this->hmd, static_cast<adc_channel_t>(channel), &config));
+        ESP_ERROR_CHECK(adc_oneshot_config_channel(this->hmd, channel, &config));
     }
 
 }

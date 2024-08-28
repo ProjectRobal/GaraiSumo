@@ -1,6 +1,8 @@
 #pragma once
 
-#include "driver/i2c.h"
+#include <driver/i2c.h>
+
+#include <hal/adc_types.h>
 
 #define OLED_TASK_STACK_SIZE 32768
 
@@ -39,9 +41,9 @@ const float SensorAngleOffset[]={};
 #define KTIR_ADC 0
 
 // pins from wich KTIR will be sampled
-const unsigned char KTIRChannel[]={0};
+const adc_channel_t KTIRChannel[]={ADC_CHANNEL_3,ADC_CHANNEL_4,ADC_CHANNEL_5};
 
-#define NUM_OF_KTIRS 1
+#define NUM_OF_KTIRS 3
 
 // 50 Hz
 #define VL_SAMPLE_TIME_MS 20
@@ -64,21 +66,18 @@ const unsigned char KTIRChannel[]={0};
 
 #define MAX_ENGINE_POWER 4095.f
 
-
 #define WATCHDOG_TIME_MS 100
-
 
 #define KTIR_THRESHOLD 2048
 
-
 #define MPU6050_ADDRESS 0x68
-
 
 #define MPU6050_INT_PIN GPIO_NUM_21
 
-
 #define PCNT_CH1 GPIO_NUM_1
 #define PCNT_CH2 GPIO_NUM_41
+
+#define START_PIN GPIO_NUM_16
 
 // a error between measurmed yaws above which there will be only IMU reading taken to account
 #define YAW_TOLERANCE 0.25

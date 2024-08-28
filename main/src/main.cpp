@@ -22,6 +22,8 @@
 
 #include "shared.hpp"
 
+#include "starter.hpp"
+
 extern "C"
 {
 
@@ -69,10 +71,10 @@ void app_main()
 
     gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
 
+    // install START Pin
+    init_starter();
 
     // for testing purpose
-//    oled_loop(NULL);
-
     mods.audio_play=new RuraPlayer(rides_of_valkyrya,sizeof(rides_of_valkyrya)/sizeof(uint8_t),25);
 
     //mods->audio_play->play();

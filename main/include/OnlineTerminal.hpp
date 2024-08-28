@@ -43,6 +43,7 @@ class OnlineTerminal
     const httpd_uri_t mag_cfg_post;
 
     const httpd_uri_t esp_rst_post;
+    const httpd_uri_t esp_starter_override;
 
     const httpd_uri_t accelfilter;
     const httpd_uri_t accelfilter_post;
@@ -94,6 +95,9 @@ class OnlineTerminal
 
         httpd_ws_send_frame(req,ws_packet);
     }
+
+    public:
+
     esp_err_t ws_sensors_reading(httpd_req_t *req);
 
     esp_err_t ws_motor_control(httpd_req_t *req);
@@ -114,29 +118,13 @@ class OnlineTerminal
 
     esp_err_t reset_handler(httpd_req_t *req);
 
+    esp_err_t starter_handler(httpd_req_t *req);
+
+    private:
+
     void start();
 
     void stop();
-
-    static esp_err_t ws_wrapper(httpd_req_t *req);
-
-    static esp_err_t ota_wrapper(httpd_req_t *req);
-
-    static esp_err_t motor_wrapper(httpd_req_t *req);
-
-    static esp_err_t imu_wrapper(httpd_req_t *req);
-
-    static esp_err_t pid_wrapper(httpd_req_t *req);
-
-    static esp_err_t calibr_wrapper(httpd_req_t *req);
-
-    static esp_err_t mag_wrapper(httpd_req_t *req);
-
-    static esp_err_t posfilter_wrapper(httpd_req_t *req);
-
-    static esp_err_t rototrfilter_wrapper(httpd_req_t *req);
-
-    static esp_err_t reset_wrapper(httpd_req_t *req);
 
     static void connect_handler(void* arg, esp_event_base_t event_base,
                             int32_t event_id, void* event_data)

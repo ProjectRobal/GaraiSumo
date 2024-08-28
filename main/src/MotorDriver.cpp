@@ -4,6 +4,8 @@
 
 #include "config.hpp"
 
+#include "starter.hpp"
+
 using shared::mods;
 
 static void freeRTOS_task(void* arg)
@@ -192,7 +194,7 @@ void MotorDriver::loop()
 
     ESP_LOGD("MAIN","Motor task");
 
-    if( readings.stoped )
+    if(( readings.stoped )||( !starter_state() ))
     {
         this->stop();
         return;

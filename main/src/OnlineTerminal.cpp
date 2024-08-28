@@ -10,6 +10,8 @@
 
 #include "OnlineTerminal.hpp"
 
+#include "starter.hpp"
+
 extern "C"
 {
     #include "HttpService.c"
@@ -17,62 +19,68 @@ extern "C"
 
 using shared::mods;
 
-esp_err_t OnlineTerminal::ws_wrapper(httpd_req_t *req)
+esp_err_t ws_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->ws_sensors_reading(req);
 }
 
-esp_err_t OnlineTerminal::ota_wrapper(httpd_req_t *req)
+esp_err_t ota_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->ws_ota_handler(req);
 }
 
-esp_err_t OnlineTerminal::motor_wrapper(httpd_req_t *req)
+esp_err_t motor_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->ws_motor_control(req);
 }
 
-esp_err_t OnlineTerminal::imu_wrapper(httpd_req_t *req)
+esp_err_t imu_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->set_imu_config(req);
 }
 
-esp_err_t OnlineTerminal::pid_wrapper(httpd_req_t *req)
+esp_err_t pid_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->set_motor_pid(req);
 }
 
-esp_err_t OnlineTerminal::calibr_wrapper(httpd_req_t *req)
+esp_err_t calibr_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->calibr_imu(req);
 }
 
-esp_err_t OnlineTerminal::mag_wrapper(httpd_req_t *req)
+esp_err_t mag_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->set_mag_config(req);
 }
 
-esp_err_t OnlineTerminal::posfilter_wrapper(httpd_req_t *req)
+esp_err_t posfilter_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->set_position_filter(req);
 }
 
-esp_err_t OnlineTerminal::rototrfilter_wrapper(httpd_req_t *req)
+esp_err_t rototrfilter_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->set_rotor_filter(req);
 }
 
-esp_err_t OnlineTerminal::reset_wrapper(httpd_req_t *req)
+esp_err_t reset_wrapper(httpd_req_t *req)
 {
     return ((OnlineTerminal*)req->user_ctx)->reset_handler(req);
 }
+
+esp_err_t starter_wrapper(httpd_req_t *req)
+{
+    return ((OnlineTerminal*)req->user_ctx)->starter_handler(req);
+}
+
 
 OnlineTerminal::OnlineTerminal()
 :ws(
     {
         .uri="/readings",
         .method=HTTP_GET,
-        .handler=this->ws_wrapper,
+        .handler=ws_wrapper,
         .user_ctx=this,
         .is_websocket=true
     }
@@ -81,7 +89,7 @@ ws_ota(
     {
         .uri="/ota",
         .method=HTTP_GET,
-        .handler=this->ota_wrapper,
+        .handler=ota_wrapper,
         .user_ctx=this,
         .is_websocket=true
     }
@@ -90,7 +98,7 @@ ws_motors(
     {
         .uri="/motors",
         .method=HTTP_GET,
-        .handler=this->motor_wrapper,
+        .handler=motor_wrapper,
         .user_ctx=this,
         .is_websocket=true
     }
@@ -99,7 +107,7 @@ pid(
     {
         .uri="/pid",
         .method=HTTP_GET,
-        .handler=this->pid_wrapper,
+        .handler=pid_wrapper,
         .user_ctx=this
     }
 ),
@@ -107,7 +115,7 @@ pid_post(
     {
         .uri="/pid",
         .method=HTTP_POST,
-        .handler=this->pid_wrapper,
+        .handler=pid_wrapper,
         .user_ctx=this
     }
 ),
@@ -115,7 +123,7 @@ imu(
     {
         .uri="/imu",
         .method=HTTP_GET,
-        .handler=this->imu_wrapper,
+        .handler=imu_wrapper,
         .user_ctx=this
     }
 ),
@@ -123,7 +131,7 @@ imu_post(
     {
         .uri="/imu",
         .method=HTTP_POST,
-        .handler=this->imu_wrapper,
+        .handler=imu_wrapper,
         .user_ctx=this
     }
 ),
@@ -131,7 +139,7 @@ imu_calibr(
     {
         .uri="/calibr",
         .method=HTTP_GET,
-        .handler=this->calibr_wrapper,
+        .handler=calibr_wrapper,
         .user_ctx=this
     }
 ),
@@ -139,7 +147,7 @@ imu_calibr_post(
     {
         .uri="/calibr",
         .method=HTTP_POST,
-        .handler=this->calibr_wrapper,
+        .handler=calibr_wrapper,
         .user_ctx=this
     }
 ),
@@ -147,7 +155,7 @@ mag_cfg(
     {
         .uri="/mag",
         .method=HTTP_GET,
-        .handler=this->mag_wrapper,
+        .handler=mag_wrapper,
         .user_ctx=this
     }
 ),
@@ -155,7 +163,7 @@ mag_cfg_post(
     {
         .uri="/mag",
         .method=HTTP_POST,
-        .handler=this->mag_wrapper,
+        .handler=mag_wrapper,
         .user_ctx=this
     }
 ),
@@ -163,7 +171,15 @@ esp_rst_post(
     {
         .uri="/reset",
         .method=HTTP_POST,
-        .handler=this->reset_wrapper,
+        .handler=reset_wrapper,
+        .user_ctx=this
+    }
+),
+esp_starter_override(
+    {
+        .uri="/start",
+        .method=HTTP_POST,
+        .handler=starter_wrapper,
         .user_ctx=this
     }
 ),
@@ -171,7 +187,7 @@ accelfilter(
     {
         .uri="/posfilter",
         .method=HTTP_GET,
-        .handler=this->posfilter_wrapper,
+        .handler=posfilter_wrapper,
         .user_ctx=this
     }
 ),
@@ -179,7 +195,7 @@ accelfilter_post(
     {
         .uri="/posfilter",
         .method=HTTP_POST,
-        .handler=this->posfilter_wrapper,
+        .handler=posfilter_wrapper,
         .user_ctx=this
     }
 ),
@@ -187,7 +203,7 @@ rotorfilter(
     {
         .uri="/rotorfilter",
         .method=HTTP_GET,
-        .handler=this->rototrfilter_wrapper,
+        .handler=rototrfilter_wrapper,
         .user_ctx=this
     }
 ),
@@ -195,7 +211,7 @@ rotorfilter_post(
     {
         .uri="/rotorfilter",
         .method=HTTP_POST,
-        .handler=this->rototrfilter_wrapper,
+        .handler=rototrfilter_wrapper,
         .user_ctx=this
     }
 )
@@ -762,6 +778,65 @@ esp_err_t OnlineTerminal::reset_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+esp_err_t OnlineTerminal::starter_handler(httpd_req_t *req)
+{
+    if(req->content_len>WS_MAX_PAYLOAD_SIZE)
+    {   
+        ESP_LOGE("OnlineTerminal","Incoming body is too big!");
+        return ESP_FAIL;
+    }
+
+    if( req->method != HTTP_POST )
+    {
+        httpd_resp_send_500(req);
+        return ESP_FAIL;
+    }
+
+    httpd_req_recv(req,this->buffer,req->content_len);
+
+    cJSON* json = cJSON_Parse(this->buffer);
+
+    if( json != NULL )
+    {
+        cJSON *start=cJSON_GetObjectItem(json,"start");
+
+        if( start != NULL )
+        {
+            if(cJSON_IsBool(start))
+            {
+                starter_override(cJSON_IsTrue(start));   
+            }
+            else
+            {
+                httpd_resp_send_500(req);
+                cJSON_Delete(json);
+                return ESP_FAIL;
+            }
+        }
+        else
+        {
+            httpd_resp_send_500(req);
+            cJSON_Delete(json);
+            return ESP_FAIL;
+        }
+    }
+    else
+    {
+        httpd_resp_send_500(req);
+        cJSON_Delete(json);
+        return ESP_FAIL;
+    }
+
+    cJSON_Delete(json);
+
+    httpd_resp_sendstr(req,"OK");
+
+
+    return ESP_OK;
+}
+
+
+
 esp_err_t OnlineTerminal::set_mag_config(httpd_req_t *req)
 {
     if(req->content_len>WS_MAX_PAYLOAD_SIZE)
@@ -900,6 +975,11 @@ esp_err_t OnlineTerminal::calibr_imu(httpd_req_t *req)
 
             mods.driver->stop();
             mods.sensors->DoIMUCalibration(N);
+
+            if(json!=NULL)
+            {
+                cJSON_Delete(json);
+            }
 
             httpd_resp_sendstr(req,"OK");
 
@@ -1123,7 +1203,7 @@ void OnlineTerminal::start()
 
     httpd_config_t config= HTTPD_DEFAULT_CONFIG();
 
-    config.max_uri_handlers = 19;
+    config.max_uri_handlers = 20;
 
 
     if(httpd_start(&this->server,&config) == ESP_OK)
@@ -1143,6 +1223,7 @@ void OnlineTerminal::start()
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->mag_cfg));
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->mag_cfg_post)); 
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->esp_rst_post)); 
+        ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&this->esp_starter_override)); 
 
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&set_ssid_cfg));  
         ESP_ERROR_CHECK(httpd_register_uri_handler(this->server,&home_cfg));       
