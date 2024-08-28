@@ -10,7 +10,7 @@ def prepare_hello_frame(file_size:int):
     
     arr.append(0x00)
     
-    arr.extend(file_size.to_bytes(4,'big'))
+    arr.extend(file_size.to_bytes(4,'little'))
     
     return arr
 
@@ -20,7 +20,7 @@ def prepare_flash_frame(id:int,data:bytes):
     
     arr.append(0x01)
     
-    arr.extend(id.to_bytes(4,'big'))
+    arr.extend(id.to_bytes(4,'little'))
     
     if len(data)<4096:
         to_fill:int = 4096 - len(data)
@@ -64,7 +64,7 @@ def main():
             
             with open(filename,"rb") as file:
                 
-                websocket.send(prepare_hello_frame(file_size))
+                websocket.send(prepare_hello_frame(chunk_count))
                 
                 msg:str = websocket.recv(timeout=25)
                 

@@ -505,6 +505,7 @@ esp_err_t OnlineTerminal::ws_ota_handler(httpd_req_t *req)
                 else
                 {
                     ESP_LOGI("MAIN","OTA started!");
+                    ESP_LOGI("OTA","Sectors to write: %u",this->ota_sectors_left);
                     sprintf(this->buffer,"OK");
 
                     ws_packet.len=strlen(this->buffer);
