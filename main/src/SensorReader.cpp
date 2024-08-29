@@ -200,7 +200,7 @@ void SensorReader::install_adc()
 
     adc_oneshot_chan_cfg_t config;
 
-    config.bitwidth = ADC_BITWIDTH_DEFAULT;
+    config.bitwidth = ADC_BITWIDTH_12;
     config.atten = ADC_ATTEN_DB_11;
 
     for(adc_channel_t channel : KTIRChannel)
