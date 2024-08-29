@@ -375,8 +375,8 @@ void SensorReader::read_encoders()
     step_ch1 = shared::mods.driver->channelADirection() ? step_ch1 : -step_ch1;
     step_ch2 = shared::mods.driver->channelBDirection() ? step_ch2 : -step_ch2;
 
-    float dl = step_ch1/PULSE_TO_DISTANCE;
-    float dr = step_ch2/PULSE_TO_DISTANCE;
+    float dl = step_ch1;
+    float dr = step_ch2;
     
     //distance
     float dx = (dl+dr)/2.f;

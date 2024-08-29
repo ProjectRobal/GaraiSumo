@@ -4,3 +4,4 @@ ota/include
 ota/lib
 ota/lib64
 ota/pyvenv.cfg
+config_backup
