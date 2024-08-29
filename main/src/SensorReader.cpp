@@ -333,9 +333,9 @@ void SensorReader::init_tasks()
 
     if( !SensorsFaulty )
     {
-        this->imu_stack = (StackType_t*)malloc(MAIN_TASK_STACK_SIZE*2);
+        this->imu_stack = (StackType_t*)malloc(MAIN_TASK_STACK_SIZE);
 
-        if( xTaskCreateStaticPinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE*2,this,configMAX_PRIORITIES-1,this->imu_stack,&this->imu_task,xPortGetCoreID()) == NULL )
+        if( xTaskCreateStaticPinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,this->imu_stack,&this->imu_task,xPortGetCoreID()) == NULL )
         {
             ESP_LOGE("MAIN","Cannot create IMU task");
         }
@@ -539,8 +539,6 @@ void SensorReader::read_imu()
 
                 ESP_LOGI("MAIN","IMU calibration finished!");  
 
-                config::ConfigLoader::save(this->dump_cfg());
-
             }
                  
                 this->mpu.setGyroOffsets(this->mpu.getGyroOffsets()+this->gyroCalibrMean.mean());
@@ -565,7 +563,8 @@ void SensorReader::read_imu()
                 this->gyroCalibrMean.reset();
                 this->accelCalibrMean.reset();
 
-            
+                // it cause crash
+                // config::ConfigLoader::save(this->dump_cfg());
         }
 
         this->CalibrationCounter++;
