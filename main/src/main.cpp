@@ -47,7 +47,7 @@ void main_loop(void *arg);
 void app_main()
 {
     esp_log_level_set("*",ESP_LOG_DEBUG);
-    esp_log_level_set("MAIN", ESP_LOG_DEBUG);
+    esp_log_level_set("MAIN", ESP_LOG_INFO);
     esp_log_level_set("Sensors", ESP_LOG_INFO);
 
     const esp_partition_t *running = esp_ota_get_running_partition();

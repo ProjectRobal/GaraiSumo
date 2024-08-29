@@ -27,6 +27,10 @@ class SingleCounter
     void init(gpio_num_t pin)
     {
 
+    gpio_set_direction(pin,GPIO_MODE_INPUT);
+
+    gpio_pulldown_en(pin);
+
     pcnt_unit_config_t config={0};
 
     config.low_limit=-1;

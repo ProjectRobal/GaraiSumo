@@ -854,8 +854,14 @@ esp_err_t OnlineTerminal::starter_handler(httpd_req_t *req)
 
     cJSON_Delete(json);
 
-    httpd_resp_sendstr(req,"OK");
-
+    if(starter_state())
+    {
+        httpd_resp_sendstr(req,"Unlocked");
+    }
+    else
+    {
+        httpd_resp_sendstr(req,"Locked");
+    }
 
     return ESP_OK;
 }
