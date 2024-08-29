@@ -26,7 +26,9 @@ class SingleCounter
 
     void init(gpio_num_t pin)
     {
-
+    
+    gpio_reset_pin(pin);
+    
     gpio_set_direction(pin,GPIO_MODE_INPUT);
 
     gpio_pulldown_en(pin);
