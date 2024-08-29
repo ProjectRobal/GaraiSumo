@@ -89,7 +89,7 @@ class OnlineTerminal
         ws_packet->type = HTTPD_WS_TYPE_TEXT;
         ws_packet->payload=(uint8_t*)this->buffer;
 
-        cJSON_PrintPreallocated(json,this->buffer,4096,true);
+        cJSON_PrintPreallocated(json,this->buffer,WS_MAX_PAYLOAD_SIZE,true);
 
         ws_packet->len=strlen(this->buffer);
 
