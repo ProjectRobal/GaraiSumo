@@ -54,7 +54,7 @@ class SingleCounter
     ESP_ERROR_CHECK(pcnt_channel_set_level_action(this->channel, PCNT_CHANNEL_LEVEL_ACTION_KEEP, PCNT_CHANNEL_LEVEL_ACTION_KEEP));
 
     pcnt_glitch_filter_config_t filter_config = {
-        .max_glitch_ns = 100,
+        .max_glitch_ns = 10,
         };
 
     ESP_ERROR_CHECK(pcnt_unit_set_glitch_filter(this->unit, &filter_config));

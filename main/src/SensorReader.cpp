@@ -386,8 +386,8 @@ void SensorReader::read_encoders()
 
     this->reads.eyaw += d0;
 
-    ESP_LOGI("Sensors","PCINT 1 steps: %ld",step_ch1);
-    ESP_LOGI("Sensors","PCINT 2 steps: %ld",step_ch2);
+    ESP_LOGD("Sensors","PCINT 1 steps: %ld",step_ch1);
+    ESP_LOGD("Sensors","PCINT 2 steps: %ld",step_ch2);
 
     ch1.clear();
     ch2.clear();
