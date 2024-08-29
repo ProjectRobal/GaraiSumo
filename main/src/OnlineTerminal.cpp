@@ -248,6 +248,8 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
         httpd_ws_frame_t ws_packet={0};
         ws_packet.type=HTTPD_WS_TYPE_TEXT;
 
+        ESP_LOGI("MAIN","Sending sensor's readings!");
+
         esp_err_t ret =httpd_ws_recv_frame(req,&ws_packet,0);
 
         if(ret != ESP_OK)
