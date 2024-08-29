@@ -188,14 +188,15 @@ config::MotorCFG MotorDriver::MotorConfig()
 
 void MotorDriver::loop()
 {
-    const sensors::Readings& readings = mods.sensors->read();
-
     mods.sensors->Lock();
+
+    const sensors::Readings& readings = mods.sensors->read();
 
     ESP_LOGD("MAIN","Motor task");
 
     if(( readings.stoped )||( !starter_state() ))
     {
+        mods.sensors->Unlock();
         this->stop();
         return;
     }

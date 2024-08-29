@@ -254,6 +254,7 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         if(ret != ESP_OK)
         {
+            mods.sensors->Unlock();
             return ret;
         }
 
@@ -265,7 +266,7 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         cJSON_AddNumberToObject(json,"T",static_cast<double>(clock())/CLOCKS_PER_SEC);
 
-        // cJSON_AddNumberToObject(json,"battery",mods.sensors->read().battery_voltage);
+        cJSON_AddNumberToObject(json,"battery",mods.sensors->read().battery_voltage);
 
         cJSON_AddBoolToObject(json,"IMUOnly",mods.sensors->read().IMUOnlyReading);
 

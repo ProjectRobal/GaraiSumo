@@ -43,7 +43,7 @@ const float SensorAngleOffset[]={};
 // pins from wich KTIR will be sampled
 const adc_channel_t KTIRChannel[]={ADC_CHANNEL_3,ADC_CHANNEL_4,ADC_CHANNEL_5};
 
-#define NUM_OF_KTIRS 1
+#define NUM_OF_KTIRS 3
 
 // 50 Hz
 #define VL_SAMPLE_TIME_MS 20
