@@ -55,7 +55,7 @@ def main():
                     
                     readings = json.loads(msg)
                     
-                    print("T: {} s Left: {} speed Right: {} speed".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"]))
+                    print("T: {} s Left: {} speed Right: {} speed Yaw: {}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"],readings["yaw"]))
                     
                     file.write(prepare_line(readings))
                     
