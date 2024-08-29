@@ -232,9 +232,10 @@ void SensorReader::read_adc()
 
     ESP_ERROR_CHECK(adc_oneshot_read(this->hmd,BATTERY_ADC_CHANNEL, &reading));
 
-    this->reads.battery_voltage = reading;// (static_cast<float>(reading)/4096.f) * 3.3f;
+    // it will be valid when I switch 20k resistor for 10k
+    this->reads.battery_voltage = (static_cast<float>(reading)/4096.f) * 11.f;
 
-    // this->reads.battery_voltage *= 6.0;
+    this->reads.battery_voltage = std::ceil(this->reads.battery_voltage*1000.f)/1000.f;
 
     // if( this->reads.battery_voltage <= 12.8 )
     // {

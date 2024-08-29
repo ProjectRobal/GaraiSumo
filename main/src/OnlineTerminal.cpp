@@ -404,21 +404,46 @@ esp_err_t OnlineTerminal::ws_motor_control(httpd_req_t *req)
 
     cJSON* motorB=cJSON_GetObjectItemCaseSensitive(json,"mB");
 
+    bool open = true;
+
+    // bool if set true it will set raw engine speed and if not it will set motor speed
+    cJSON* raw_or_speed=cJSON_GetObjectItemCaseSensitive(json,"open");
+
+    if(cJSON_IsBool(raw_or_speed))
+    {
+        open = cJSON_IsTrue(raw_or_speed);
+    }
+
     if((cJSON_IsNumber(motorA)) && (cJSON_IsNumber(motorB)))
     {
-        int32_t motorA_pwr=motorA->valueint;
-        int32_t motorB_pwr=motorB->valueint;
 
         ESP_LOGI("OnlineTerminal","Manual override, disabling automatic mode!");
 
-        mods.driver->setAutomaticMode(false);
+        mods.driver->setAutomaticMode(!open);
 
-        mods.driver->set_channelA(motorA_pwr);
-        mods.driver->set_channelB(motorB_pwr);
+        if( open )
+        {
+            int32_t motorA_pwr=motorA->valueint;
+            int32_t motorB_pwr=motorB->valueint;
 
-        this->clear_buf();
+            mods.driver->set_channelA(motorA_pwr);
+            mods.driver->set_channelB(motorB_pwr);
 
-        sprintf(this->buffer,"A: %ld B: %ld",motorA_pwr,motorB_pwr);
+            this->clear_buf();
+
+            sprintf(this->buffer,"A: %ld B: %ld",motorA_pwr,motorB_pwr);
+        }
+        else
+        {
+            float speed = motorA->valuedouble;
+            float angel = motorB->valuedouble;
+            mods.driver->setTargetSpeed(speed);
+            mods.driver->setTargetAngel(speed);
+
+            this->clear_buf();
+
+            sprintf(this->buffer,"Speed: %f Yaw: %f",speed,angel);
+        }
 
         ws_packet.len=strlen(this->buffer);
         

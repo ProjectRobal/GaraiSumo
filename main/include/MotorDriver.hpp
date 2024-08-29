@@ -26,10 +26,10 @@ class MotorDriver
     float target_yaw;
 
     // set a max power of both engines, from 0 to 4095
-    uint16_t target_speed;
+    float target_speed;
 
     // a power for turning
-    uint16_t turning_power;
+    float turning_power;
 
     PID<float> motorA;
 
@@ -98,22 +98,22 @@ class MotorDriver
         return this->target_yaw;
     }
 
-    void setTargetSpeed(uint16_t target_speed)
+    void setTargetSpeed(float target_speed)
     {
         this->target_speed=target_speed;
     }
 
-    uint16_t TargetSpeed() const
+    float TargetSpeed() const
     {
         return this->target_speed;
     }
 
-    void setTurningPower(uint16_t power)
+    void setTurningPower(float power)
     {
         this->turning_power=power;
     }
 
-    uint16_t TurningPower() const
+    float TurningPower() const
     {
         return this->turning_power;
     }
