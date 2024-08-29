@@ -215,11 +215,11 @@ void SensorReader::read_adc()
     ESP_LOGD("MAIN","ADC reading!!");
     uint8_t i=0;
 
-   for(uint8_t channel : KTIRChannel)
+   for(adc_channel_t channel : KTIRChannel)
     {
         int result;
 
-        ESP_ERROR_CHECK(adc_oneshot_read(this->hmd,static_cast<adc_channel_t>(channel), &result));
+        ESP_ERROR_CHECK(adc_oneshot_read(this->hmd,channel, &result));
 
         this->reads.floor_sensors[i++]= result>=this->KtirThreshold;
 
@@ -233,7 +233,7 @@ void SensorReader::read_adc()
     ESP_ERROR_CHECK(adc_oneshot_read(this->hmd,BATTERY_ADC_CHANNEL, &reading));
 
     // it will be valid when I switch 20k resistor for 10k
-    this->reads.battery_voltage = (static_cast<float>(reading)/4096.f) * 11.f;
+    this->reads.battery_voltage = (static_cast<float>(reading)/4096.f) * 36.3f;
 
     this->reads.battery_voltage = std::ceil(this->reads.battery_voltage*1000.f)/1000.f;
 
