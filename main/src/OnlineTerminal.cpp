@@ -313,7 +313,7 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         cJSON* ktir_arr=cJSON_AddArrayToObject(json,"ktirs");
 
-        for(const bool& ktir : mods.sensors->read().floor_sensors)
+        for(bool ktir : mods.sensors->read().floor_sensors)
         {
             cJSON* ktir_bool=cJSON_CreateBool(ktir);
             cJSON_AddItemToArray(ktir_arr,ktir_bool);
