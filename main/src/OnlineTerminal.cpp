@@ -263,6 +263,8 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         cJSON_AddNumberToObject(json,"T",static_cast<double>(clock())/CLOCKS_PER_SEC);
 
+        cJSON_AddNumberToObject(json,"battery",mods.sensors->read().battery_voltage);
+
         cJSON_AddBoolToObject(json,"IMUOnly",mods.sensors->read().IMUOnlyReading);
 
         int _distances[18];
@@ -772,6 +774,8 @@ esp_err_t OnlineTerminal::reset_handler(httpd_req_t *req)
     }
 
     ESP_LOGI("MAIN","Reseting device...");
+
+    httpd_resp_sendstr(req,"RST");
 
     esp_restart();
 
