@@ -539,9 +539,10 @@ void SensorReader::read_imu()
 
                 ESP_LOGI("MAIN","IMU calibration finished!");  
 
+                config::ConfigLoader::save(this->dump_cfg());
+
             }
                  
-
                 this->mpu.setGyroOffsets(this->mpu.getGyroOffsets()+this->gyroCalibrMean.mean());
 
                 // we have to take into account a g force!!!
@@ -557,8 +558,6 @@ void SensorReader::read_imu()
                 this->mpu.setAccelOffsets(accel_offset);
 
                 this->mpu.printOffsets();
-
-                config::ConfigLoader::save(this->dump_cfg());
 
                 this->gyroMean.reset();
                 this->accelMean.reset();
