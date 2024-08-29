@@ -222,13 +222,6 @@ rotorfilter_post(
 
 void OnlineTerminal::init()
 {
-
-    // ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STACONNECTED, &this->connect_handler, this));
-    // ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STADISCONNECTED, &this->disconnect_handler, this));
-
-    // ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_CONNECTED, &this->connect_handler, this));
-    // ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_DISCONNECTED, &this->disconnect_handler, this));
-
     this->start();
 }
 

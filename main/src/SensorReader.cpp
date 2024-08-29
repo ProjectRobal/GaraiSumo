@@ -333,9 +333,9 @@ void SensorReader::init_tasks()
 
     if( !SensorsFaulty )
     {
-        this->imu_stack = (StackType_t*)malloc(MAIN_TASK_STACK_SIZE);
+        this->imu_stack = (StackType_t*)malloc(MAIN_TASK_STACK_SIZE*2);
 
-        if( xTaskCreateStaticPinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE,this,configMAX_PRIORITIES-1,this->imu_stack,&this->imu_task,xPortGetCoreID()) == NULL )
+        if( xTaskCreateStaticPinnedToCore(IMU_task,"IMU",MAIN_TASK_STACK_SIZE*2,this,configMAX_PRIORITIES-1,this->imu_stack,&this->imu_task,xPortGetCoreID()) == NULL )
         {
             ESP_LOGE("MAIN","Cannot create IMU task");
         }
