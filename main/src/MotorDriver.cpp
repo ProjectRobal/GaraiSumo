@@ -148,16 +148,23 @@ void MotorDriver::setPIDA(const config::MotorPID& pid)
     this->motorA.setParams(pid.P,pid.I,pid.D);
 }
 
-void MotorDriver::setPIDB(const config::MotorPID& pid)
+void MotorDriver::setPIDLeft(const config::MotorPID& pid)
 {
     this->motorLeft.setParams(pid.P,pid.I,pid.D);
+    // this->motorRight.setParams(pid.P,pid.I,pid.D);
+}
+
+void MotorDriver::setPIDRight(const config::MotorPID& pid)
+{
+    // this->motorLeft.setParams(pid.P,pid.I,pid.D);
     this->motorRight.setParams(pid.P,pid.I,pid.D);
 }
 
 void MotorDriver::setMotorConfig(const config::MotorCFG& cfg)
 {
     this->setPIDA(cfg.motor1);
-    this->setPIDB(cfg.motor2);
+    this->setPIDLeft(cfg.motor2);
+    this->setPIDRight(cfg.motor3);
 }
 
 config::MotorPID MotorDriver::PIDA()
@@ -169,7 +176,7 @@ config::MotorPID MotorDriver::PIDA()
     };
 }
 
-config::MotorPID MotorDriver::PIDB()
+config::MotorPID MotorDriver::PIDLeft()
 {
     return {
         .P=this->motorLeft.P(),
@@ -178,11 +185,21 @@ config::MotorPID MotorDriver::PIDB()
     };
 }
 
+config::MotorPID MotorDriver::PIDRight()
+{
+    return {
+        .P=this->motorRight.P(),
+        .I=this->motorRight.I(),
+        .D=this->motorRight.D()
+    };
+}
+
 config::MotorCFG MotorDriver::MotorConfig()
 {
     return {
         .motor1=this->PIDA(),
-        .motor2=this->PIDB()
+        .motor2=this->PIDLeft(),
+        .motor3=this->PIDRight()
     };
 }
 

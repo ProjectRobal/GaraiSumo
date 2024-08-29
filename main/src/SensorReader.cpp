@@ -558,6 +558,8 @@ void SensorReader::read_imu()
 
                 this->mpu.printOffsets();
 
+                config::ConfigLoader::save(this->dump_cfg());
+
                 this->gyroMean.reset();
                 this->accelMean.reset();
 

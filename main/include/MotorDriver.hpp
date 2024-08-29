@@ -63,6 +63,10 @@ class MotorDriver
         this->motorLeft.setMax(1.f);
         this->motorLeft.setTimeStep(SAMPLE_TIME);
 
+        this->motorRight.setMin(0.f);
+        this->motorRight.setMax(1.f);
+        this->motorRight.setTimeStep(SAMPLE_TIME);
+
         this->last_A_direction = false;
         this->last_B_direction = false;
     }
@@ -71,13 +75,17 @@ class MotorDriver
 
     void setPIDA(const config::MotorPID& pid);
 
-    void setPIDB(const config::MotorPID& pid);
+    void setPIDLeft(const config::MotorPID& pid);
+
+    void setPIDRight(const config::MotorPID& pid);
 
     void setMotorConfig(const config::MotorCFG& cfg);
 
     config::MotorPID PIDA();
 
-    config::MotorPID PIDB();
+    config::MotorPID PIDLeft();
+
+    config::MotorPID PIDRight();
 
     config::MotorCFG MotorConfig();
 

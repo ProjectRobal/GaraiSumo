@@ -308,7 +308,7 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         cJSON_AddNumberToObject(json,"left_motor_speed",mods.sensors->read().motorSpeed[0]);
 
-        cJSON_AddNumberToObject(json,"right_motor_speed",mods.sensors->read().motorSpeed[0]);
+        cJSON_AddNumberToObject(json,"right_motor_speed",mods.sensors->read().motorSpeed[1]);
         
         cJSON_AddNumberToObject(json,"yaw",mods.sensors->read().yaw);
 
@@ -1005,7 +1005,7 @@ esp_err_t OnlineTerminal::calibr_imu(httpd_req_t *req)
                 }
             }
 
-            mods.driver->stop();
+            starter_override(false);
             mods.sensors->DoIMUCalibration(N);
 
             if(json!=NULL)

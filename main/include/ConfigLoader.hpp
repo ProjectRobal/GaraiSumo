@@ -69,6 +69,7 @@ namespace config
     {
         MotorPID motor1;
         MotorPID motor2;
+        MotorPID motor3;
     };
 
     struct PositionFilterCFG

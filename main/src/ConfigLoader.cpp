@@ -265,6 +265,12 @@ bool ConfigLoader::fromBuffer(const char* buffer,MotorCFG& cfg)
         return false;
     } 
 
+    if(!ConfigLoader::json_to_pid(cJSON_GetObjectItemCaseSensitive(json,"motor3"),cfg.motor3))
+    {
+        cJSON_Delete(json);
+        return false;
+    }
+
     cJSON_Delete(json);
 
     return true;
@@ -279,8 +285,11 @@ bool ConfigLoader::toBuffer(char* buffer,size_t size,const MotorCFG& cfg)
 
     cJSON* pid2=ConfigLoader::pid_to_json(cfg.motor2);
 
+    cJSON* pid3=ConfigLoader::pid_to_json(cfg.motor3);
+
     cJSON_AddItemToObject(json,"motor1",pid1);
     cJSON_AddItemToObject(json,"motor2",pid2);
+    cJSON_AddItemToObject(json,"motor2",pid3);
 
     if(!cJSON_PrintPreallocated(json,buffer,512,true))
     {

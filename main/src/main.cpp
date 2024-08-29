@@ -138,6 +138,11 @@ void app_main()
             .I=0.0,
             .D=0.0
         };
+        motor_cfg.motor3={
+            .P=-1.0,
+            .I=0.0,
+            .D=0.0
+        };
 
         config::ConfigLoader::save(motor_cfg);
 
