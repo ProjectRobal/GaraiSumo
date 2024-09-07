@@ -33,9 +33,9 @@ class Magnetrometer
 
         readings = Mat(3,1);
 
-        this->x_kalman = KalmanFilter1D(0.0000089,0.00029753);
-        this->y_kalman = KalmanFilter1D(0.0000089,0.00029753);
-        this->z_kalman = KalmanFilter1D(0.000011,0.0003305);
+        this->x_kalman = KalmanFilter1D(0.0000089,0.00006);
+        this->y_kalman = KalmanFilter1D(0.0000089,0.00006);
+        this->z_kalman = KalmanFilter1D(0.000011,0.00006);
     }
 
     Vec3Df read()

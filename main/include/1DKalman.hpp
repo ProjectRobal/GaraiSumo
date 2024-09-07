@@ -82,8 +82,6 @@ class KalmanFilter1D
         return filter;
     }
 
-    // eyaw - yaw from encoders
-    // yaw - yaw from IMU
     float step(float y)
     {
         float Pp = this->P + this->V;
