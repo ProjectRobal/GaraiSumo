@@ -17,6 +17,8 @@ class MeanBuffer
     protected:
 
     T buffer;
+    T last_reading;
+
     uint16_t iter;
 
     public:
@@ -26,6 +28,8 @@ class MeanBuffer
         this->buffer=0;
         // point at first element of buffer array
         this->iter=0;
+
+        this->last_reading=0;
     }
 
     void push(const T& element)
@@ -37,8 +41,8 @@ class MeanBuffer
         }
         else
         {
+            this->last_reading = this->buffer/Size;
             this->reset();
-
             // T mean=this->mean();
             // this->push(mean);
             this->push(element);
@@ -59,14 +63,16 @@ class MeanBuffer
 
     T mean() const
     {
-        if(this->iter==0)
-        {
-            return 0;
-        }
 
-        T out=this->buffer/this->iter;
+        return this->last_reading;
+        // if(this->iter==0)
+        // {
+        //     return 0;
+        // }
 
-        return out;
+        // T out=this->buffer/this->iter;
+
+        // return out;
     }
 
 };
