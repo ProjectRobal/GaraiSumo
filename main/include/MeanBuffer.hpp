@@ -39,8 +39,8 @@ class MeanBuffer
         {
             this->reset();
 
-            T mean=this->mean();
-            this->push(mean);
+            // T mean=this->mean();
+            // this->push(mean);
             this->push(element);
         }
 
