@@ -8,6 +8,8 @@
 
 #include "1DKalman.hpp"
 
+#include "MeanBuffer.hpp"
+
 using dspm::Mat;
 
 class Magnetrometer
@@ -22,6 +24,10 @@ class Magnetrometer
     KalmanFilter1D x_kalman;
     KalmanFilter1D y_kalman;
     KalmanFilter1D z_kalman;
+
+    MeanBuffer<float,10> x_buffer;
+    MeanBuffer<float,10> y_buffer;
+    MeanBuffer<float,10> z_buffer;
 
     public:
 
@@ -40,9 +46,13 @@ class Magnetrometer
 
     Vec3Df read()
     {   
-        this->readings(0,0) = this->x_kalman.step(this->readX());
-        this->readings(1,0) = this->y_kalman.step(this->readY());
-        this->readings(2,0) = this->z_kalman.step(this->readZ());
+        x_buffer.push(this->readX());
+        y_buffer.push(this->readY());
+        z_buffer.push(this->readZ());
+
+        this->readings(0,0) = this->x_kalman.step(x_buffer.mean());
+        this->readings(1,0) = this->y_kalman.step(y_buffer.mean());
+        this->readings(2,0) = this->z_kalman.step(z_buffer.mean());
 
         this->readings = this->readings - this->offsets;
 
