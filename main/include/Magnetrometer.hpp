@@ -78,6 +78,10 @@ class Magnetrometer
         this->x_kalman = KalmanFilter1D(cfg.xW,cfg.xV);
         this->y_kalman = KalmanFilter1D(cfg.yW,cfg.yV);
         this->z_kalman = KalmanFilter1D(cfg.zW,cfg.zV);
+
+        this->x_buffer.reset();
+        this->y_buffer.reset();
+        this->z_buffer.reset();
     }
 
     config::MagConfig getCFG()
