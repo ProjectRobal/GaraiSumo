@@ -3,9 +3,11 @@ from websockets.sync.client import connect
 import argparse
 
 import json
+import numpy as np
 
 import time
 
+import matplotlib.pyplot as plt
 
 def prepare_line(json:dict,end="\n"):
     
@@ -30,6 +32,9 @@ def prepare_line(json:dict,end="\n"):
     return line
 
 
+x = []
+y = []
+
 def main():
     parser = argparse.ArgumentParser(description='A script for updating Garai over the WiFi')
     
@@ -42,6 +47,11 @@ def main():
     filename = args.output
         
     print("File with results: ",filename)
+    
+    plt.ion()
+    
+    graph = plt.plot(x,y)[0]
+    
     
     try:
         with connect("ws://{}".format(address)) as websocket:
@@ -57,10 +67,21 @@ def main():
                     
                     text:str = "{};{};{}".format(readings["raw_magentrometer"]["x"],readings["raw_magentrometer"]["y"],readings["raw_magentrometer"]["z"])
                     
-                    print(text)
+                    x.append(readings["raw_magentrometer"]["x"])
+                    y.append(readings["raw_magentrometer"]["y"])
+                    
+                    graph.remove()
+                    
+                    graph = plt.plot(x,y,"o",color="r")[0]
+                    
+                    angle = np.arctan2(readings["raw_magentrometer"]["y"],readings["raw_magentrometer"]["x"])*(180.0/np.pi)
+                    
+                    print(angle)
                     file.write(text+'\n')
                     
-                    input()
+                    # input()
+                    time.sleep(0.01)
+                    plt.pause(0.01)
                                 
     
     except Exception as e:

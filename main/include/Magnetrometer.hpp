@@ -46,13 +46,13 @@ class Magnetrometer
 
     Vec3Df read()
     {   
-        x_buffer.push(this->readX());
-        y_buffer.push(this->readY());
-        z_buffer.push(this->readZ());
+        // x_buffer.push(this->readX());
+        // y_buffer.push(this->readY());
+        // z_buffer.push(this->readZ());
 
-        this->readings(0,0) = x_buffer.mean();
-        this->readings(1,0) = y_buffer.mean();
-        this->readings(2,0) = z_buffer.mean();
+        this->readings(0,0) = this->x_kalman.step(this->readX());
+        this->readings(1,0) = this->y_kalman.step(this->readY());
+        this->readings(2,0) = this->z_kalman.step(this->readZ());
 
         this->readings = this->readings - this->offsets;
 
