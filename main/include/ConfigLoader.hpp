@@ -89,6 +89,13 @@ namespace config
         float Q0_2;
     };
 
+    struct Kalman1DCFG
+    {
+        float Ex;
+        float R;
+        float Q0;
+    };
+
     struct PartitionInfo
     {
         size_t total;

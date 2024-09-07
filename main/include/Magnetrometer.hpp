@@ -6,6 +6,8 @@
 
 #include "ConfigLoader.hpp"
 
+#include "1DKalman.hpp"
+
 using dspm::Mat;
 
 class Magnetrometer
@@ -17,6 +19,10 @@ class Magnetrometer
     // 3 elements vector with magnetrometer offsets
     Mat offsets;
 
+    KalmanFilter1D x_kalman;
+    KalmanFilter1D y_kalman;
+    KalmanFilter1D z_kalman;
+
     public:
 
     Magnetrometer()
@@ -26,13 +32,17 @@ class Magnetrometer
         offsets = Mat(3,1);
 
         readings = Mat(3,1);
+
+        this->x_kalman = KalmanFilter1D(0.0000089,0.00029753);
+        this->y_kalman = KalmanFilter1D(0.0000089,0.00029753);
+        this->z_kalman = KalmanFilter1D(0.000011,0.0003305);
     }
 
     Vec3Df read()
     {   
-        this->readings(0,0) = this->readX();
-        this->readings(1,0) = this->readY();
-        this->readings(2,0) = this->readZ();
+        this->readings(0,0) = this->x_kalman.step(this->readX());
+        this->readings(1,0) = this->y_kalman.step(this->readY());
+        this->readings(2,0) = this->z_kalman.step(this->readZ());
 
         this->readings = this->readings - this->offsets;
 
