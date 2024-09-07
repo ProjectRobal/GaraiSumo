@@ -92,7 +92,7 @@ class KalmanFilter1D
 
         float K = Pp/S;
 
-        this->x = y + K*E;
+        this->x = this->x + K*E;
 
         this->P = Pp - S*K*K;
         
