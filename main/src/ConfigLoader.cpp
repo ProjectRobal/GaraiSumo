@@ -212,6 +212,63 @@ bool ConfigLoader::fromBuffer(const char* buffer,MagConfig& cfg)
         }   
     }
 
+    cJSON* kalman = cJSON_GetObjectItem(json,"kalman_x");
+
+    if( kalman != NULL )
+    {
+        cJSON* w = cJSON_GetObjectItem(kalman,"W");
+
+        if(cJSON_IsNumber(w))
+        {
+            cfg.xW = w->valuedouble;
+        }
+
+        cJSON* v = cJSON_GetObjectItem(kalman,"V");
+
+        if(cJSON_IsNumber(v))
+        {
+            cfg.xV = v->valuedouble;
+        }
+    }
+
+    kalman = cJSON_GetObjectItem(json,"kalman_y");
+
+    if( kalman != NULL )
+    {
+        cJSON* w = cJSON_GetObjectItem(kalman,"W");
+
+        if(cJSON_IsNumber(w))
+        {
+            cfg.xW = w->valuedouble;
+        }
+
+        cJSON* v = cJSON_GetObjectItem(kalman,"V");
+
+        if(cJSON_IsNumber(v))
+        {
+            cfg.xV = v->valuedouble;
+        }
+    }
+
+    kalman = cJSON_GetObjectItem(json,"kalman_z");
+
+    if( kalman != NULL )
+    {
+        cJSON* w = cJSON_GetObjectItem(kalman,"W");
+
+        if(cJSON_IsNumber(w))
+        {
+            cfg.xW = w->valuedouble;
+        }
+
+        cJSON* v = cJSON_GetObjectItem(kalman,"V");
+
+        if(cJSON_IsNumber(v))
+        {
+            cfg.xV = v->valuedouble;
+        }
+    }
+
     cJSON_Delete(json);
 
     return true;
@@ -230,6 +287,27 @@ bool ConfigLoader::toBuffer(char* buffer,size_t size,const MagConfig& cfg)
     cJSON* c_matrix = cJSON_CreateDoubleArray(cfg.c_matrix,9);
 
     cJSON_AddItemToObject(json,"matrix",c_matrix);
+
+    cJSON* kalman = cJSON_CreateObject();
+
+    cJSON* w = cJSON_AddNumberToObject(kalman,"W",cfg.xW);
+    cJSON* v = cJSON_AddNumberToObject(kalman,"V",cfg.xW);
+
+    cJSON_AddItemToObject(json,"kalman_x",kalman);
+
+    kalman = cJSON_CreateObject();
+
+    w = cJSON_AddNumberToObject(kalman,"W",cfg.yW);
+    v = cJSON_AddNumberToObject(kalman,"V",cfg.yW);
+
+    cJSON_AddItemToObject(json,"kalman_y",kalman);
+
+    kalman = cJSON_CreateObject();
+
+    w = cJSON_AddNumberToObject(kalman,"W",cfg.zW);
+    v = cJSON_AddNumberToObject(kalman,"V",cfg.zW);
+
+    cJSON_AddItemToObject(json,"kalman_z",kalman);
 
     if(!cJSON_PrintPreallocated(json,buffer,size,true))
     {

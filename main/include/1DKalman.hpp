@@ -56,8 +56,8 @@ class KalmanFilter1D
         // R
         // Q0_1,Q0_2
 
-        this->V=cfg.Ex;
-        this->W=cfg.R;
+        this->V=cfg.V;
+        this->W=cfg.W;
 
         this->x=cfg.Q0;
 
@@ -74,8 +74,8 @@ class KalmanFilter1D
         
         config::Kalman1DCFG filter;
 
-        filter.Ex=this->V;
-        filter.R=this->W;
+        filter.W=this->V;
+        filter.V=this->W;
 
         filter.Q0=this->x;
 

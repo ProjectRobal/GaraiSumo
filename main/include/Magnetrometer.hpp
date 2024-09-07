@@ -64,6 +64,10 @@ class Magnetrometer
                 this->c_matrix(y,x) = cfg.c_matrix[ y*3 + x ];
             }
         }
+
+        this->x_kalman = KalmanFilter1D(cfg.xW,cfg.xV);
+        this->y_kalman = KalmanFilter1D(cfg.yW,cfg.yV);
+        this->z_kalman = KalmanFilter1D(cfg.zW,cfg.zV);
     }
 
     config::MagConfig getCFG()
@@ -81,6 +85,21 @@ class Magnetrometer
                 cfg.c_matrix[ y*3 + x] = this->c_matrix(y,x);
             }
         }
+
+        config::Kalman1DCFG k_cfg = this->x_kalman.getCFG();
+
+        cfg.xV = k_cfg.V;
+        cfg.xW = k_cfg.W;
+
+        k_cfg = this->y_kalman.getCFG();
+
+        cfg.yV = k_cfg.V;
+        cfg.yW = k_cfg.W;
+
+        k_cfg = this->z_kalman.getCFG();
+
+        cfg.zV = k_cfg.V;
+        cfg.zW = k_cfg.W;
 
         return cfg;
     }

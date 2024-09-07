@@ -56,6 +56,13 @@ namespace config
     {
         Vec3Df offsets;
         double c_matrix[9];
+
+        double xV;
+        double xW;
+        double yV;
+        double yW;
+        double zV;
+        double zW;
     };
 
     struct MotorPID
@@ -91,8 +98,8 @@ namespace config
 
     struct Kalman1DCFG
     {
-        float Ex;
-        float R;
+        float W;
+        float V;
         float Q0;
     };
 
@@ -110,7 +117,13 @@ namespace config
         {
             return {
                 .offsets = Vec3Df(0,0,0),
-                .c_matrix = {1.f,0.f,0.f,0.f,1.f,0.f,0.f,0.f,1.f}
+                .c_matrix = {1.f,0.f,0.f,0.f,1.f,0.f,0.f,0.f,1.f},
+                .xV = 0.00006,
+                .xW = 0.0000089,
+                .yV = 0.00006,
+                .yW = 0.0000089,
+                .zV = 0.00006,
+                .zW = 0.000011
             };
         }
 
