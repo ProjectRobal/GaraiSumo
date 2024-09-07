@@ -52,6 +52,9 @@ def main():
     
     graph = plt.plot(x,y)[0]
     
+    yaw = []
+    
+    mean_angle = 0
     
     try:
         with connect("ws://{}".format(address)) as websocket:

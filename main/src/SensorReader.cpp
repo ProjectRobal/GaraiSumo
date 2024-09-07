@@ -425,11 +425,11 @@ void SensorReader::fusion()
 
     // we only care about 2D projection from top view:
     // so only yaw axis from IMU
-    if( !this->reads.IMUOnlyReading )
-    {
-        MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->reads.magReading.x,this->reads.magReading.y,this->reads.magReading.z);
-    }
-    else
+    // if( !this->reads.IMUOnlyReading )
+    // {
+    //     MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->reads.magReading.x,this->reads.magReading.y,this->reads.magReading.z);
+    // }
+    // else
     {
         MadgwickAHRSupdateIMU(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z);
     }
