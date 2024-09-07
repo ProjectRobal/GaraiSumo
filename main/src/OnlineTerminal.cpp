@@ -902,7 +902,7 @@ esp_err_t OnlineTerminal::set_mag_config(httpd_req_t *req)
 
             httpd_req_recv(req,this->buffer,req->content_len);
 
-            config::MagConfig config;
+            config::MagConfig config = mods.sensors->dump_mag_cfg();
 
             if(!config::ConfigLoader::fromBuffer(this->buffer,config))
             {

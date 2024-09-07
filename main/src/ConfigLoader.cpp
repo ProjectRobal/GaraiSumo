@@ -291,21 +291,21 @@ bool ConfigLoader::toBuffer(char* buffer,size_t size,const MagConfig& cfg)
     cJSON* kalman = cJSON_CreateObject();
 
     cJSON* w = cJSON_AddNumberToObject(kalman,"W",cfg.xW);
-    cJSON* v = cJSON_AddNumberToObject(kalman,"V",cfg.xW);
+    cJSON* v = cJSON_AddNumberToObject(kalman,"V",cfg.xV);
 
     cJSON_AddItemToObject(json,"kalman_x",kalman);
 
     kalman = cJSON_CreateObject();
 
     w = cJSON_AddNumberToObject(kalman,"W",cfg.yW);
-    v = cJSON_AddNumberToObject(kalman,"V",cfg.yW);
+    v = cJSON_AddNumberToObject(kalman,"V",cfg.yV);
 
     cJSON_AddItemToObject(json,"kalman_y",kalman);
 
     kalman = cJSON_CreateObject();
 
     w = cJSON_AddNumberToObject(kalman,"W",cfg.zW);
-    v = cJSON_AddNumberToObject(kalman,"V",cfg.zW);
+    v = cJSON_AddNumberToObject(kalman,"V",cfg.zV);
 
     cJSON_AddItemToObject(json,"kalman_z",kalman);
 
