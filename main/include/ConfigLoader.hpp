@@ -136,7 +136,7 @@ namespace config
 
             if(cJSON_IsNumber(x))
             {
-                vec.x=x->valueint;
+                vec.x=x->valuedouble;
             }
             else
             {
@@ -147,7 +147,7 @@ namespace config
 
             if(cJSON_IsNumber(y))
             {
-                vec.y=y->valueint;
+                vec.y=y->valuedouble;
             }
             else
             {
@@ -158,7 +158,7 @@ namespace config
 
             if(cJSON_IsNumber(z))
             {
-                vec.z=z->valueint;
+                vec.z=z->valuedouble;
             }
             else
             {

@@ -182,7 +182,7 @@ bool ConfigLoader::fromBuffer(const char* buffer,MagConfig& cfg)
         return false;
     }
 
-    if(!ConfigLoader::json_to_vector3d<float>(cJSON_GetObjectItemCaseSensitive(json,"offset"),cfg.offsets))
+    if(!ConfigLoader::json_to_vector3d<float>(cJSON_GetObjectItemCaseSensitive(json,"offsets"),cfg.offsets))
     {
         cJSON_Delete(json);
         return false;
