@@ -35,8 +35,8 @@ def prepare_line(json:dict,end="\n"):
 x = []
 y = []
 
-x_off = 0 #2.74011
-y_off = 0 #2.8739
+x_off = 0 #0.76825573 #0.969241535 #2.74011
+y_off = 0 #1.552019993 #1.4565894265 #2.8739
 
 def main():
     global x
@@ -185,10 +185,11 @@ def main():
                     time.sleep(0.01)
                     plt.pause(0.01)
                     
-                    if len(x)>1000:
+                    if len(x)>1000 and len(y)>1000:
+                        print("Mean: X: {} Y: {}".format(np.mean(x),np.mean(y)))
                         x = []
-                    if len(y)>1000:
                         y = []
+                        exit(0)
                                 
     
     except Exception as e:

@@ -278,8 +278,8 @@ void SensorReader::init_mag()
     {
         ESP_LOGD("MAIN","Found QMC 5883 magnetrometer!");
 
-        qmc->setFullScale(QMC5883::FullScale::G8);
-        qmc->setOutputDataRate(QMC5883::OutputDataRate::_200Hz);
+        qmc->setFullScale(QMC5883::FullScale::G2);
+        qmc->setOutputDataRate(QMC5883::OutputDataRate::_50Hz);
         qmc->setOverSampleRatio(QMC5883::OverSampleRatio::_512);
         qmc->setIntEnable(true);
         qmc->setMode(QMC5883::Mode::Continuous);
