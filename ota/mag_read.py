@@ -77,9 +77,9 @@ def main():
                     
                     graph = plt.plot(x,y,"o",color="r")[0]
                     
-                    angle = np.arctan2(readings["raw_magentrometer"]["y"],readings["raw_magentrometer"]["x"])*(180.0/np.pi)
+                    # angle = np.arctan2(readings["raw_magentrometer"]["y"],readings["raw_magentrometer"]["x"])*(180.0/np.pi)
                     
-                    print(angle)
+                    print(text)
                     file.write(text+'\n')
                     
                     # input()
