@@ -280,7 +280,7 @@ void SensorReader::init_mag()
 
         qmc->setFullScale(QMC5883::FullScale::G8);
         qmc->setOutputDataRate(QMC5883::OutputDataRate::_50Hz);
-        qmc->setOverSampleRatio(QMC5883::OverSampleRatio::_64);
+        qmc->setOverSampleRatio(QMC5883::OverSampleRatio::_512);
         qmc->setMode(QMC5883::Mode::Continuous);
         qmc->setIntEnable(true);
 
