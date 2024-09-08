@@ -90,7 +90,9 @@ bool QMC5883::setMode(QMC5883::Mode mode)
 {
     uint8_t reg=this->readConfig1();
 
-    reg=(((reg&(~0b11))|mode));
+    reg= reg&(~0b11);
+
+    reg = reg | mode;
 
     return this->setConfig1(reg);
 }
@@ -119,7 +121,9 @@ bool QMC5883::setOutputDataRate(QMC5883::OutputDataRate rate)
 {
     uint8_t reg=this->readConfig1();
 
-    reg=((reg&(~(0b11<<2)|(rate<<2))));
+    reg = reg&(~(0b11<<2));
+
+    reg = reg | (rate<<2);
 
     return this->setConfig1(reg);
 }
@@ -154,7 +158,9 @@ bool QMC5883::setFullScale(QMC5883::FullScale scale)
 {
     uint8_t reg=this->readConfig1();
 
-    reg=((reg&((~(0b11<<4))|(scale<<4))));
+    reg = reg&((~(0b11<<4)));
+
+    reg = reg | (scale<<4);
 
     bool ret=this->setConfig1(reg);
 
@@ -200,7 +206,9 @@ bool QMC5883::setOverSampleRatio(QMC5883::OverSampleRatio ratio)
 {
     uint8_t reg=this->readConfig1();
 
-    reg=((reg&((~(0b11<<6))|(ratio<<6))));
+    reg = reg&(~(0b11<<6));
+
+    reg = reg | (ratio<<6);
 
     return this->setConfig1(reg);
 }
