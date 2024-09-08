@@ -50,9 +50,9 @@ class Magnetrometer
         // y_buffer.push(this->readY());
         // z_buffer.push(this->readZ());
 
-        this->readings(0,0) = this->x_kalman.step(this->readX());
-        this->readings(1,0) = this->y_kalman.step(this->readY());
-        this->readings(2,0) = this->z_kalman.step(this->readZ());
+        this->readings(0,0) = this->readX();//this->x_kalman.step(this->readX());
+        this->readings(1,0) = this->readY();//this->y_kalman.step(this->readY());
+        this->readings(2,0) = this->readZ();//this->z_kalman.step(this->readZ());
 
         this->readings = this->readings - this->offsets;
 

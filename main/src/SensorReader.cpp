@@ -278,8 +278,9 @@ void SensorReader::init_mag()
     {
         ESP_LOGD("MAIN","Found QMC 5883 magnetrometer!");
 
-        qmc->setFullScale(QMC5883::FullScale::G2);
+        qmc->setFullScale(QMC5883::FullScale::G8);
         qmc->setOutputDataRate(QMC5883::OutputDataRate::_50Hz);
+        qmc->setOverSampleRatio(QMC5883::OverSampleRatio::_64);
         qmc->setMode(QMC5883::Mode::Continuous);
         qmc->setIntEnable(true);
 
@@ -425,11 +426,11 @@ void SensorReader::fusion()
 
     // we only care about 2D projection from top view:
     // so only yaw axis from IMU
-    // if( !this->reads.IMUOnlyReading )
-    // {
-    //     MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->reads.magReading.x,this->reads.magReading.y,this->reads.magReading.z);
-    // }
-    // else
+    if( !this->reads.IMUOnlyReading )
+    {
+        MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->reads.magReading.x,this->reads.magReading.y,this->reads.magReading.z);
+    }
+    else
     {
         MadgwickAHRSupdateIMU(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z);
     }
