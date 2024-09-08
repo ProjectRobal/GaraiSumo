@@ -86,7 +86,7 @@ const adc_channel_t KTIRChannel[]={ADC_CHANNEL_3,ADC_CHANNEL_4,ADC_CHANNEL_5};
 #define DISTANCE_TOLERANCE 0.5
 
 //constant use to convert pulse into distance in cm
-#define PULSE_TO_DISTANCE 200.f
+#define PULSE_TO_DISTANCE 8.f
 
 //distance between wheel and it's mass center in cm
 #define D_WHEELS 4.f

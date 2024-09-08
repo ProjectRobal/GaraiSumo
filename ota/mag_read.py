@@ -35,8 +35,8 @@ def prepare_line(json:dict,end="\n"):
 x = []
 y = []
 
-x_off = 0 #0.76825573 #0.969241535 #2.74011
-y_off = 0 #1.552019993 #1.4565894265 #2.8739
+x_off = 0 #0.665 #0.661 #0.6686249982 #0.76825573 #0.969241535 #2.74011
+y_off = 0 #1.14 #1.133 #1.141666650694885 #1.552019993 #1.4565894265 #2.8739
 
 def main():
     global x
@@ -62,8 +62,8 @@ def main():
     
     stdev = 0.0125
     
-    V = stdev*(1/100)*0.01
-    W = stdev*stdev
+    V = stdev*(1/100)
+    W = stdev*stdev*100
     
     x0=0
     P0 = 1
@@ -99,39 +99,39 @@ def main():
                     x_raw = readings["raw_magentrometer"]["x"] - x_off
                     y_raw = readings["raw_magentrometer"]["y"] - y_off
                     
-                    # if first:
+                    if first:
                     
-                    #     xpri = xpost
+                        xpri = xpost
                         
-                    #     Ppri = Ppost + V
-                    #     E = x_raw - xpri
+                        Ppri = Ppost + V
+                        E = x_raw - xpri
                         
-                    #     S = Ppri + W
+                        S = Ppri + W
                         
-                    #     K = Ppri/S
+                        K = Ppri/S
                         
-                    #     xpost = xpri + K*E
-                    #     Ppost = Ppri - S*K*K
+                        xpost = xpri + K*E
+                        Ppost = Ppri - S*K*K
                         
-                    #     ypri = ypost
+                        ypri = ypost
                         
-                    #     Pypri = Pypost + V
-                    #     E = y_raw - ypri
+                        Pypri = Pypost + V
+                        E = y_raw - ypri
                         
-                    #     S = Pypri + W
+                        S = Pypri + W
                         
-                    #     K = Ppri/S
+                        K = Ppri/S
                         
-                    #     ypost = ypri + K*E
-                    #     Pypost = Pypri - S*K*K
-                    # else:
-                    #     first = False
+                        ypost = ypri + K*E
+                        Pypost = Pypri - S*K*K
+                    else:
+                        first = False
                         
-                    #     xpost = x_raw
-                    #     xpri = x_raw
+                        xpost = x_raw
+                        xpri = x_raw
                         
-                    #     ypost = y_raw
-                    #     ypri = y_raw
+                        ypost = y_raw
+                        ypri = y_raw
                     
                     text:str = "{};{};{}".format(x_raw,y_raw,readings["raw_magentrometer"]["z"])
                     
@@ -178,7 +178,7 @@ def main():
                     
                     print(text)
                     # print("X: {} Y: {} X_STD: {} Y_STD: {}".format(np.mean(x),np.mean(y),np.std(x),np.std(y)))
-                    # print(np.arctan2(y[-1],x[-1])*(180.0/np.pi))
+                    print(np.arctan2(y[-1],x[-1])*(180.0/np.pi))
                     file.write(text+'\n')
                     
                     # input()
@@ -186,10 +186,10 @@ def main():
                     plt.pause(0.01)
                     
                     if len(x)>1000 and len(y)>1000:
-                        print("Mean: X: {} Y: {}".format(np.mean(x),np.mean(y)))
+                        # print("Mean: X: {} Y: {}".format(np.mean(x),np.mean(y)))
                         x = []
                         y = []
-                        exit(0)
+                        # exit(0)
                                 
     
     except Exception as e:
