@@ -85,7 +85,7 @@ class OLED
     i2c_num(i2c_num)
     {}
 
-    bool init(const uint8_t& width,const uint8_t& height);
+    bool init(uint8_t width,uint8_t height);
 
     void setFont(uint8_t const *font)
     {

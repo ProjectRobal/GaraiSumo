@@ -44,6 +44,10 @@ void oled_loop(void *arg);
 void main_loop(void *arg);
 
 
+static StackType_t* oled_stack;
+
+static StaticTask_t oled_task;
+
 void app_main()
 {
     esp_log_level_set("*",ESP_LOG_DEBUG);
@@ -222,6 +226,15 @@ void app_main()
     // init screen task
     // to do
 
+    oled_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
+    
+    if( xTaskCreateStaticPinnedToCore(oled_loop,"OLED",MIN_TASK_STACK_SIZE,NULL,tskIDLE_PRIORITY+1,oled_stack,&oled_task,!xPortGetCoreID()) == NULL )
+    {
+        ESP_LOGE("MAIN","Cannot create encoder task");
+    }
+
+
+
 }
 
 
@@ -271,7 +284,7 @@ void oled_loop(void *arg)
 
     oled::OLED screen(I2C_MENU_PORT);
 
-    screen.init(128,64);
+    screen.init(128,32);
 
     screen.setFont(ssd1306xled_font6x8);
 
@@ -293,29 +306,11 @@ void oled_loop(void *arg)
 
     while(true)
     {
-
-        vTaskDelay(200/portTICK_PERIOD_MS);
-    }
-
-    while(true)
-    {
         // execute oled loop here
 
         screen.clear();
 
-        uint8_t ret=oled_modes::modes[page_id](screen,&mods,fun_button_state,mode_button_state);
-
-        if(ret!=0)
-        {
-
-            page_id=ret-1;
-
-            if(page_id>OLED_MODES_COUNT)
-            {
-                page_id=0;
-            }
-
-        }
+        oled_modes::main_page(screen);
        
         screen.draw();
 

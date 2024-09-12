@@ -22,7 +22,7 @@ void OLED::rewind_column()
     this->send_cmd(0x10); // higher address column for page address set to 0
 }
 
-bool OLED::init(const uint8_t& width,const uint8_t& height)
+bool OLED::init(uint8_t width,uint8_t height)
 {
     if((width!=128)||((height!=64)&&(height!=32)))
     {
