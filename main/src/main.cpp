@@ -101,6 +101,13 @@ void app_main()
 
     OnlineTerminal* terminal=new OnlineTerminal();
 
+    oled_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
+    
+    if( xTaskCreateStaticPinnedToCore(oled_loop,"OLED",MIN_TASK_STACK_SIZE,NULL,tskIDLE_PRIORITY+1,oled_stack,&oled_task,!xPortGetCoreID()) == NULL )
+    {
+        ESP_LOGE("MAIN","Cannot create oled task");
+    }
+
     
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -226,12 +233,7 @@ void app_main()
     // init screen task
     // to do
 
-    oled_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
     
-    if( xTaskCreateStaticPinnedToCore(oled_loop,"OLED",MIN_TASK_STACK_SIZE,NULL,tskIDLE_PRIORITY+1,oled_stack,&oled_task,!xPortGetCoreID()) == NULL )
-    {
-        ESP_LOGE("MAIN","Cannot create encoder task");
-    }
 
 
 
