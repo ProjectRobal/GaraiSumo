@@ -416,6 +416,7 @@ esp_err_t OnlineTerminal::ws_motor_control(httpd_req_t *req)
 
         if( open )
         {
+            // hello
             if(( readings.stoped )||( !starter_state() ))
             {
                 mods.driver->stop();                
