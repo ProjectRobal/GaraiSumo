@@ -19,7 +19,7 @@ uint8_t main_page(oled::OLED& screen)
     {
         ++step;
 
-        if( step == 8 )
+        if( step == 4 )
         {
             moveup = false;
         }
