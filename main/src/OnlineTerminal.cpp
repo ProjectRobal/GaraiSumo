@@ -416,20 +416,23 @@ esp_err_t OnlineTerminal::ws_motor_control(httpd_req_t *req)
 
         if( open )
         {
+            int32_t motorA_pwr=motorA->valueint;
+            int32_t motorB_pwr=motorB->valueint;
+            
+            mods.sensors->Lock();
             // hello
-            if(( readings.stoped )||( !starter_state() ))
+            if(( mods.sensors->read().stoped )||( !starter_state() ))
             {
                 mods.driver->stop();                
             }
             else
             {
-                int32_t motorA_pwr=motorA->valueint;
-                int32_t motorB_pwr=motorB->valueint;
 
                 mods.driver->set_channelA(motorA_pwr);
                 mods.driver->set_channelB(motorB_pwr);
 
             }
+            mods.sensors->Unlock();
 
             this->clear_buf();
 

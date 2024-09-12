@@ -103,14 +103,14 @@ void MotorDriver::set_channelB(int32_t pwr)
 {
     if(pwr>0)
     {
-        ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_2,pwr);
-        ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_3,0);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_2,0);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_3,pwr);
         this->last_B_direction = false;
     }
     else if(pwr<0)
     {
-        ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_2,0);
-        ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_3,-pwr);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_2,-pwr);
+        ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_3,0);
         this->last_B_direction = true;
     }
     else
