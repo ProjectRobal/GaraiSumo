@@ -36,7 +36,7 @@ bool OLED::init(uint8_t width,uint8_t height)
     {
         case 32:
 
-        for(const uint8_t& cmd : s_oled128x32_initData)
+        for(uint8_t cmd : s_oled128x32_initData)
         {
             res=this->send_cmd(cmd);
         }
@@ -45,7 +45,7 @@ bool OLED::init(uint8_t width,uint8_t height)
 
         case 64:
 
-        for(const uint8_t& cmd : s_oled128x64_initData)
+        for(uint8_t cmd : s_oled128x64_initData)
         {
             res=this->send_cmd(cmd);
         }
@@ -65,7 +65,7 @@ bool OLED::init(uint8_t width,uint8_t height)
 
 }
 
-void OLED::drawPixel(const uint8_t& x,const uint8_t& y,const bool& color)
+void OLED::drawPixel(uint8_t x,uint8_t y,const bool& color)
 {
     if((x>=this->width)||(y>=this->height))
     {
@@ -90,7 +90,7 @@ void OLED::drawPixel(const uint8_t& x,const uint8_t& y,const bool& color)
 }
 
 // needs some improvments
-void OLED::drawLine(const uint8_t& x1,const uint8_t& y1,const uint8_t& x2,const uint8_t& y2,const bool& color)
+void OLED::drawLine(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,const bool& color)
 {
     
     int8_t dx= x1 < x2 ? 1 : -1;
@@ -126,7 +126,7 @@ void OLED::drawLine(const uint8_t& x1,const uint8_t& y1,const uint8_t& x2,const 
     }
 }
 
-void OLED::drawRect(const uint8_t& left,const uint8_t& top,const uint8_t& right,const uint8_t& bottom,const bool& color)
+void OLED::drawRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,const bool& color)
 {
     this->drawLine(left,top,right,top,color);
     this->drawLine(right,top,right,bottom,color);
@@ -134,7 +134,7 @@ void OLED::drawRect(const uint8_t& left,const uint8_t& top,const uint8_t& right,
     this->drawLine(left,bottom,left,top,color);
 }
 
-void OLED::fillRect(const uint8_t& left,const uint8_t& top,const uint8_t& right,const uint8_t& bottom,const bool& color)
+void OLED::fillRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,const bool& color)
 {
     for(uint8_t y=top;y<bottom;++y)
     {
@@ -145,13 +145,13 @@ void OLED::fillRect(const uint8_t& left,const uint8_t& top,const uint8_t& right,
     }
 }
 
-void OLED::fill(const uint8_t& color)
+void OLED::fill(uint8_t color)
 {
     this->fillRect(0,0,this->width,this->height,color);
 }
 
 
-void OLED::drawBitmap(const uint8_t& x,const uint8_t& y,const uint8_t& width,const uint8_t& height,const uint8_t* buffer)
+void OLED::drawBitmap(uint8_t x,uint8_t y,uint8_t width,uint8_t height,const uint8_t* buffer)
 {
     uint8_t _x=0;
     uint8_t _y=0;
@@ -172,7 +172,7 @@ void OLED::drawBitmap(const uint8_t& x,const uint8_t& y,const uint8_t& width,con
     }
 }
 
-void OLED::drawChar(const uint8_t& x,const uint8_t& y,const bool& color,char text)
+void OLED::drawChar(uint8_t x,uint8_t y,const bool& color,char text)
 {
     if(this->font[0]!=0x00)
     {
@@ -180,8 +180,8 @@ void OLED::drawChar(const uint8_t& x,const uint8_t& y,const bool& color,char tex
         return;
     }
 
-    const uint8_t& font_height=this->font[2];
-    const uint8_t& font_width=this->font[1];
+    uint8_t font_height=this->font[2];
+    uint8_t font_width=this->font[1];
 
     const char& first_char=this->font[3];
 
@@ -202,7 +202,7 @@ void OLED::drawChar(const uint8_t& x,const uint8_t& y,const bool& color,char tex
         for(uint8_t q=0;q<font_height;++q)
         {
 
-            const uint8_t& c=this->font[char_index + d*bytes_per_characer + q/8];
+            uint8_t c=this->font[char_index + d*bytes_per_characer + q/8];
 
             this->drawPixel(x+d,y+q,(( c & ( 1<< q%8 ) ))^ (!color));
 
@@ -211,7 +211,7 @@ void OLED::drawChar(const uint8_t& x,const uint8_t& y,const bool& color,char tex
     }
 }
 
-void OLED::drawText(const uint8_t& x,const uint8_t& y,const bool& color,const char* text)
+void OLED::drawText(uint8_t x,uint8_t y,const bool& color,const char* text)
 {
     if(this->font[0]!=0x00)
     {
@@ -219,8 +219,8 @@ void OLED::drawText(const uint8_t& x,const uint8_t& y,const bool& color,const ch
         return;
     }
 
-    const uint8_t& font_height=this->font[2];
-    const uint8_t& font_width=this->font[1]; 
+    uint8_t font_height=this->font[2];
+    uint8_t font_width=this->font[1]; 
 
     uint8_t _x=x;
     uint8_t _y=y;
@@ -253,7 +253,7 @@ bool OLED::draw()
 
         for(uint8_t x=0;x<this->width;++x)
         {
-        this->send_data(this->buffer[i*this->width+x]);
+            this->send_data(this->buffer[i*this->width+x]);
         }
     }
 

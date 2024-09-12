@@ -242,16 +242,11 @@ void app_main()
 void oled_loop(void *arg)
 {
 
-    bool fun_button_state;
-    bool mode_button_state;
-
     gpio_set_direction(FUN_BUTTON,GPIO_MODE_INPUT);
     gpio_set_direction(MODE_BUTTON,GPIO_MODE_INPUT);
     gpio_pullup_en(FUN_BUTTON);
     gpio_pullup_en(MODE_BUTTON);
 
-    fun_button_state=gpio_get_level(FUN_BUTTON);
-    mode_button_state=gpio_get_level(MODE_BUTTON);
 
     // OLED MENU I2C initialization
     i2c_config_t conf1{};
@@ -313,9 +308,6 @@ void oled_loop(void *arg)
         oled_modes::main_page(screen);
        
         screen.draw();
-
-        fun_button_state=gpio_get_level(FUN_BUTTON);
-        mode_button_state=gpio_get_level(MODE_BUTTON);
 
         vTaskDelay(200/portTICK_PERIOD_MS);
     }

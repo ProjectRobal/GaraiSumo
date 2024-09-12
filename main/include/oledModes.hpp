@@ -19,7 +19,7 @@ namespace oled_modes
 uint8_t main_page(oled::OLED& screen)
 {
 
-    screen.drawBitmap(0,0,128,32,sprites::konar_logo_64x32);
+    screen.drawBitmap(0,0,64,32,sprites::konar_logo_64x32);
 
     // if(gpio_get_level(MODE_BUTTON)!=mode_button_state)
     // {

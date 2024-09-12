@@ -92,36 +92,36 @@ class OLED
         this->font=font;
     }
 
-    void drawPixel(const uint8_t& x,const uint8_t& y,const bool& color);
+    void drawPixel(uint8_t x,uint8_t y,const bool& color);
 
-    void drawLine(const uint8_t& x1,const uint8_t& y1,const uint8_t& x2,const uint8_t& y2,const bool& color);
+    void drawLine(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,const bool& color);
 
-    void drawRect(const uint8_t& left,const uint8_t& top,const uint8_t& right,const uint8_t& bottom,const bool& color);
+    void drawRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,const bool& color);
 
-    void fillRect(const uint8_t& left,const uint8_t& top,const uint8_t& right,const uint8_t& bottom,const bool& color);
+    void fillRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,const bool& color);
 
-    void fill(const uint8_t& color);
+    void fill(uint8_t color);
 
     void clear()
     {
         this->fill(0);
     }
 
-    void drawBitmap(const uint8_t& x,const uint8_t& y,const uint8_t& width,const uint8_t& height,const uint8_t* buffer);
+    void drawBitmap(uint8_t x,uint8_t y,uint8_t width,uint8_t height,const uint8_t* buffer);
 
-    void drawText(const uint8_t& x,const uint8_t& y,const bool& color,const char* text);
+    void drawText(uint8_t x,uint8_t y,const bool& color,const char* text);
 
-    void drawChar(const uint8_t& x,const uint8_t& y,const bool& color,char text);
+    void drawChar(uint8_t x,uint8_t y,const bool& color,char text);
 
     // put buffer into RAM
     bool draw();
 
-    const uint8_t& getWidth() const
+    uint8_t getWidth() const
     {
         return this->width;
     }
 
-    const uint8_t& getHeight() const
+    uint8_t getHeight() const
     {
         return this->height;
     }
