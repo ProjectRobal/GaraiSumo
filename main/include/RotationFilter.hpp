@@ -47,13 +47,13 @@ class RotationFilter
     RotationFilter()
     : Q(2,1),
     Ex(2,2),
-    H(2,1),
+    H(1,2),
     Ht(2,1),
     P(Mat::eye(2)),
     A(2,2),
     B(2,1)
     {
-        this->H(2,0) = 1.f;
+        this->H(0,0) = 1.f;
 
         /*
         
@@ -132,7 +132,7 @@ class RotationFilter
 
         this->P = this->A*this->P*this->A.t() + this->Ex;
 
-        float error = eyaw - Q_curr(0,0);
+        float error = eyaw - (this->H*Q_curr)(0,0);
 
         Mat S = this->H*this->P*this->Ht + this->R;
 
@@ -142,7 +142,7 @@ class RotationFilter
 
         this->P = this->P - K*S*K.t();
         
-        return this->Q(0,0);   
+        return (this->H*this->Q)(0,0);   
     }
 
 };
