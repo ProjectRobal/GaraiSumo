@@ -170,7 +170,12 @@ class SensorReader
     {
         this->mpu.setCalibrationData(_config.calibr);
 
-        MadgwickSetBeta(_config.beta);
+        this->Lock();
+
+        this->rotor.reset();
+        this->reads.yaw = 0.0;
+
+        this->Unlock();
     }
 
     void updatePositionFilterYCFG(const config::PositionFilterCFG& _config)
