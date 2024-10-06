@@ -298,6 +298,12 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
         cJSON_AddNumberToObject(raw_magnetrometer,"y",raw_mag.y);
         cJSON_AddNumberToObject(raw_magnetrometer,"z",raw_mag.z);
 
+        cJSON* shock = cJSON_AddObjectToObject(json,"shock");
+
+        cJSON_AddNumberToObject(shock,"angle",mods.sensors->read().shock_angel);
+
+        cJSON_AddNumberToObject(shock,"value",mods.sensors->read().shock_value);
+
 
         cJSON_AddNumberToObject(json,"left_motor_speed",mods.sensors->read().motorSpeed[0]);
 

@@ -433,6 +433,10 @@ void SensorReader::fusion()
     this->reads.position.x = this->reads.epostion.x;
     this->reads.position.y = this->reads.epostion.y;
 
+    this->reads.shock_angel = atan2(_accelMean.y,_accelMean.x);
+    this->reads.shock_value = _accelMean.y*_accelMean.y + _accelMean.x*_accelMean.x; 
+
+
     ESP_LOGD("Sensors","Yaw: %f",this->reads.yaw);
     ESP_LOGD("Sensors","X: %f Y: %f",this->reads.position.x,this->reads.position.y);
 

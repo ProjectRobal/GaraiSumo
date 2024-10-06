@@ -59,6 +59,10 @@ struct Readings
         // current degree in yaw axis, from encoders
         float eyaw = 0.f;
 
+        // calculated from accelerometer
+        float shock_value;
+        float shock_angel;
+
         // is ktir touching black or white surface
         bool floor_sensors[NUM_OF_KTIRS]={0};
 
