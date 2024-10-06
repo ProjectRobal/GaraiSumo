@@ -418,6 +418,7 @@ void SensorReader::fusion()
     {
         // reset kalman
         this->rotor.reset();
+        this->reads.yaw = 0.0;
         this->Unlock();
         return;
     } 
