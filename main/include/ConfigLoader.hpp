@@ -92,8 +92,6 @@ namespace config
         float Ex1;
         float Ex2;
         float R;
-        float Q0_1;
-        float Q0_2;
     };
 
     struct Kalman1DCFG

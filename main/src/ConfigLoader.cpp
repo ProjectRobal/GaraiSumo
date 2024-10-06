@@ -484,25 +484,6 @@ bool ConfigLoader::fromBuffer(const char* buffer,RotationFilterCFG& cfg)
 
     cfg.R=obj->valuedouble;
 
-    obj=cJSON_GetObjectItemCaseSensitive(json,"Q0_1");
-
-    if(!cJSON_IsNumber(obj))
-    {
-        cJSON_Delete(json);
-        return false;
-    }
-
-    cfg.Q0_1=obj->valuedouble;
-
-    obj=cJSON_GetObjectItemCaseSensitive(json,"Q0_2");
-
-    if(!cJSON_IsNumber(obj))
-    {
-        cJSON_Delete(json);
-        return false;
-    }
-
-    cfg.Q0_2=obj->valuedouble;
 
     cJSON_Delete(json);
 
@@ -519,9 +500,6 @@ bool ConfigLoader::toBuffer(char* buffer,size_t size,const RotationFilterCFG& cf
     cJSON_AddNumberToObject(json,"Ex2",cfg.Ex2);
 
     cJSON_AddNumberToObject(json,"R",cfg.R);
-
-    cJSON_AddNumberToObject(json,"Q0_1",cfg.Q0_1);
-    cJSON_AddNumberToObject(json,"Q0_2",cfg.Q0_2);
     
     bool res=cJSON_PrintPreallocated(json,buffer,size,true);
 

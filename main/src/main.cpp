@@ -194,11 +194,9 @@ void app_main()
     if(!config::ConfigLoader::load(rotor))
     {
         rotor={
-            .Ex1=1.f,
-            .Ex2=1.f,
-            .R=1.f,
-            .Q0_1=0.f,
-            .Q0_2=0.f
+            .Ex1=1.f*SAMPLE_TIME,
+            .Ex2=1.f*SAMPLE_TIME,
+            .R=4.f,
         };
 
         config::ConfigLoader::save(rotor);

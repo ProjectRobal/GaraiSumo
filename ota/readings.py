@@ -57,7 +57,7 @@ def main():
                     
                     print("T: {} s Left: {} speed Right: {} speed Yaw: {}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"],readings["yaw"]))
                     
-                    file.write(prepare_line(readings))
+                    # file.write(prepare_line(readings))
                     
                     time.sleep(0.001)
                                 

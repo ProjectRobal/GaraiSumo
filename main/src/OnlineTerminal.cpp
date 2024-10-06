@@ -1208,8 +1208,6 @@ esp_err_t OnlineTerminal::set_rotor_filter(httpd_req_t *req)
         case HTTP_POST:
         {
 
-                case 'x':
-
             httpd_req_recv(req,this->buffer,req->content_len);
 
             config::RotationFilterCFG cfg;
