@@ -416,7 +416,8 @@ void SensorReader::fusion()
 
     if( this->CalibrateIMU )
     {
-        MadgwickReset();
+        // reset kalman
+        this->rotor.reset();
         this->Unlock();
         return;
     } 
@@ -424,33 +425,10 @@ void SensorReader::fusion()
     Vec3Df _gyroMean=this->gyroMean.mean();
     Vec3Df _accelMean=this->accelMean.mean();
 
-    // we only care about 2D projection from top view:
-    // so only yaw axis from IMU
-    if( !this->reads.IMUOnlyReading )
-    {
-        MadgwickAHRSupdate(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z,this->reads.magReading.x,this->reads.magReading.y,this->reads.magReading.z);
-    }
-    else
-    {
-        MadgwickAHRSupdateIMU(_gyroMean.x,_gyroMean.y,_gyroMean.z,_accelMean.x,_accelMean.y,_accelMean.z);
-    }
+    // we are going to use Kalman filter to estimate Yaw rotation using Gyroscope and encoders.
 
-    float _roll=0.f;
-    float _pitch=0.f;
-    float _yaw=0.f;
+    this->reads.yaw=this->rotor.step(this->reads.eyaw,_gyroMean.z);
 
-    MadgwickQuaterionToEuler(&_roll,&_pitch,&_yaw);
-
-    // to do:
-    this->reads.yaw=this->rotor.step(this->reads.eyaw,_yaw);
-
-    this->reads.position.x=this->posfilter_x.step(this->reads.epostion.x,_accelMean.x);
-    this->reads.position.y=this->posfilter_y.step(this->reads.epostion.y,_accelMean.y);
-
-    // leave it this way for now
-    this->reads.yaw = _yaw;
-
-    // leave it this way for now
     this->reads.position.x = this->reads.epostion.x;
     this->reads.position.y = this->reads.epostion.y;
 
