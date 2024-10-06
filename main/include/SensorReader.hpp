@@ -201,6 +201,13 @@ class SensorReader
     void updateRoationFilterCFG(const config::RotationFilterCFG& _config)
     {
         this->rotor.setFromCFG(_config);
+
+        this->Lock();
+
+        this->rotor.reset();
+        this->reads.yaw = 0.0;
+
+        this->Unlock();
     }
 
     config::RotationFilterCFG getRoationFilterCFG()

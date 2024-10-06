@@ -484,7 +484,6 @@ bool ConfigLoader::fromBuffer(const char* buffer,RotationFilterCFG& cfg)
 
     cfg.R=obj->valuedouble;
 
-
     cJSON_Delete(json);
 
     return true;

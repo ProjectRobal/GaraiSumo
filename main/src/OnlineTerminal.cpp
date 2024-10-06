@@ -1245,6 +1245,7 @@ void OnlineTerminal::start()
     httpd_config_t config= HTTPD_DEFAULT_CONFIG();
 
     config.max_uri_handlers = 20;
+    config.stack_size = 4096*2;
 
 
     if(httpd_start(&this->server,&config) == ESP_OK)
