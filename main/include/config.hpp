@@ -89,7 +89,7 @@ const adc_channel_t KTIRChannel[]={ADC_CHANNEL_3,ADC_CHANNEL_4,ADC_CHANNEL_5};
 #define PULSE_TO_DISTANCE 0.33953f
 
 //distance between wheel and it's mass center in cm
-#define D_WHEELS 11.13f
+#define D_WHEELS 5.565f //11.13f
 
 //a weight in delta degree and delta distance change, a weight for IMU is (1-PCNT_CONFIDENCE_F)
 #define PCNT_CONFIDENCE_F 0.6f
