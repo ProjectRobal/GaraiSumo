@@ -53,14 +53,10 @@ class PID
     void setParams(T p,T i=0,T d=0)
     {
         _p=p;
-        if(i)
-        {
-            setI(i);
-        }
-        if(d)
-        {
-            setD(d);
-        }
+        
+        setI(i);
+
+        setD(d);
 
         this->reset();
     }
