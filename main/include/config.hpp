@@ -85,11 +85,11 @@ const adc_channel_t KTIRChannel[]={ADC_CHANNEL_3,ADC_CHANNEL_4,ADC_CHANNEL_5};
 // a error between measurmed distance above which there will be only IMU reading taken to account
 #define DISTANCE_TOLERANCE 0.5
 
-//constant use to convert pulse into distance in cm
-#define PULSE_TO_DISTANCE 8.f
+//constant use to convert pulse into distance in cm ( pulses_per_revolution * 1/(2*M_PI*wheel_radius) )
+#define PULSE_TO_DISTANCE 0.33953f
 
 //distance between wheel and it's mass center in cm
-#define D_WHEELS 4.f
+#define D_WHEELS 11.13f
 
 //a weight in delta degree and delta distance change, a weight for IMU is (1-PCNT_CONFIDENCE_F)
 #define PCNT_CONFIDENCE_F 0.6f
