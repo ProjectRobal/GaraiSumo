@@ -30,6 +30,8 @@
 #include "HMC5883.hpp"
 #include "QMC5883.hpp"
 
+#include "BetaFilter.hpp"
+
 extern "C"
 {
     #include "MadgwickAHRS.h"
@@ -119,6 +121,9 @@ class SensorReader
 
     SingleCounter ch1;
     SingleCounter ch2;
+
+    BetaFilter left_motor_filter;
+    BetaFilter right_motor_filter;
 
     MeanBuffer<Vec3Df,10> gyroMean;
 
