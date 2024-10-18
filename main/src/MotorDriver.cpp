@@ -234,6 +234,11 @@ void MotorDriver::loop()
         // error between target angel and current angel 
         float d0 = this->target_yaw-readings.yaw;   
 
+        if( abs(d0) <= 0.1f)
+        {
+            d0 = 0.f;
+        }
+
         float angular_speed = this->turning_power*this->motorA.step(d0);
 
         float target_speed_left = this->target_speed + D_WHEELS*angular_speed;
