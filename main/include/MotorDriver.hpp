@@ -70,6 +70,8 @@ class MotorDriver
         this->last_A_direction = false;
         this->last_B_direction = false;
 
+        this->turning_power = 2048.f;
+
         this->stop();
     }
 

@@ -129,8 +129,8 @@ void app_main()
     // it cannot sace configuration
     if(!config::ConfigLoader::load(sensor_cfg))
     {
-        sensor_cfg.calibr.accelerometer=Vec3Di(0);
-        sensor_cfg.calibr.gyroscope=Vec3Di(0);  
+        sensor_cfg.calibr.accelerometer=Vec3Di(924,-119,7081);
+        sensor_cfg.calibr.gyroscope=Vec3Di(-496,26,-143);  
         sensor_cfg.beta = Madgwick_betaDef;
 
         config::ConfigLoader::save(sensor_cfg);
