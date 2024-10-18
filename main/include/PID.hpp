@@ -33,7 +33,7 @@ class PID
         last_output=0;
         _dt=0.f;
         integral=0;
-        max_integral=10;
+        max_integral=25;
     }
 
     PID(T p,T i,T d)
@@ -42,6 +42,12 @@ class PID
         _p = p;
         _i = i;
         _d = d;
+    }
+
+    void reset()
+    {
+        this->last_output = 0;
+        this->integral = 0;
     }   
 
     void setParams(T p,T i=0,T d=0)
@@ -55,6 +61,8 @@ class PID
         {
             setD(d);
         }
+
+        this->reset();
     }
 
     void setMax(T _max)
@@ -72,16 +80,22 @@ class PID
     void setP(T p)
     {
         _p=p;
+
+        this->reset();
     }
 
     void setI(T i)
     {
         _i=i;
+
+        this->reset();
     }
 
     void setD(T d)
     {
         _d=d;
+
+        this->reset();
     }
 
     T P() const
@@ -102,6 +116,8 @@ class PID
     void setTimeStep(double dt)
     {
         _dt=dt;
+
+        this->reset();
     }
 
     const double& TimeStep() const
