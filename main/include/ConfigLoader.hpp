@@ -32,13 +32,13 @@ extern "C"
 
 #include "MPU6050.hpp"
 
-#define SENSOR_CFG_FILENAME "sensor.json"
+#define SENSOR_CFG_FILENAME "littlefs/sensor.json"
 
-#define MAG_CFG_FILENAME "mag.json"
+#define MAG_CFG_FILENAME "littlefs/mag.json"
 
-#define MOTOR_PID_FILENAME "motor_pid.json"
+#define MOTOR_PID_FILENAME "littlefs/motor_pid.json"
 
-#define ROTATION_FILTER_FILENAME "rotor.json"
+#define ROTATION_FILTER_FILENAME "littlefs/rotor.json"
 
 #define CONFIG_FOLDER "cfg"
 

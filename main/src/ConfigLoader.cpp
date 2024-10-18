@@ -367,7 +367,7 @@ bool ConfigLoader::toBuffer(char* buffer,size_t size,const MotorCFG& cfg)
 
     cJSON_AddItemToObject(json,"motor1",pid1);
     cJSON_AddItemToObject(json,"motor2",pid2);
-    cJSON_AddItemToObject(json,"motor2",pid3);
+    cJSON_AddItemToObject(json,"motor3",pid3);
 
     if(!cJSON_PrintPreallocated(json,buffer,512,true))
     {
@@ -510,11 +510,11 @@ bool ConfigLoader::toBuffer(char* buffer,size_t size,const RotationFilterCFG& cf
 bool ConfigLoader::save(const SensorConfig& cfg)
 {
 
-    char filename[255]={0};
+    // char filename[255]={0};
 
-    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,SENSOR_CFG_FILENAME);
+    // sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,SENSOR_CFG_FILENAME);
 
-    FILE *file= fopen(filename,"w");
+    FILE *file= fopen(SENSOR_CFG_FILENAME,"w");
 
     if(!file)
     {
@@ -539,11 +539,11 @@ bool ConfigLoader::save(const SensorConfig& cfg)
 
 bool ConfigLoader::load(SensorConfig& cfg)
 {
-    char filename[255]={0};
+    // char filename[255]={0};
 
-    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,SENSOR_CFG_FILENAME);
+    // sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,SENSOR_CFG_FILENAME);
 
-    FILE *file= fopen(filename,"r");
+    FILE *file= fopen(SENSOR_CFG_FILENAME,"r");
 
     if(!file)
     {
@@ -563,11 +563,11 @@ bool ConfigLoader::load(SensorConfig& cfg)
 bool ConfigLoader::save(const MagConfig& cfg)
 {
 
-    char filename[255]={0};
+    // char filename[255]={0};
 
-    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,MAG_CFG_FILENAME);
+    // sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,MAG_CFG_FILENAME);
 
-    FILE *file= fopen(filename,"w");
+    FILE *file= fopen(MAG_CFG_FILENAME,"w");
 
     if(!file)
     {
@@ -592,11 +592,11 @@ bool ConfigLoader::save(const MagConfig& cfg)
 
 bool ConfigLoader::load(MagConfig& cfg)
 {
-    char filename[255]={0};
+    // char filename[255]={0};
 
-    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,MAG_CFG_FILENAME);
+    // sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,MAG_CFG_FILENAME);
 
-    FILE *file= fopen(filename,"r");
+    FILE *file= fopen(MAG_CFG_FILENAME,"r");
 
     if(!file)
     {
@@ -618,9 +618,9 @@ bool ConfigLoader::save(const MotorCFG& cfg)
 
     char filename[255]={0};
 
-    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,MOTOR_PID_FILENAME);
+    // sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,MOTOR_PID_FILENAME);
 
-    FILE *file= fopen(filename,"w");
+    FILE *file= fopen(MOTOR_PID_FILENAME,"w");
 
     if(!file)
     {
@@ -646,11 +646,11 @@ bool ConfigLoader::save(const MotorCFG& cfg)
 bool ConfigLoader::load(MotorCFG& cfg)
 {
 
-    char filename[255]={0};
+    // char filename[255]={0};
 
-    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,MOTOR_PID_FILENAME);
+    // sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,MOTOR_PID_FILENAME);
 
-    FILE *file= fopen(filename,"r");
+    FILE *file= fopen(MOTOR_PID_FILENAME,"r");
 
     if(!file)
     {
@@ -673,7 +673,7 @@ bool ConfigLoader::save(const PositionFilterCFG& cfg,const char* _filename)
 {
     char filename[255]={0};
 
-    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,_filename);
+    sprintf(filename,"/littlefs/%s",_filename);
 
     FILE *file= fopen(filename,"w");
 
@@ -702,7 +702,7 @@ bool ConfigLoader::load(PositionFilterCFG& cfg,const char* _filename)
 
     char filename[255]={0};
 
-    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,_filename);
+    sprintf(filename,"/littlefs/%s",_filename);
 
     FILE *file= fopen(filename,"r");
 
@@ -725,11 +725,11 @@ bool ConfigLoader::load(PositionFilterCFG& cfg,const char* _filename)
 bool ConfigLoader::save(const RotationFilterCFG& cfg)
 {
 
-    char filename[255]={0};
+    // char filename[255]={0};
 
-    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,ROTATION_FILTER_FILENAME);
+    // sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,ROTATION_FILTER_FILENAME);
 
-    FILE *file= fopen(filename,"w");
+    FILE *file= fopen(ROTATION_FILTER_FILENAME,"w");
 
     if(!file)
     {
@@ -755,11 +755,11 @@ bool ConfigLoader::save(const RotationFilterCFG& cfg)
 
 bool ConfigLoader::load(RotationFilterCFG& cfg)
 {
-    char filename[255]={0};
+    // char filename[255]={0};
 
-    sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,ROTATION_FILTER_FILENAME);
+    // sprintf(filename,"/littlefs/%s/%s",CONFIG_FOLDER,ROTATION_FILTER_FILENAME);
 
-    FILE *file= fopen(filename,"r");
+    FILE *file= fopen(ROTATION_FILTER_FILENAME,"r");
 
     if(!file)
     {

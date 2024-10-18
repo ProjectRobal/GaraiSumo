@@ -449,7 +449,7 @@ esp_err_t OnlineTerminal::ws_motor_control(httpd_req_t *req)
             float speed = motorA->valuedouble;
             float angel = motorB->valuedouble;
             mods.driver->setTargetSpeed(speed);
-            mods.driver->setTargetAngel(speed);
+            mods.driver->setTargetAngel(angel);
 
             this->clear_buf();
 
