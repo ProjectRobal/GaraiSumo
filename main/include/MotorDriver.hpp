@@ -55,15 +55,15 @@ class MotorDriver
     motorRight(1.f,0.f,0.f),
     automaticMode(true)
     {
-        this->motorA.setMin(-1.f);
+        this->motorA.setMin(0.f);
         this->motorA.setMax(1.f);
         this->motorA.setTimeStep(SAMPLE_TIME);
 
-        this->motorLeft.setMin(-1.f);
+        this->motorLeft.setMin(0.f);
         this->motorLeft.setMax(1.f);
         this->motorLeft.setTimeStep(SAMPLE_TIME);
 
-        this->motorRight.setMin(-1.f);
+        this->motorRight.setMin(0.f);
         this->motorRight.setMax(1.f);
         this->motorRight.setTimeStep(SAMPLE_TIME);
 
