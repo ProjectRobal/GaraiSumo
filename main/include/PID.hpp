@@ -120,7 +120,7 @@ class PID
         this->reset();
     }
 
-    const double& TimeStep() const
+    double TimeStep() const
     {
         return _dt;
     }
