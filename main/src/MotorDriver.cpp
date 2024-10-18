@@ -234,7 +234,7 @@ void MotorDriver::loop()
         // error between target angel and current angel 
         float d0 = this->target_yaw-readings.yaw;   
 
-        if( abs(d0) <= 1f)
+        if( abs(d0) <= 1.f)
         {
             d0 = 0.f;
         }
