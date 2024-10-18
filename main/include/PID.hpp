@@ -33,7 +33,7 @@ class PID
         last_output=0;
         _dt=0.f;
         integral=0;
-        max_integral=0.25;
+        max_integral=10;
     }
 
     PID(T p,T i,T d)
