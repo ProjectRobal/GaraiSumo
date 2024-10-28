@@ -57,8 +57,10 @@ class IterRegulator
 
     float step(float error)
     {
-
-        this->P = this->last_step / ( error - this->last_error ) ;
+        if( this->last_error != 0 )
+        {
+            this->P = this->last_step / ( error - this->last_error ) ;
+        }
 
         this->last_step = error*this->P;
 
