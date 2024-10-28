@@ -69,7 +69,7 @@ class IterRegulator
         //      this->last_step = this->max_step*(this->last_step/abs(this->last_step));
         // }
 
-        if( -error > 0 )
+        if( error > 0 )
         {
             this->power += this->max_step;
         }
