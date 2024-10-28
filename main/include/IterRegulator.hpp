@@ -55,12 +55,25 @@ class IterRegulator
         }
     }
 
-    float step(float error)
+    float step(float targetSpeed,float speed)
     {
         // if( this->last_error != 0 )
         // {
         //     this->P = this->last_step / ( error - this->last_error ) ;
         // }
+
+        if( this->power > 0 )
+        {
+
+            this->P = this->speed / this->power;
+
+        }
+        else
+        {
+            this->power += this->max_step;
+        }
+
+        this->power = this->P*this->targetSpeed;
 
         // this->last_step = error*this->P;
 
@@ -68,13 +81,6 @@ class IterRegulator
         // {
         //      this->last_step = this->max_step*(this->last_step/abs(this->last_step));
         // }
-
-        if( error > 0 )
-        {
-            this->power += this->max_step;
-        }
-
-        this->last_error = error;
 
         this->filter();
 
