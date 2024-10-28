@@ -64,7 +64,10 @@ class IterRegulator
 
         this->last_step = error*this->P;
 
-        this->last_step = abs(this->last_step) > this->max_step ? this->max_step*(this->last_step/abs(this->last_step)) : this->last_step;
+        if( abs(this->last_step) > this->max_step )
+        {
+             this->last_step = this->max_step*(this->last_step/abs(this->last_step));
+        }
 
         this->power += this->last_step;
 
