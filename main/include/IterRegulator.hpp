@@ -65,7 +65,7 @@ class IterRegulator
         if( this->power > 0 && speed > 0 )
         {
 
-            this->P = speed / this->power;
+            this->P = this->power/speed;
 
             this->power = this->P*targetSpeed;
 
