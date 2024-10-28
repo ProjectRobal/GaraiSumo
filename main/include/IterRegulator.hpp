@@ -67,13 +67,13 @@ class IterRegulator
 
             this->P = speed / this->power;
 
+            this->power = this->P*targetSpeed;
+
         }
         else
         {
             this->power += this->max_step;
         }
-
-        this->power = this->P*targetSpeed;
 
         // this->last_step = error*this->P;
 
