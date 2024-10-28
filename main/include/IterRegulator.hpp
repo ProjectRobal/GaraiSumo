@@ -62,7 +62,7 @@ class IterRegulator
         //     this->P = this->last_step / ( error - this->last_error ) ;
         // }
 
-        if( this->power > 0 && this->speed > 0 )
+        if( this->power > 0 && speed > 0 )
         {
 
             this->P = speed / this->power;
