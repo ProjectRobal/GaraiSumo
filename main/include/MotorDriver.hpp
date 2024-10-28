@@ -61,8 +61,8 @@ class MotorDriver
     motorA(1.f,0.f,0.f),
     motorLeft(1.f,0.f,0.f),
     motorRight(1.f,0.f,0.f),
-    regLeft(0.00036/8.f,0.001),
-    regRight(0.00036/8.f,0.001),
+    regLeft(0.00036/8.f,0.0625),
+    regRight(0.00036/8.f,0.0625),
     automaticMode(true)
     {
         this->motorA.setMin(-1.f);
