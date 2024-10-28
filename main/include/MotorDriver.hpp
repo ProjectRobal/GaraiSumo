@@ -51,6 +51,9 @@ class MotorDriver
 
     public:
 
+    // motor A max speed 2800
+    // motor B max speed 4500
+
     MotorDriver()
     : target_yaw(0.f),
     target_speed(0),
@@ -58,8 +61,8 @@ class MotorDriver
     motorA(1.f,0.f,0.f),
     motorLeft(1.f,0.f,0.f),
     motorRight(1.f,0.f,0.f),
-    regLeft(10,256),
-    regRight(10,256),
+    regLeft(0.00036/8.f,256),
+    regRight(0.00036/8.f,256),
     automaticMode(true)
     {
         this->motorA.setMin(-1.f);
