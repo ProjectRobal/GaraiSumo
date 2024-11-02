@@ -21,6 +21,8 @@
  Left Motor Speed Max: 6500
  Right Motor Speed Max: 2750 at this moment
 
+ Left motor is a bit weaker and robot is turning left.
+
 */
 
 class MotorDriver
@@ -71,11 +73,11 @@ class MotorDriver
         this->motorA.setMax(1.f);
         this->motorA.setTimeStep(SAMPLE_TIME);
 
-        this->motorLeft.setMin(0.f);
+        this->motorLeft.setMin(-1.f);
         this->motorLeft.setMax(1.f);
         this->motorLeft.setTimeStep(SAMPLE_TIME);
 
-        this->motorRight.setMin(0.f);
+        this->motorRight.setMin(-1.f);
         this->motorRight.setMax(1.f);
         this->motorRight.setTimeStep(SAMPLE_TIME);
 
