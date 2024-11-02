@@ -250,15 +250,15 @@ void MotorDriver::loop()
         int32_t PowerLeft = this->motorLeft.step(dSpeedLeft)*MAX_ENGINE_POWER;
         int32_t PowerRight = this->motorRight.step(dSpeedRight)*MAX_ENGINE_POWER;
 
-        if( target_speed_left < 0 )
-        {
-            PowerLeft = -PowerLeft;
-        }
+        // if( target_speed_left < 0 )
+        // {
+        //     PowerLeft = -PowerLeft;
+        // }
 
-        if( target_speed_right < 0 )
-        {
-            PowerRight = -PowerRight;
-        }
+        // if( target_speed_right < 0 )
+        // {
+        //     PowerRight = -PowerRight;
+        // }
 
         this->set_channelB(PowerLeft);
         this->set_channelA(PowerRight);
