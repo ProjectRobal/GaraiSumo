@@ -77,13 +77,13 @@ void MotorDriver::init_ledc()
 
 void MotorDriver::set_channelA(int32_t pwr)
 {
-    if(pwr>0)
+    if(pwr<0)
     {
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,pwr);
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_1,0);
         this->last_A_direction = false;
     }
-    else if(pwr<0)
+    else if(pwr>0)
     {
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,0);
         ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_1,-pwr);

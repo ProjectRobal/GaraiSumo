@@ -16,6 +16,13 @@
 
 #include "IterRegulator.hpp"
 
+/*
+
+ Left Motor Speed Max: 6500
+ Right Motor Speed Max: 2750 at this moment
+
+*/
+
 class MotorDriver
 {
     private:
