@@ -260,8 +260,8 @@ void MotorDriver::loop()
         //     PowerRight = -PowerRight;
         // }
 
-        this->set_channelB(PowerLeft);
-        this->set_channelA(PowerRight);
+        this->set_channelB(PowerRight);
+        this->set_channelA(PowerLeft);
 
 
     }
