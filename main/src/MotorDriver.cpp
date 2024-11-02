@@ -247,8 +247,8 @@ void MotorDriver::loop()
         float dSpeedLeft = abs(target_speed_left) - abs(readings.motorSpeed[1]); 
         float dSpeedRight = abs(target_speed_right) - abs(readings.motorSpeed[0]); 
 
-        int32_t PowerLeft = this->regLeft.step(abs(target_speed_left),abs(readings.motorSpeed[1]))*MAX_ENGINE_POWER;
-        int32_t PowerRight = this->regRight.step(abs(target_speed_right),abs(readings.motorSpeed[0]))*MAX_ENGINE_POWER;
+        int32_t PowerLeft = this->motorLeft.step(dSpeedLeft)*MAX_ENGINE_POWER;
+        int32_t PowerRight = this->motorRight.step(dSpeedRight)*MAX_ENGINE_POWER;
 
         if( target_speed_left < 0 )
         {

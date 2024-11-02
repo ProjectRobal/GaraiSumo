@@ -37,9 +37,6 @@ class MotorDriver
 
     PID<float> motorLeft;
     PID<float> motorRight;
-
-    IterRegulator regLeft;
-    IterRegulator regRight;
     
     bool automaticMode;
 
@@ -61,8 +58,6 @@ class MotorDriver
     motorA(1.f,0.f,0.f),
     motorLeft(1.f,0.f,0.f),
     motorRight(1.f,0.f,0.f),
-    regLeft(0.00036/8.f,0.2),
-    regRight(0.00036/8.f,0.2),
     automaticMode(true)
     {
         this->motorA.setMin(-1.f);
@@ -79,12 +74,6 @@ class MotorDriver
 
         this->last_A_direction = false;
         this->last_B_direction = false;
-
-        this->regLeft.setMax(1.f);
-        this->regLeft.setMin(0.f);
-
-        this->regRight.setMax(1.f);
-        this->regRight.setMin(0.f);
 
         this->turning_power = 350;
 
