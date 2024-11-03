@@ -101,15 +101,15 @@ class MotorDriver
     {
         this->motorA.setMin(-1.f);
         this->motorA.setMax(1.f);
-        this->motorA.setTimeStep(MOTOR_UPDATE_TIME);
+        this->motorA.setTimeStep(ENCODER_UPDATE_TIME);
 
         this->motorLeft.setMin(0.f);
         this->motorLeft.setMax(1.f);
-        this->motorLeft.setTimeStep(MOTOR_UPDATE_TIME);
+        this->motorLeft.setTimeStep(ENCODER_UPDATE_TIME);
 
         this->motorRight.setMin(0.f);
         this->motorRight.setMax(1.f);
-        this->motorRight.setTimeStep(MOTOR_UPDATE_TIME);
+        this->motorRight.setTimeStep(ENCODER_UPDATE_TIME);
 
         this->last_A_direction = false;
         this->last_B_direction = false;
