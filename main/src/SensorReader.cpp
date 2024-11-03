@@ -120,8 +120,8 @@ void SensorReader::init_peripherials()
 
     //----------------------------
 
-    left_motor_filter.setBeta(1.f);
-    right_motor_filter.setBeta(1.f);
+    left_motor_filter.setBeta(0.25f);
+    right_motor_filter.setBeta(0.25f);
 
     left_motor_filter.setCutOff(1.f);
     right_motor_filter.setCutOff(1.f);
@@ -402,12 +402,13 @@ void SensorReader::read_encoders()
     float speed_left = dl/ENCODER_UPDATE_TIME;
     float speed_right = dr/ENCODER_UPDATE_TIME;
 
-    this->reads.motorSpeed[0] = speed_left;//this->left_motor_filter.next(speed_left);
-    this->reads.motorSpeed[1] = speed_right;//this->right_motor_filter.next(speed_right);
+    this->reads.motorSpeed[0] = this->left_motor_filter.next(speed_left);
+    this->reads.motorSpeed[1] = this->right_motor_filter.next(speed_right);
 
     this->reads.epostion.x += dx*cos(this->reads.eyaw);
     this->reads.epostion.y += dx*sin(this->reads.eyaw);
 
+    xEventGroupSetBits(MotorDriver::motorEvent,1<<0);
 
     //KTIR floor sensor reading
 

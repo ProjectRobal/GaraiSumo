@@ -6,7 +6,13 @@
 
 #include "starter.hpp"
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/event_groups.h>
+
 using shared::mods;
+
+// static EventGroupHandle_t MotorDriver::motorEvent = xEventGroupCreate();
 
 static void freeRTOS_task(void* arg)
 {
@@ -16,7 +22,8 @@ static void freeRTOS_task(void* arg)
     {
         driver->loop();
 
-        vTaskDelay(MOTOR_UPDATE_TIME_MS/portTICK_PERIOD_MS);
+        // vTaskDelay(MOTOR_UPDATE_TIME_MS/portTICK_PERIOD_MS);
+        xEventGroupWaitBits(MotorDriver::motorEvent,1<<0,true,true,portMAX_DELAY);
     }
 }
 

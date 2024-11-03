@@ -24,6 +24,11 @@
 
 #include "starter.hpp"
 
+#include "MotorDriver.hpp"
+
+EventGroupHandle_t MotorDriver::motorEvent = xEventGroupCreate();
+
+
 extern "C"
 {
 

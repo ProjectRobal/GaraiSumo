@@ -9,6 +9,10 @@
 #include <driver/gpio.h>
 #include <driver/ledc.h>
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/event_groups.h>
+
 #include "PID.hpp"
 
 #include "SensorReader.hpp"
@@ -80,6 +84,8 @@ class MotorDriver
     bool last_B_direction;
 
     public:
+
+    static EventGroupHandle_t motorEvent;
 
     // motor A max speed 2800
     // motor B max speed 4500
