@@ -97,11 +97,11 @@ class MotorDriver
         this->motorA.setMax(1.f);
         this->motorA.setTimeStep(MOTOR_UPDATE_TIME);
 
-        this->motorLeft.setMin(-1.f);
+        this->motorLeft.setMin(0.f);
         this->motorLeft.setMax(1.f);
         this->motorLeft.setTimeStep(MOTOR_UPDATE_TIME);
 
-        this->motorRight.setMin(-1.f);
+        this->motorRight.setMin(0.f);
         this->motorRight.setMax(1.f);
         this->motorRight.setTimeStep(MOTOR_UPDATE_TIME);
 
