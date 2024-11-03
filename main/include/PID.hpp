@@ -11,7 +11,7 @@ class PID
     T _i;
     T _d;
 
-    T last_output;
+    T last_error;
     T integral;
     T max_integral;
 
@@ -30,7 +30,7 @@ class PID
         _p=0;
         _i=0;
         _d=0;
-        last_output=0;
+        last_error=0;
         _dt=0.f;
         integral=0;
         max_integral=10;
@@ -46,7 +46,7 @@ class PID
 
     void reset()
     {
-        this->last_output = 0;
+        this->last_error = 0;
         this->integral = 0;
     }   
 
@@ -134,9 +134,9 @@ class PID
             integral = -max_integral;
         }
 
-        last_output=filter(_p*x + integral + _d*((x-last_output)/dt));
+        last_error = x;
 
-        return last_output;
+        return filter(_p*x + integral + _d*((x-last_error)/dt));
     }
 
     T step(T x)
