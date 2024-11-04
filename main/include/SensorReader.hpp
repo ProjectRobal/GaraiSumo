@@ -125,6 +125,9 @@ class SensorReader
     BetaFilter left_motor_filter;
     BetaFilter right_motor_filter;
 
+    BetaFilter left_motor_filter1;
+    BetaFilter right_motor_filter1;
+
     MeanBuffer<Vec3Df,10> gyroMean;
 
     MeanBuffer<Vec3Df,10> accelMean;

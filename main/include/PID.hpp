@@ -134,9 +134,11 @@ class PID
             integral = -max_integral;
         }
 
+        T output = filter(_p*x + integral + _d*((x-last_error)/dt));
+
         last_error = x;
 
-        return filter(_p*x + integral + _d*((x-last_error)/dt));
+        return output;
     }
 
     T step(T x)

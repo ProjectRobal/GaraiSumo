@@ -120,11 +120,17 @@ void SensorReader::init_peripherials()
 
     //----------------------------
 
-    left_motor_filter.setBeta(0.9f);
-    right_motor_filter.setBeta(0.9f);
+    left_motor_filter.setBeta(0.45f);
+    right_motor_filter.setBeta(0.45f);
 
     left_motor_filter.setCutOff(1.f);
     right_motor_filter.setCutOff(1.f);
+
+    left_motor_filter1.setBeta(0.35f);
+    right_motor_filter1.setBeta(0.35f);
+
+    left_motor_filter1.setCutOff(1.f);
+    right_motor_filter1.setCutOff(1.f);
 
     }
 
@@ -402,8 +408,8 @@ void SensorReader::read_encoders()
     float speed_left = dl/ENCODER_UPDATE_TIME;
     float speed_right = dr/ENCODER_UPDATE_TIME;
 
-    this->reads.motorSpeed[0] = this->left_motor_filter.next(speed_left);
-    this->reads.motorSpeed[1] = this->right_motor_filter.next(speed_right);
+    this->reads.motorSpeed[0] = this->left_motor_filter1.next(this->left_motor_filter.next(speed_left));
+    this->reads.motorSpeed[1] = this->right_motor_filter1.next(this->right_motor_filter.next(speed_right));
 
     this->reads.epostion.x += dx*cos(this->reads.eyaw);
     this->reads.epostion.y += dx*sin(this->reads.eyaw);
