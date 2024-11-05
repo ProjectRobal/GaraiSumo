@@ -139,6 +139,8 @@ void SensorReader::init_sensors()
 
     this->imuEvent = xEventGroupCreate();
 
+    this->fusionEvent = xEventGroupCreate();
+
     gpio_set_direction(MPU6050_INT_PIN,GPIO_MODE_INPUT);
 
     gpio_set_intr_type(MPU6050_INT_PIN,GPIO_INTR_NEGEDGE);
@@ -327,6 +329,10 @@ SensorReader::SensorReader()
     
 }
 
+void SensorReader::wait_for_fusion()
+{
+    xEventGroupWaitBits(this->fusionEvent,1<<0,true,true,portMAX_DELAY);
+}
 
 void SensorReader::init_tasks()
 {
@@ -455,6 +461,8 @@ void SensorReader::fusion()
 
     ESP_LOGD("Sensors","Yaw: %f",this->reads.yaw);
     ESP_LOGD("Sensors","X: %f Y: %f",this->reads.position.x,this->reads.position.y);
+
+    xEventGroupSetBits(this->fusionEvent,1<<0);
 
     this->Unlock();
 }

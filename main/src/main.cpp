@@ -5,6 +5,8 @@
 #include <nvs_flash.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <freertos/semphr.h>
+
 
 #include <esp_log.h>
 
@@ -25,6 +27,11 @@
 #include "starter.hpp"
 
 #include "MotorDriver.hpp"
+
+#include "Tactics.hpp"
+
+#include "Tactics_list.hpp"
+
 
 EventGroupHandle_t MotorDriver::motorEvent = xEventGroupCreate();
 
@@ -48,10 +55,21 @@ void oled_loop(void *arg);
 
 void main_loop(void *arg);
 
+void tactic_loop(void *arg);
+
 
 static StackType_t* oled_stack;
 
 static StaticTask_t oled_task;
+
+
+static StackType_t* tactic_stack;
+
+static StaticTask_t tactic_task;
+
+
+tactics::Tactics * policy;
+
 
 void app_main()
 {
@@ -99,6 +117,8 @@ void app_main()
     config::RotationFilterCFG rotor;
 
     config::MagConfig mag;
+
+    mods.current_tactics.set(Tactics_type::DoNothing);
 
     mods.sensors=new sensors::SensorReader();
 
@@ -236,13 +256,40 @@ void app_main()
     // init screen task
     // to do
 
-    
+    policy = select_tactics(mods.current_tactics.get());
 
+    tactic_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
 
-
+    if( xTaskCreateStaticPinnedToCore(tactic_loop,"Tactic",MIN_TASK_STACK_SIZE,NULL,tskIDLE_PRIORITY+1,tactic_stack,&tactic_task,!xPortGetCoreID()) == NULL )
+    {
+        ESP_LOGE("MAIN","Cannot create tactic task");
+    }
 }
 
+void tactic_loop(void*arg)
+{
+    while(true)
+    {
+        if( !starter_state() )
+        {
+            vTaskDelay(100/portTICK_PERIOD_MS);
+            continue;
+        }
 
+        Tactics_type curr_tactic = mods.current_tactics.get();
+
+        if( curr_tactic != policy->type() )
+        {
+            delete policy;
+            policy = select_tactics(curr_tactic);
+        }
+
+        shared::mods.sensors->wait_for_fusion();
+
+        policy->loop();
+
+    }
+}
 
 void oled_loop(void *arg)
 {

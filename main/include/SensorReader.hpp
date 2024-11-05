@@ -147,6 +147,8 @@ class SensorReader
 
     EventGroupHandle_t imuEvent;
 
+    EventGroupHandle_t fusionEvent;
+
     // initialize magnetrometer
     void init_mag();
 
@@ -174,6 +176,8 @@ class SensorReader
     public:
 
     SensorReader();
+
+    void wait_for_fusion();
 
     // init peripherials and sensors
     void init(const config::SensorConfig& _config);
