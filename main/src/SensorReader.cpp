@@ -479,7 +479,7 @@ void SensorReader::tofs_read()
     for(uint16_t& dis : this->reads.distances)
     {
         // out of sight
-        dis=8191;
+        dis=8190;
     }
 
     for(uint8_t i=0;i<NUM_OF_SENSORS;++i)
