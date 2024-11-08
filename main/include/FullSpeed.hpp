@@ -29,7 +29,7 @@ namespace tactics
 
         void loop(){
 
-            float speed = -750.f;
+            float speed = 0.f;
 
             shared::mods.sensors->Lock();
 
