@@ -6,6 +6,7 @@ import json
 
 import time
 
+import numpy as np
 
 def prepare_line(json:dict,end="\n"):
     
@@ -57,7 +58,16 @@ def main():
                 # print("T: {} s Left: {} speed Right: {} speed Yaw: {}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"],readings["yaw"]))
                 
                 # print("{};{};{};{}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"]/0.5,readings["yaw"]))
-                print(readings["T"]," ",readings["distances"])
+                
+                id = np.argmin(readings["distances"])
+                
+                t_yaw = ( id - 8 )*20
+                
+                if t_yaw < 0.0:
+                    t_yaw = 360.0 + t_yaw
+                
+                print(readings["T"]," target angle: ",t_yaw," angle: ",readings["yaw"]," ",readings["distances"])
+                
                 
                 # file.write(prepare_line(readings))
                 

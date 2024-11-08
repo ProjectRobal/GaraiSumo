@@ -57,10 +57,10 @@ namespace tactics
             {
                 float angle = ( target_id - 8 ) * 20;
 
-                if( angle < 0.f )
-                {
-                    angle = 360.f + angle;
-                }
+                // if( angle < 0.f )
+                // {
+                //     angle = 360.f + angle;
+                // }
 
                 this->target_angel = angle;
             }

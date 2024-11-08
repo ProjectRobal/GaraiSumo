@@ -494,6 +494,11 @@ void SensorReader::tofs_read()
 
         angel=SensorAngleOffset[i]+this->reads.yaw;
 
+        if( angel < 0.f )
+        {
+            angel = 360 + angel;
+        }
+
         this->reads.distances[this->from_angel_to_sensor_index(angel)]=distance;
 
     }
