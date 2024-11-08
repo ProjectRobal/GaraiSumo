@@ -56,7 +56,7 @@ def main():
                 
                 # print("T: {} s Left: {} speed Right: {} speed Yaw: {}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"],readings["yaw"]))
                 
-                print("{};{};{};{}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"]/0.6,readings["yaw"]))
+                print("{};{};{};{}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"]/0.5,readings["yaw"]))
                 
                 # file.write(prepare_line(readings))
                 
