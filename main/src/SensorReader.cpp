@@ -395,13 +395,13 @@ void SensorReader::read_encoders()
     step_ch2 = shared::mods.driver->channelBDirection() ? -step_ch2 : step_ch2;
 
     float dl = ((float)step_ch1)/PULSE_TO_DISTANCE;
-    float dr = (((float)step_ch2)/PULSE_TO_DISTANCE)*1.6666666667;
+    float dr = ((float)step_ch2)/PULSE_TO_DISTANCE;
     
     //distance
-    float dx = (dl+dr)/2.f;
+    float dx = (dl+(dr*0.6f))/2.f;
 
     //change of rotation
-    float d0 = (dl-dr)/(2.f*D_WHEELS);
+    float d0 = (dl-(dr*0.6f))/(2.f*D_WHEELS);
 
     this->reads.eyaw += d0;
 
