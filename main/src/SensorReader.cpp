@@ -401,7 +401,7 @@ void SensorReader::read_encoders()
     float dx = (dl+dr)/2.f;
 
     //change of rotation
-    float d0 = (dl-dr)/(2.f*D_WHEELS);
+    float d0 = (dl-(dr/0.6))/(2.f*D_WHEELS);
 
     this->reads.eyaw += d0;
 
