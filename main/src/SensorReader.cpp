@@ -260,7 +260,7 @@ void SensorReader::read_adc()
     // }
 }
 
-uint8_t SensorReader::from_angel_to_sensor_index(const float& angel) const
+uint8_t SensorReader::from_angel_to_sensor_index(float angel) const
 {
     // we want index 8 to represent 0 radians
     return (8+(static_cast<uint8_t>(angel/SENSOR_SPACING)))%18;
@@ -479,7 +479,7 @@ void SensorReader::tofs_read()
     for(uint16_t& dis : this->reads.distances)
     {
         // out of sight
-        dis=8190;
+        dis=8191;
     }
 
     for(uint8_t i=0;i<NUM_OF_SENSORS;++i)

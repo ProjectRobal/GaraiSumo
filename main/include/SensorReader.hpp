@@ -168,7 +168,7 @@ class SensorReader
 
     void install_adc();
 
-    uint8_t from_angel_to_sensor_index(const float& angel) const; 
+    uint8_t from_angel_to_sensor_index(float angel) const; 
 
     float yaw_error_tolerance;
     float distance_error_tolerance;
