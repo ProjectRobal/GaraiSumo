@@ -29,7 +29,7 @@ namespace tactics
 
         void loop(){
 
-            float speed = 750.f;
+            float speed = -750.f;
 
             shared::mods.sensors->Lock();
 
@@ -43,7 +43,7 @@ namespace tactics
 
             for( uint16_t distance : readings.distances )
             {
-                if( distance < min_dist )
+                if( ( distance < min_dist ) && ( distance < 1500 ) )
                 {
                     min_dist = distance;
 
