@@ -116,3 +116,7 @@ const gpio_num_t MotorsPin[]={(gpio_num_t)40,(gpio_num_t)39,(gpio_num_t)2,(gpio_
 
 #define FUN_BUTTON GPIO_NUM_17
 #define MODE_BUTTON GPIO_NUM_18
+
+#define MOTOR_LEFT_DUMPING 1.f
+
+#define MOTOR_RIGHT_DUMPING 0.5f

@@ -398,10 +398,10 @@ void SensorReader::read_encoders()
     float dr = ((float)step_ch2)/PULSE_TO_DISTANCE;
     
     //distance
-    float dx = (dl+(dr/0.6))/2.f;
+    float dx = ((dl/MOTOR_LEFT_DUMPING)+(dr/MOTOR_RIGHT_DUMPING))/2.f;
 
     //change of rotation
-    float d0 = (dl-(dr/0.6))/(2.f*D_WHEELS);
+    float d0 = ((dl/MOTOR_LEFT_DUMPING)-(dr/MOTOR_RIGHT_DUMPING))/(2.f*D_WHEELS);
 
     this->reads.eyaw += d0;
 
