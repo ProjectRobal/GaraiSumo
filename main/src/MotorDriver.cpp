@@ -246,10 +246,17 @@ void MotorDriver::loop()
             d0 = 0.f;
         }
 
-        float angular_speed = this->turning_power*this->motorA.step(d0);
+        float w = this->turning_power;
 
-        float target_speed_left = (this->target_speed - D_WHEELS*angular_speed)*MOTOR_LEFT_DUMPING;
-        float target_speed_right = (this->target_speed + D_WHEELS*angular_speed)*MOTOR_RIGHT_DUMPING;
+        if( this->target_speed != 0.f )
+        {
+            w = this->target_speed;
+        }
+
+        float angular_speed = this->w*this->motorA.step(d0);
+
+        float target_speed_left = (this->target_speed - angular_speed)*MOTOR_LEFT_DUMPING;
+        float target_speed_right = (this->target_speed + angular_speed)*MOTOR_RIGHT_DUMPING;
 
         float dSpeedLeft = abs(target_speed_left) - abs(readings.motorSpeed[0]); 
         float dSpeedRight = abs(target_speed_right) - abs(readings.motorSpeed[1]); 
