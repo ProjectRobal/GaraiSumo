@@ -4,5 +4,6 @@
 
 #include "Tactics_type.hpp"
 
+#define TACTICS_COUNT 2
 
-tactics::Tactics* select_tactics(Tactics_type tactic);
+extern tactics::Tactics* tactics_list[TACTICS_COUNT];

@@ -118,7 +118,7 @@ void app_main()
 
     config::MagConfig mag;
 
-    mods.current_tactics.set(Tactics_type::DoNothing);
+    mods.current_tactics.set(0);
 
     mods.sensors=new sensors::SensorReader();
 
@@ -255,9 +255,6 @@ void app_main()
 
     // init screen task
     // to do
-
-    policy = select_tactics(mods.current_tactics.get());
-
     tactic_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
 
     if( xTaskCreateStaticPinnedToCore(tactic_loop,"Tactic",MIN_TASK_STACK_SIZE,NULL,tskIDLE_PRIORITY+1,tactic_stack,&tactic_task,!xPortGetCoreID()) == NULL )
@@ -276,17 +273,16 @@ void tactic_loop(void*arg)
             continue;
         }
 
-        Tactics_type curr_tactic = mods.current_tactics.get();
+        uint32_t curr_tactic = mods.current_tactics.get();
 
-        if( curr_tactic != policy->type() )
+        if( curr_tactic >= TACTICS_COUNT )
         {
-            delete policy;
-            policy = select_tactics(curr_tactic);
+            curr_tactic = 0;
         }
 
         shared::mods.sensors->wait_for_fusion();
 
-        policy->loop();
+        tactics_list[curr_tactic]->loop();
 
     }
 }

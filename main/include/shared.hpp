@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "MotorDriver.hpp"
 
 #include "RuraPlayer.hpp"
@@ -18,7 +20,7 @@ struct Modules
     sensors::SensorReader* sensors;
     RuraPlayer* audio_play;
     MotorDriver* driver;
-    LockRes<Tactics_type> current_tactics;
+    LockRes<uint32_t> current_tactics;
     
 };
 
