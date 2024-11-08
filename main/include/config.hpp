@@ -35,7 +35,7 @@ const float SensorAngleOffset[]={0.3490658504,0.3490658504*2,0.3490658504*3,0.34
 #define SENSOR_SPACING 0.3490658504
 // about 20 degress
 
-#define NUM_OF_SENSORS 1
+#define NUM_OF_SENSORS 5
 
 // ADC unit used for KTIR sampling
 #define KTIR_ADC 0
