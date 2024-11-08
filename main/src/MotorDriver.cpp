@@ -250,10 +250,10 @@ void MotorDriver::loop()
 
         if( this->target_speed != 0.f )
         {
-            w = this->target_speed;
+            w = -this->target_speed;
         }
 
-        float angular_speed = this->w*this->motorA.step(d0);
+        float angular_speed = w*this->motorA.step(d0);
 
         float target_speed_left = (this->target_speed - angular_speed)*MOTOR_LEFT_DUMPING;
         float target_speed_right = (this->target_speed + angular_speed)*MOTOR_RIGHT_DUMPING;
