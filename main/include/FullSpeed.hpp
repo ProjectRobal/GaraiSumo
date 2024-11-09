@@ -43,7 +43,7 @@ namespace tactics
 
             for( uint16_t distance : readings.distances )
             {
-                if( ( distance < min_dist ) && ( distance < 90 ) )
+                if( ( distance < min_dist ) && ( distance < 1000 ) )
                 {
                     min_dist = distance;
 
