@@ -37,7 +37,7 @@ extern "C"
     #include "MadgwickAHRS.h"
 }
 
-#define TOF_CONTINOUS
+// #define TOF_CONTINOUS
 
 namespace sensors
 {
