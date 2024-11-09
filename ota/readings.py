@@ -63,8 +63,6 @@ def main():
                 
                 t_yaw = ( id - 8 )*20
                 
-                if t_yaw < 0.0:
-                    t_yaw = 360.0 + t_yaw
                 
                 print(readings["T"]," target angle: ",t_yaw," angle: ",readings["yaw"]," ",readings["distances"])
                 

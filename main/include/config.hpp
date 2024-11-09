@@ -29,7 +29,7 @@
 const unsigned char SensorList[]={3,4,5,6,7};
 
 // specified an angel of each sensor
-const float SensorAngleOffset[]={-20,-20*2,0,20,20*2};
+const float SensorAngleOffset[]={-20*2,-20,0,20,20*2};
 
 // angel between each sensor, in radians
 #define SENSOR_SPACING 20
