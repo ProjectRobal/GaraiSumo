@@ -135,7 +135,7 @@ void SensorReader::init_peripherials()
 
     for( uint8_t i=0;i<NUM_OF_SENSORS;++i )
     {
-        tof_filter[i].setBeta(0.5f);
+        tof_filter[i].setBeta(0.2f);
         tof_filter[i].setCutOff(5.f);
     }
 
