@@ -60,7 +60,7 @@ namespace tactics
                 //     angle = 360.f + angle;
                 // }
 
-                this->target_angel = readings.yaw + ( target_id - 2 )*20.f;
+                this->target_angel = readings.yaw - ( target_id - 2 )*20.f;
             }
             else
             {
