@@ -263,14 +263,14 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         cJSON_AddBoolToObject(json,"IMUOnly",mods.sensors->read().IMUOnlyReading);
 
-        int _distances[18];
+        int _distances[NUM_OF_SENSORS];
 
-        for(uint8_t i=0;i<18;++i)
+        for(uint8_t i=0;i<;++i)
         {
             _distances[i]=mods.sensors->read().distances[i];
         }
 
-        cJSON* intarray=cJSON_CreateIntArray(_distances,18);
+        cJSON* intarray=cJSON_CreateIntArray(_distances,NUM_OF_SENSORS);
 
         cJSON_AddItemToObject(json,"distances",intarray);
 
