@@ -13,6 +13,7 @@
         "memory": "cpp",
         "random": "cpp",
         "future": "cpp",
-        "optional": "cpp"
+        "optional": "cpp",
+        "valarray": "cpp"
     }
 }

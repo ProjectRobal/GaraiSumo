@@ -269,9 +269,12 @@ void tactic_loop(void*arg)
     {
         if( !starter_state() )
         {
+            mods.audio_play->pause();
             vTaskDelay(100/portTICK_PERIOD_MS);
             continue;
         }
+
+        mods.audio_play->play();
 
         uint32_t curr_tactic = mods.current_tactics.get();
 
