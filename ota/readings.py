@@ -61,7 +61,7 @@ def main():
                 
                 id = np.argmin(readings["distances"])                
                 
-                print(readings["T"]," target: ",readings["yaw"] + (id-2)*20," angle: ",readings["yaw"]," ",readings["distances"])
+                print(readings["T"]," target: ",readings["yaw"] - (id-2)*20," angle: ",readings["yaw"]," ",readings["distances"])
                 print("Lowest yaw: ",readings["distances"][id])
                 
                 

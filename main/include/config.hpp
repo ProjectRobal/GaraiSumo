@@ -26,7 +26,7 @@
 #define BATTERY_ADC_CHANNEL ADC_CHANNEL_8
 
 // specified multiplexer ports where sensors are connected
-const unsigned char SensorList[]={3,4,5,6,7};
+const unsigned char SensorList[]={3,5,4,6,7};
 
 // specified an angel of each sensor
 const float SensorAngleOffset[]={-20*2,-20,0,20,20*2};
