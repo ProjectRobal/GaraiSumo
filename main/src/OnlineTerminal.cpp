@@ -265,7 +265,7 @@ esp_err_t OnlineTerminal::ws_sensors_reading(httpd_req_t *req)
 
         int _distances[NUM_OF_SENSORS];
 
-        for(uint8_t i=0;i<;++i)
+        for(uint8_t i=0;i<NUM_OF_SENSORS;++i)
         {
             _distances[i]=mods.sensors->read().distances[i];
         }
