@@ -499,7 +499,7 @@ void SensorReader::tofs_read()
             angel = 360 + angel;
         }
 
-        this->reads.distances[this->from_angel_to_sensor_index(angel)]=distance;
+        this->reads.distances[i]=distance;
 
     }
 

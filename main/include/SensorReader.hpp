@@ -51,7 +51,7 @@ struct Readings
         float battery_voltage = 0.f;
 
         // distance for each direction
-        uint16_t distances[18] = {0};
+        uint16_t distances[NUM_OF_SENSORS] = {0};
         // current degree in yaw axis
         float yaw = 0.f;
 

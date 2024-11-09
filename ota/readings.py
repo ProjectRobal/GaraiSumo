@@ -59,12 +59,10 @@ def main():
                 
                 # print("{};{};{};{}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"]/0.5,readings["yaw"]))
                 
-                id = np.argmin(readings["distances"])
+                id = np.argmin(readings["distances"])                
                 
-                t_yaw = ( id - 8 )*20
-                
-                
-                print(readings["T"]," target angle: ",t_yaw," angle: ",readings["yaw"]," ",readings["distances"])
+                print(readings["T"]," angle: ",readings["yaw"]," ",readings["distances"])
+                print("Lowest yaw: ",readings["distances"][id])
                 
                 
                 # file.write(prepare_line(readings))

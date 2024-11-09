@@ -53,16 +53,14 @@ namespace tactics
                 id++;
             }
 
-            if( target_id < 18 )
+            if( target_id < 5 )
             {
-                float angle = ( target_id - 8 ) * 20;
-
                 // if( angle < 0.f )
                 // {
                 //     angle = 360.f + angle;
                 // }
 
-                this->target_angel = angle;
+                this->target_angel = readings.yaw + ( target_id - 2 )*20.f;
             }
             else
             {
