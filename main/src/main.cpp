@@ -165,18 +165,18 @@ void app_main()
     if(!config::ConfigLoader::load(motor_cfg))
     {
         motor_cfg.motor1={
-            .P=1.0,
+            .P=0.004,
             .I=0.0,
-            .D=0.0
+            .D=-0.00002
         };
         motor_cfg.motor2={
-            .P=-1.0,
-            .I=0.0,
+            .P=0.0035,
+            .I=0.0025,
             .D=0.0
         };
         motor_cfg.motor3={
-            .P=-1.0,
-            .I=0.0,
+            .P=0.0035,
+            .I=0.0025,
             .D=0.0
         };
 
