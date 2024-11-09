@@ -128,6 +128,11 @@ class SensorReader
     BetaFilter left_motor_filter1;
     BetaFilter right_motor_filter1;
 
+    // tofs filters
+
+    BetaFilter tof_filter[NUM_OF_SENSORS];
+
+
     MeanBuffer<Vec3Df,10> gyroMean;
 
     MeanBuffer<Vec3Df,10> accelMean;

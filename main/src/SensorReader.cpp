@@ -132,6 +132,13 @@ void SensorReader::init_peripherials()
     left_motor_filter1.setCutOff(1.f);
     right_motor_filter1.setCutOff(1.f);
 
+
+    for( uint8_t i=0;i<NUM_OF_SENSORS;++i )
+    {
+        tof_filter[i].setBeta(0.5f);
+        tof_filter[i].setCutOff(5.f);
+    }
+
     }
 
 void SensorReader::init_sensors()
@@ -487,17 +494,17 @@ void SensorReader::tofs_read()
         this->vl->SwitchSensor(SensorList[i]);
 
         #ifdef TOF_CONTINOUS
-            distance=this->vl->readContinous();
+            distance = tof_filter[i].next(this->vl->readContinous());
         #else
-            distance=this->vl->read();
+            distance= tof_filter[i].next(this->vl->read());
         #endif
 
-        angel=SensorAngleOffset[i]+this->reads.yaw;
+        // angel=SensorAngleOffset[i]+this->reads.yaw;
 
-        if( angel < 0.f )
-        {
-            angel = 360 + angel;
-        }
+        // if( angel < 0.f )
+        // {
+        //     angel = 360 + angel;
+        // }
 
         this->reads.distances[i]=distance;
 
