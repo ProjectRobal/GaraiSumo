@@ -69,19 +69,19 @@ def main():
                 
                 # print("T: {} s Left: {} speed Right: {} speed Yaw: {}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"],readings["yaw"]))
                 
-                # print("{};{};{};{}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"]/0.5,readings["yaw"]))
+                print("{};{};{};{}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"]/0.5,readings["yaw"]))
                 
                 id = np.argmin(readings["distances"])   
                 
                 x.append(float(readings["T"]))
                 y.append(float(readings["left_motor_speed"]))             
                 
-                print(readings["T"]," target: ",readings["yaw"] - (id-2)*20," angle: ",readings["yaw"]," ",readings["distances"])
-                print("Lowest yaw: ",readings["distances"][id])
+                # print(readings["T"]," target: ",readings["yaw"] - (id-2)*20," angle: ",readings["yaw"]," ",readings["distances"])
+                # print("Lowest yaw: ",readings["distances"][id])
                 
                 graph.remove()
                 
-                graph = plt.plot(x,y,"o",color="r")[0]
+                graph = plt.plot(x,y,color="r")[0]
                 
                 # file.write(prepare_line(readings))
                 
