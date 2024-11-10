@@ -5,6 +5,6 @@
 
 
 tactics::Tactics* tactics_list[TACTICS_COUNT] = {
-    new tactics::FullSpeed(),
-    new tactics::DoNothing()
+    new tactics::DoNothing(),
+    new tactics::FullSpeed()
 };
