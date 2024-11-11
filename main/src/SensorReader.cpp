@@ -402,7 +402,7 @@ void SensorReader::read_encoders()
     int32_t step_ch2 = ch2.get();
     ch2.clear();
 
-    TickType_t currentTime = this->encoderLastTime - pdTICKS_TO_MS( xTaskGetTickCount() );
+    TickType_t currentTime =  pdTICKS_TO_MS( xTaskGetTickCount() ) - this->encoderLastTime;
 
     this->encoderLastTime = pdTICKS_TO_MS( xTaskGetTickCount() );
 
