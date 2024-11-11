@@ -68,7 +68,6 @@ def main():
                 readings = json.loads(msg)
                 
                 # print("T: {} s Left: {} speed Right: {} speed Yaw: {}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"],readings["yaw"]))
-                
                 print("{};{};{};{}".format(readings["T"],readings["left_motor_speed"],readings["right_motor_speed"]/0.5,readings["yaw"]))
                 
                 id = np.argmin(readings["distances"])   

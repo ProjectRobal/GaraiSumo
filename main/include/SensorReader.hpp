@@ -10,6 +10,7 @@
 
 #include <esp_adc/adc_oneshot.h>
 #include <esp_log.h>
+#include <esp_timer.h>
 
 #include "config.hpp"
 
@@ -154,7 +155,7 @@ class SensorReader
 
     EventGroupHandle_t fusionEvent;
 
-    TickType_t encoderLastTime;
+    int64_t encoderLastTime;
 
     // initialize magnetrometer
     void init_mag();
