@@ -120,14 +120,14 @@ void SensorReader::init_peripherials()
 
     //----------------------------
 
-    left_motor_filter.setBeta(0.35f);
-    right_motor_filter.setBeta(0.35f);
+    left_motor_filter.setBeta(0.8f);
+    right_motor_filter.setBeta(0.8f);
 
     left_motor_filter.setCutOff(1.f);
     right_motor_filter.setCutOff(1.f);
 
-    left_motor_filter1.setBeta(0.2f);
-    right_motor_filter1.setBeta(0.2f);
+    left_motor_filter1.setBeta(0.75f);
+    right_motor_filter1.setBeta(0.75f);
 
     left_motor_filter1.setCutOff(1.f);
     right_motor_filter1.setCutOff(1.f);

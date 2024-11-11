@@ -274,7 +274,7 @@ void tactic_loop(void*arg)
             continue;
         }
 
-        mods.audio_play->play();
+        // mods.audio_play->play();
 
         uint32_t curr_tactic = mods.current_tactics.get();
 
