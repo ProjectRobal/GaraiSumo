@@ -344,6 +344,8 @@ void SensorReader::wait_for_fusion()
 void SensorReader::init_tasks()
 {
     this->encoder_stack = (StackType_t*)malloc(MIN_TASK_STACK_SIZE);
+
+    this->encoderLastTime = pdTICKS_TO_MS( xTaskGetTickCount() );
     
     if( xTaskCreateStaticPinnedToCore(Encoders_task,"Encoders",MIN_TASK_STACK_SIZE,this,tskIDLE_PRIORITY+1,this->encoder_stack,&this->encoder_task,xPortGetCoreID()) == NULL )
     {
@@ -400,6 +402,10 @@ void SensorReader::read_encoders()
     int32_t step_ch2 = ch2.get();
     ch2.clear();
 
+    TickType_t currentTime = this->encoderLastTime - pdTICKS_TO_MS( xTaskGetTickCount() );
+
+    this->encoderLastTime = pdTICKS_TO_MS( xTaskGetTickCount() );
+
     step_ch1 = shared::mods.driver->channelADirection() ? -step_ch1 : step_ch1;
     step_ch2 = shared::mods.driver->channelBDirection() ? -step_ch2 : step_ch2;
 
@@ -417,8 +423,10 @@ void SensorReader::read_encoders()
     ESP_LOGD("Sensors","PCINT 1 steps: %ld",step_ch1);
     ESP_LOGD("Sensors","PCINT 2 steps: %ld",step_ch2);
 
-    float speed_left = dl/ENCODER_UPDATE_TIME;
-    float speed_right = dr/ENCODER_UPDATE_TIME;
+    float update_time = ( (float)currentTime )/ 1000.f;
+
+    float speed_left = dl/update_time;
+    float speed_right = dr/update_time;
 
     this->reads.motorSpeed[0] = this->left_motor_filter1.next(this->left_motor_filter.next(speed_left));
     this->reads.motorSpeed[1] = this->right_motor_filter1.next(this->right_motor_filter.next(speed_right));

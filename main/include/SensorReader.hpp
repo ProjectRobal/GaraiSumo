@@ -154,6 +154,8 @@ class SensorReader
 
     EventGroupHandle_t fusionEvent;
 
+    TickType_t encoderLastTime;
+
     // initialize magnetrometer
     void init_mag();
 
