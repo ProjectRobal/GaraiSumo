@@ -253,7 +253,9 @@ void MotorDriver::loop()
             w = -this->target_speed;
         }
 
-        float angular_speed = w*this->motorA.step(d0);
+        float dt = readings.encoder_update_time;
+
+        float angular_speed = w*this->motorA.step(d0,dt);
 
         float target_speed_left = (this->target_speed - angular_speed)*MOTOR_LEFT_DUMPING;
         float target_speed_right = (this->target_speed + angular_speed)*MOTOR_RIGHT_DUMPING;
@@ -271,8 +273,8 @@ void MotorDriver::loop()
             this->motorRight.reset();
         }
 
-        int32_t PowerLeft = this->motorLeft.step(dSpeedLeft)*MAX_ENGINE_POWER;
-        int32_t PowerRight = this->motorRight.step(dSpeedRight)*MAX_ENGINE_POWER;
+        int32_t PowerLeft = this->motorLeft.step(dSpeedLeft,dt)*MAX_ENGINE_POWER;
+        int32_t PowerRight = this->motorRight.step(dSpeedRight,dt)*MAX_ENGINE_POWER;
 
         if( target_speed_left < 0 )
         {

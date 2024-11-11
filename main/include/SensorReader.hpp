@@ -45,6 +45,8 @@ namespace sensors
 
 struct Readings
     {
+        float encoder_update_time;
+
         //  magnetrometer readings
         Vec3Df magReading;
 

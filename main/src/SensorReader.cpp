@@ -426,6 +426,8 @@ void SensorReader::read_encoders()
 
     float update_time = ( (float)currentTime )/ 1000000.f;
 
+    this->reads.encoder_update_time = update_time;
+
     float speed_left = dl/update_time;
     float speed_right = dr/update_time;
 

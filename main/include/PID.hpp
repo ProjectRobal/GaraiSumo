@@ -123,6 +123,12 @@ class PID
 
     T step(T x,double dt)
     {
+
+        if( dt == 0.f )
+        {
+            return 0.f;
+        }
+
         integral += _i*x*dt;
 
         if( integral > max_integral )
