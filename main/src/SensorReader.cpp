@@ -396,7 +396,9 @@ void SensorReader::read_encoders()
     this->Lock();
 
     int32_t step_ch1 = ch1.get();
+    ch1.clear();
     int32_t step_ch2 = ch2.get();
+    ch2.clear();
 
     step_ch1 = shared::mods.driver->channelADirection() ? -step_ch1 : step_ch1;
     step_ch2 = shared::mods.driver->channelBDirection() ? -step_ch2 : step_ch2;
@@ -414,9 +416,6 @@ void SensorReader::read_encoders()
 
     ESP_LOGD("Sensors","PCINT 1 steps: %ld",step_ch1);
     ESP_LOGD("Sensors","PCINT 2 steps: %ld",step_ch2);
-
-    ch1.clear();
-    ch2.clear();
 
     float speed_left = dl/ENCODER_UPDATE_TIME;
     float speed_right = dr/ENCODER_UPDATE_TIME;
