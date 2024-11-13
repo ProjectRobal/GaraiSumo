@@ -73,7 +73,7 @@ def main():
                 id = np.argmin(readings["distances"])   
                 
                 x.append(float(readings["T"]))
-                y.append(float(readings["left_motor_speed"]))             
+                y.append(float(readings["yaw"]))             
                 
                 # print(readings["T"]," target: ",readings["yaw"] - (id-2)*20," angle: ",readings["yaw"]," ",readings["distances"])
                 # print("Lowest yaw: ",readings["distances"][id])

@@ -244,6 +244,7 @@ void MotorDriver::loop()
         if( abs(d0) <= 3.25f)
         {
             d0 = 0.f;
+            this->motorA.reset();
         }
 
         float w = this->turning_power;
