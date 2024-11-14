@@ -39,7 +39,7 @@ namespace tactics
         // size 64 x 32
         virtual const uint8_t* picture()
         {
-            return konar_logo_64x32;
+            return sprites::konar_logo_64x32;
         }
 
         virtual void loop() = 0;

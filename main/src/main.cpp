@@ -393,7 +393,7 @@ void oled_loop(void *arg)
 
         if( transition_counter > 0)
         {
-            screen.setFont(ssd1306xled_font8x16);
+            screen.setFont(ssd1306xled_font6x8);
 
             screen.drawText(0,0,1,current_page->name());
 
