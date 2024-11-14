@@ -102,6 +102,8 @@ namespace oled_modes
 
             shared::mods.sensors->Unlock();
 
+            screen.setFont(ssd1306xled_font6x8);
+
             // display yaw value
             char msg_buff[32];
 
@@ -144,7 +146,7 @@ namespace oled_modes
         int loop(oled::OLED& screen,bool fun,bool mode)
         {
             
-            if( this->subpage )
+            if( ! this->subpage )
             {
                 this->tof_page(screen);
             }
@@ -155,9 +157,8 @@ namespace oled_modes
             
             if( fun )
             {
-                this->subpage ++ ;
+                this->subpage = ! this->subpage;
 
-                this->subpage = this->subpage - static_cast<uint8_t>(this->subpage/2) * 2;
             }
 
             if( mode )
