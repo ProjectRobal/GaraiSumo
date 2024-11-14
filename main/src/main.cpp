@@ -404,7 +404,7 @@ void oled_loop(void *arg)
 
             if( page_id > 0 )
             {
-                transition_counter = 10;
+                transition_counter = 6;
             }
         }
        

@@ -63,6 +63,8 @@ namespace oled_modes
                     y++;
                     x = 0;
                 }
+
+                i++;
             }
 
 
