@@ -50,6 +50,8 @@ namespace oled_modes
 
             // display data
 
+            screen.setFont(ssd1306xled_font6x8);
+
             // display distance data
             char msg_buff[32];
 
