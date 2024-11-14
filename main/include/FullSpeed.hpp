@@ -29,7 +29,7 @@ namespace tactics
 
         const char* name()
         {
-            return "Full Speed";
+            return "FullSpeed";
         }
 
         const char* descritpion()

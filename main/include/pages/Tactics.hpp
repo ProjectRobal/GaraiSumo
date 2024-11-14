@@ -17,11 +17,17 @@ namespace oled_modes
     // page wtih tactics selection
     class Tactics : public Page
     {
+
+        size_t scroll_iterator;
+
+        uint8_t sleep_counter;
+
         public:
 
         Tactics()
         {
-            
+            this->scroll_iterator = 0;
+            this->sleep_counter = 3;
         }
 
         const char* name()
@@ -47,30 +53,36 @@ namespace oled_modes
 
             const char* description = tactics->descritpion();   
 
-            size_t i=0;
+            // add text scrolling
 
-            uint8_t x=0;
-            uint8_t y=0;
+            this->sleep_counter++;
 
-            while(description[i])
+            if( this->sleep_counter >= 3 )
             {
-                screen.drawChar(65+(x*6),16+(y*8),1,description[i]);
 
-                x++;
-
-                if( x == 8 )
+                for(uint8_t i=0;i<8;++i)
                 {
-                    y++;
-                    x = 0;
+                    if( !description[this->scroll_iterator] )
+                    {
+                        this->scroll_iterator = 0;
+                        break;
+                    }
+
+                    screen.drawChar(65+(i*6),20,1,description[this->scroll_iterator++]);
+
                 }
 
-                i++;
+                this->sleep_counter = 0;
+
             }
 
 
             // change tactic
             if( fun )
             {
+                this->scroll_iterator = 0;
+                this->sleep_counter = 3;
+
                 current_tactics++;
 
                 current_tactics = current_tactics - static_cast<uint32_t>( current_tactics / TACTICS_COUNT ) * TACTICS_COUNT;

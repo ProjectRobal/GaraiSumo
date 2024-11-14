@@ -16,7 +16,7 @@ namespace tactics
 
         const char* name()
         {
-            return "Do nothing";
+            return "Nothing";
         }
 
         const char* descritpion()
