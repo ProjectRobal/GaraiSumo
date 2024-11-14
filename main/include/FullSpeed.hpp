@@ -46,6 +46,8 @@ namespace tactics
 
         void loop(){
 
+            shared::mods.audio_play->play();
+
             float speed = -1000.f;
 
             shared::mods.sensors->Lock();

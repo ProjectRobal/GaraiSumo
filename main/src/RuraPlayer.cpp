@@ -1,5 +1,8 @@
 #include "RuraPlayer.hpp"
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
 #include <esp_log.h>
 
 static void timer_task(void* arg)
@@ -14,6 +17,7 @@ void RuraPlayer::timer_callback()
 
     while(true)
     {
+        this->lock();
 
         uint8_t sample=this->audio[this->ptr++];
 
@@ -35,6 +39,8 @@ void RuraPlayer::timer_callback()
         {
             this->ptr=0;
         }
+
+        this->unlock();
 
         vTaskDelay(this->frameTime/portTICK_PERIOD_MS);
 
@@ -72,10 +78,11 @@ void RuraPlayer::init_pwm()
 
 }
 
-RuraPlayer::RuraPlayer(const uint8_t* audio,size_t size,uint32_t frameTime)
+RuraPlayer::RuraPlayer(uint8_t* audio,size_t size,uint32_t frameTime)
 : audio(audio),
 size(size)
 {
+    this->semp = xSemaphoreCreateMutex();
     this->frameTime = frameTime;
     this->init_pwm();
 
@@ -102,5 +109,12 @@ void RuraPlayer::play()
 
 void RuraPlayer::pause()
 {
+    this->lock();
+
     vTaskSuspend(this->timerTask);
+    this->ptr=0;
+    ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_4,0);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_4);
+
+    this->unlock();
 }

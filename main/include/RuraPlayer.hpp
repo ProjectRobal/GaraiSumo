@@ -9,6 +9,9 @@
 #include <driver/ledc.h>
 #include <driver/timer.h>
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
 #include "config.hpp"
 
 const uint16_t tones[]=
@@ -62,9 +65,9 @@ const uint16_t tones[]=
 
 class RuraPlayer
 {
-    const uint8_t *audio;
+    uint8_t *audio;
 
-    const size_t size;
+    size_t size;
 
     uint32_t frameTime;
 
@@ -77,9 +80,28 @@ class RuraPlayer
     StackType_t* rura_stack;
     StaticTask_t rura_task;
 
+    SemaphoreHandle_t semp;
+
+    void lock()
+    {
+        xSemaphoreTake(this->semp,portMAX_DELAY);
+    }
+
+    void unlock()
+    {
+        xSemaphoreGive(this->semp);
+    }
+
     public:
 
-    RuraPlayer(const uint8_t* audio,size_t size,uint32_t frameTime);
+    RuraPlayer(uint8_t* audio,size_t size,uint32_t frameTime);
+
+    void set_audio(uint8_t* audio,size_t size)
+    {
+        this->pause();
+        this->audio = audio;
+        this->size = size;
+    }
 
     void timer_callback();
 

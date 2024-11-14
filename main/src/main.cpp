@@ -103,7 +103,7 @@ void app_main()
     init_starter();
 
     // for testing purpose
-    mods.audio_play=new RuraPlayer(rides_of_valkyrya,sizeof(rides_of_valkyrya)/sizeof(uint8_t),25);
+    mods.audio_play=new RuraPlayer((uint8_t*)rides_of_valkyrya,sizeof(rides_of_valkyrya)/sizeof(uint8_t),25);
 
     //mods->audio_play->play();
 
@@ -266,6 +266,8 @@ void app_main()
 
 void tactic_loop(void*arg)
 {
+    uint32_t selected_tactic = mods.current_tactics.get();
+    
     while(true)
     {
         if( !starter_state() )
@@ -275,13 +277,20 @@ void tactic_loop(void*arg)
             continue;
         }
 
-        // mods.audio_play->play();
+        //mods.audio_play->play();
 
         uint32_t curr_tactic = mods.current_tactics.get();
 
         if( curr_tactic >= TACTICS_COUNT )
         {
             curr_tactic = 0;
+        }
+
+        if( selected_tactic != curr_tactic )
+        {
+            tactics_list[curr_tactic]->begin();
+
+            selected_tactic = curr_tactic;
         }
 
         shared::mods.sensors->wait_for_fusion();

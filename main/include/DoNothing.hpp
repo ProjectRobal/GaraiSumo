@@ -24,6 +24,11 @@ namespace tactics
             return "It does nothing!";
         }
 
+        void begin()
+        {
+            shared::mods.audio_play->pause();
+        }
+
         // size 64 x 32
         const uint8_t* picture()
         {

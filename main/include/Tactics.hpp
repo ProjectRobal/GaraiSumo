@@ -42,6 +42,9 @@ namespace tactics
             return sprites::konar_logo_64x32;
         }
 
+        virtual void begin()
+        {}
+
         virtual void loop() = 0;
 
         virtual Tactics_type type() = 0;
