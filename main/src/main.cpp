@@ -20,6 +20,7 @@
 
 #include "OnlineTerminal.hpp"
 #include "OLED.hpp"
+#include "oledPage.hpp"
 #include "oledModes.hpp"
 
 #include "shared.hpp"
@@ -298,6 +299,8 @@ void oled_loop(void *arg)
     gpio_pullup_en(FUN_BUTTON);
     gpio_pullup_en(MODE_BUTTON);
 
+    bool last_fun_state = gpio_get_level(FUN_BUTTON);
+    bool last_mode_state = gpio_get_level(MODE_BUTTON);
 
     // OLED MENU I2C initialization
     i2c_config_t conf1{};
@@ -326,7 +329,6 @@ void oled_loop(void *arg)
         ESP_LOGE("OLED","%s",esp_err_to_name(err));
     }
 
-    uint8_t page_id=0;
 
     oled::OLED screen(I2C_MENU_PORT);
 
@@ -350,13 +352,54 @@ void oled_loop(void *arg)
 
     screen.draw();
 
+    oled_modes::Page * current_page = oled_modes::pages[0];
+
+    bool fun_click = false;
+    bool mode_click = false;
+
     while(true)
     {
-        // execute oled loop here
 
+        bool fun_state = gpio_get_level(FUN_BUTTON);
+
+        fun_click = false;
+
+        if( fun_state != last_fun_state )
+        {
+            last_fun_state = fun_state;
+            if( !fun_state )
+            {
+                fun_click = true;
+            }
+        }
+
+        bool mode_state = gpio_get_level(FUN_BUTTON);
+
+        mode_click = false;
+
+        if( mode_state != last_mode_state )
+        {
+            last_mode_state = mode_state;
+            if( !mode_state )
+            {
+                mode_click = true;
+            }
+        }
+
+        // execute oled loop here
         screen.clear();
 
-        oled_modes::main_page(screen);
+        int page_id = current_page->loop(screen,fun_click,mode_click);
+
+        if( page_id > 0)
+        {
+            page_id--;
+
+            if(page_id<OLED_PAGES_COUNT)
+            {
+                current_page = oled_modes::pages[page_id];
+            }
+        }
        
         screen.draw();
 

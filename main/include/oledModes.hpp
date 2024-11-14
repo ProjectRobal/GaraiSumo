@@ -10,12 +10,13 @@
 
 #include "config.hpp"
 
+#include "oledPage.hpp"
+
+#define OLED_PAGES_COUNT 3
+
 namespace oled_modes
 {
 
-// returns page id to switch to ( returns 0 to not switch )
-
-// show main page ( KoNaR logo )
-uint8_t main_page(oled::OLED& screen);
+    extern Page* pages[OLED_PAGES_COUNT];
 
 } // namespace oled_modes
