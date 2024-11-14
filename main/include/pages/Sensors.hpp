@@ -61,29 +61,29 @@ namespace oled_modes
 
             memset(msg_buff,0,32);
 
-            // itoa(tof_readings[1],msg_buff,10);
+            itoa(tof_readings[1],msg_buff,10);
 
-            // screen.drawText(8,16,1,msg_buff);
+            screen.drawText(8,16,1,msg_buff);
 
-            // memset(msg_buff,0,32);
+            memset(msg_buff,0,32);
 
-            // itoa(tof_readings[2],msg_buff,10);
+            itoa(tof_readings[2],msg_buff,10);
 
-            // screen.drawText(16,8,1,msg_buff);
+            screen.drawText(16,8,1,msg_buff);
 
-            // memset(msg_buff,0,32);
+            memset(msg_buff,0,32);
 
-            // itoa(tof_readings[3],msg_buff,10);
+            itoa(tof_readings[3],msg_buff,10);
 
-            // screen.drawText(24,16,1,msg_buff);
+            screen.drawText(24,16,1,msg_buff);
 
-            // memset(msg_buff,0,32);
+            memset(msg_buff,0,32);
 
-            // itoa(tof_readings[4],msg_buff,10);
+            itoa(tof_readings[4],msg_buff,10);
 
-            // screen.drawText(32,20,1,msg_buff);
+            screen.drawText(32,24,1,msg_buff);
 
-            // memset(msg_buff,0,32);
+            memset(msg_buff,0,32);
 
 
 
