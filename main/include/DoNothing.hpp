@@ -27,7 +27,7 @@ namespace tactics
         // size 64 x 32
         const uint8_t* picture()
         {
-            return sprites::konar_logo_64x32;
+            return sprites::do_nothing_64x32;
         }
 
         void loop(){}
