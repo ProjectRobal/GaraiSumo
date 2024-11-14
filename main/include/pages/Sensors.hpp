@@ -45,7 +45,7 @@ namespace oled_modes
 
             screen.setFont(ssd1306xled_font6x8);
 
-            screen.drawText(48,8,1,"TOFs");
+            screen.drawText(48,24,1,"TOFs");
 
             // display distance data
             char msg_buff[32];
@@ -127,11 +127,11 @@ namespace oled_modes
 
             memset(msg_buff,0,32);
 
-            screen.drawText(36,8,1,"Right: ");
+            screen.drawText(48,8,1,"Right: ");
 
             itoa(motor_speed[1],msg_buff,10);
 
-            screen.drawText(36,16,1,msg_buff);
+            screen.drawText(48,16,1,msg_buff);
 
             memset(msg_buff,0,32);
         }
