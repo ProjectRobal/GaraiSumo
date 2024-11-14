@@ -62,15 +62,17 @@ namespace oled_modes
 
                 for(uint8_t i=0;i<8;++i)
                 {
-                    if( !description[this->scroll_iterator] )
+                    if( !description[this->scroll_iterator+i] )
                     {
                         this->scroll_iterator = 0;
                         break;
                     }
 
-                    screen.drawChar(65+(i*6),20,1,description[this->scroll_iterator++]);
-
+                    screen.drawChar(65+(i*6),20,1,description[this->scroll_iterator+i]);
+                
                 }
+
+                this->scroll_iterator ++;
 
                 this->sleep_counter = 0;
 
