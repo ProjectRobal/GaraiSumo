@@ -24,6 +24,11 @@ namespace oled_modes
             
         }
 
+        const char* name()
+        {
+            return "Tactics";
+        }
+
         int loop(oled::OLED& screen,bool fun,bool mode)
         {
             

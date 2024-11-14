@@ -357,6 +357,8 @@ void oled_loop(void *arg)
     bool fun_click = false;
     bool mode_click = false;
 
+    uint8_t transition_counter = 0;
+
     while(true)
     {
 
@@ -389,15 +391,32 @@ void oled_loop(void *arg)
         // execute oled loop here
         screen.clear();
 
-        int page_id = current_page->loop(screen,fun_click,mode_click);
-
-        if( page_id > 0)
+        if( transition_counter > 0)
         {
-            page_id--;
+            screen.setFont(ssd1306xled_font8x16);
 
-            if(page_id<OLED_PAGES_COUNT)
+            screen.drawText(0,0,1,current_page->name());
+
+            transition_counter--;
+        }
+        else
+        {
+
+            int page_id = current_page->loop(screen,fun_click,mode_click);
+
+            if( page_id > 0)
             {
-                current_page = oled_modes::pages[page_id];
+                page_id--;
+
+                if(page_id<OLED_PAGES_COUNT)
+                {
+                    current_page = oled_modes::pages[page_id];
+                }
+            }
+
+            if( page_id > 0 )
+            {
+                transition_counter = 15;
             }
         }
        

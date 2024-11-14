@@ -143,6 +143,11 @@ namespace oled_modes
             this->subpage = 0;
         }
 
+        const char* name()
+        {
+            return "Sensors";
+        }
+
         int loop(oled::OLED& screen,bool fun,bool mode)
         {
             

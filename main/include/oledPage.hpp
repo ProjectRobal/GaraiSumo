@@ -12,6 +12,11 @@ namespace oled_modes
 
         virtual int loop(oled::OLED& screen,bool fun,bool mode) = 0;
 
+        virtual const char* name()
+        {
+            return "Dummy";
+        }
+
     };
 
 }

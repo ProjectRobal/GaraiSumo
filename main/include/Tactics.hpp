@@ -4,6 +4,8 @@
 #include <freertos/task.h>
 #include <freertos/event_groups.h>
 
+#include "sprites.hpp"
+
 #include "MotorDriver.hpp"
 
 #include "RuraPlayer.hpp"
@@ -23,6 +25,22 @@ namespace tactics
     class Tactics
     {
         public:
+
+        virtual const char* descritpion()
+        {
+            return "Dummy";
+        }
+
+        virtual const char* name()
+        {
+            return "None";
+        }
+
+        // size 64 x 32
+        virtual const uint8_t* picture()
+        {
+            return konar_logo_64x32;
+        }
 
         virtual void loop() = 0;
 
