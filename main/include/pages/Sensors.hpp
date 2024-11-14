@@ -111,19 +111,19 @@ namespace oled_modes
 
             itoa(yaw,msg_buff,10);
 
-            screen.drawText(0,24,1,msg_buff);
+            screen.drawText(30,24,1,msg_buff);
 
             memset(msg_buff,0,32);
 
             // display speed values
 
-            screen.drawText(12,16,1,"Motor Speed: ");
+            screen.drawText(12,0,1,"Motor Speed: ");
 
             screen.drawText(6,8,1,"Left: ");
 
             itoa(motor_speed[0],msg_buff,10);
 
-            screen.drawText(6,0,1,msg_buff);
+            screen.drawText(6,16,1,msg_buff);
 
             memset(msg_buff,0,32);
 
@@ -131,7 +131,7 @@ namespace oled_modes
 
             itoa(motor_speed[1],msg_buff,10);
 
-            screen.drawText(36,0,1,msg_buff);
+            screen.drawText(36,16,1,msg_buff);
 
             memset(msg_buff,0,32);
         }
