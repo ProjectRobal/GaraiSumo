@@ -373,7 +373,7 @@ void oled_loop(void *arg)
             }
         }
 
-        bool mode_state = gpio_get_level(FUN_BUTTON);
+        bool mode_state = gpio_get_level(MODE_BUTTON);
 
         mode_click = false;
 
