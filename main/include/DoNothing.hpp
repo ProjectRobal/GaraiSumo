@@ -14,12 +14,12 @@ namespace tactics
         : Tactics()
         {}
 
-        const char* descritpion()
+        const char* name()
         {
             return "Do nothing";
         }
 
-        const char* name()
+        const char* descritpion()
         {
             return "It does nothing!";
         }

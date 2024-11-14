@@ -27,12 +27,12 @@ namespace tactics
 
         }
 
-        const char* descritpion()
+        const char* name()
         {
             return "Full Speed";
         }
 
-        const char* name()
+        const char* descritpion()
         {
             return "Find enemy and goes full speed!";
         }
