@@ -92,13 +92,13 @@ class OLED
         this->font=font;
     }
 
-    void drawPixel(uint8_t x,uint8_t y,const bool& color);
+    void drawPixel(uint8_t x,uint8_t y,bool color);
 
-    void drawLine(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,const bool& color);
+    void drawLine(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,bool color);
 
-    void drawRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,const bool& color);
+    void drawRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,bool color);
 
-    void fillRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,const bool& color);
+    void fillRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,bool color);
 
     void fill(uint8_t color);
 
@@ -109,9 +109,9 @@ class OLED
 
     void drawBitmap(uint8_t x,uint8_t y,uint8_t width,uint8_t height,const uint8_t* buffer);
 
-    void drawText(uint8_t x,uint8_t y,const bool& color,const char* text);
+    void drawText(uint8_t x,uint8_t y,bool color,const char* text);
 
-    void drawChar(uint8_t x,uint8_t y,const bool& color,char text);
+    void drawChar(uint8_t x,uint8_t y,bool color,char text);
 
     // put buffer into RAM
     bool draw();

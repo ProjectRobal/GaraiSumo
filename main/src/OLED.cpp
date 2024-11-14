@@ -65,7 +65,7 @@ bool OLED::init(uint8_t width,uint8_t height)
 
 }
 
-void OLED::drawPixel(uint8_t x,uint8_t y,const bool& color)
+void OLED::drawPixel(uint8_t x,uint8_t y,bool color)
 {
     if((x>=this->width)||(y>=this->height))
     {
@@ -90,7 +90,7 @@ void OLED::drawPixel(uint8_t x,uint8_t y,const bool& color)
 }
 
 // needs some improvments
-void OLED::drawLine(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,const bool& color)
+void OLED::drawLine(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,bool color)
 {
     
     int8_t dx= x1 < x2 ? 1 : -1;
@@ -126,7 +126,7 @@ void OLED::drawLine(uint8_t x1,uint8_t y1,uint8_t x2,uint8_t y2,const bool& colo
     }
 }
 
-void OLED::drawRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,const bool& color)
+void OLED::drawRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,bool color)
 {
     this->drawLine(left,top,right,top,color);
     this->drawLine(right,top,right,bottom,color);
@@ -134,7 +134,7 @@ void OLED::drawRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,const 
     this->drawLine(left,bottom,left,top,color);
 }
 
-void OLED::fillRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,const bool& color)
+void OLED::fillRect(uint8_t left,uint8_t top,uint8_t right,uint8_t bottom,bool color)
 {
     for(uint8_t y=top;y<bottom;++y)
     {
@@ -172,7 +172,7 @@ void OLED::drawBitmap(uint8_t x,uint8_t y,uint8_t width,uint8_t height,const uin
     }
 }
 
-void OLED::drawChar(uint8_t x,uint8_t y,const bool& color,char text)
+void OLED::drawChar(uint8_t x,uint8_t y,bool color,char text)
 {
     if(this->font[0]!=0x00)
     {
@@ -211,7 +211,7 @@ void OLED::drawChar(uint8_t x,uint8_t y,const bool& color,char text)
     }
 }
 
-void OLED::drawText(uint8_t x,uint8_t y,const bool& color,const char* text)
+void OLED::drawText(uint8_t x,uint8_t y,bool color,const char* text)
 {
     if(this->font[0]!=0x00)
     {

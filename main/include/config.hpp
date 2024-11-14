@@ -114,8 +114,8 @@ const gpio_num_t MotorsPin[]={(gpio_num_t)40,(gpio_num_t)39,(gpio_num_t)2,(gpio_
 #define POS_Y_CFG_FILE "posyfilter.json"
 
 
-#define FUN_BUTTON GPIO_NUM_17
-#define MODE_BUTTON GPIO_NUM_18
+#define FUN_BUTTON GPIO_NUM_18
+#define MODE_BUTTON GPIO_NUM_17
 
 #define MOTOR_LEFT_DUMPING 1.f
 
