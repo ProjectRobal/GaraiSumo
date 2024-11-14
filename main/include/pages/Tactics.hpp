@@ -36,6 +36,35 @@ namespace oled_modes
 
             // show diffrent pictures and description depending on selected tactics
 
+            
+            tactics::Tactics* tactics = tactics_list[current_tactics];
+
+            screen.drawBitmap(0,0,64,32,tactics->picture());  
+
+            screen.setFont(ssd1306xled_font6x8);
+
+            screen.drawText(65,0,1,tactics->name());
+
+            const char* description = tactics->descritpion();   
+
+            size_t i=0;
+
+            uint8_t x=0;
+            uint8_t y=0;
+
+            while(description[i])
+            {
+                screen.drawChar(65+(x*6),9+(y*8),1,description[i]);
+
+                x++;
+
+                if( x == 8 )
+                {
+                    y++;
+                    x = 0;
+                }
+            }
+
 
             // change tactic
             if( fun )

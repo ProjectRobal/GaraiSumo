@@ -14,6 +14,22 @@ namespace tactics
         : Tactics()
         {}
 
+        const char* descritpion()
+        {
+            return "Do nothing";
+        }
+
+        const char* name()
+        {
+            return "It does nothing!";
+        }
+
+        // size 64 x 32
+        const uint8_t* picture()
+        {
+            return sprites::konar_logo_64x32;
+        }
+
         void loop(){}
 
         Tactics_type type()

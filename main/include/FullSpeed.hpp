@@ -27,6 +27,23 @@ namespace tactics
 
         }
 
+        const char* descritpion()
+        {
+            return "Full Speed";
+        }
+
+        const char* name()
+        {
+            return "Find enemy and goes full speed!";
+        }
+
+        // size 64 x 32
+        const uint8_t* picture()
+        {
+            return sprites::konar_logo_64x32;
+        }
+
+
         void loop(){
 
             float speed = -1000.f;

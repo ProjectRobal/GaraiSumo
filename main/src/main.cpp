@@ -336,21 +336,7 @@ void oled_loop(void *arg)
 
     screen.setFont(ssd1306xled_font6x8);
 
-    //screen.drawPixel(64,32,1);
-
-    screen.drawText(25,15,1,"  ABC  ");
-
-    screen.drawRect(0,0,25,25,1);
-
-    screen.setFont(ssd1306xled_font8x16);
-
-    //screen.drawPixel(64,32,1);>
-
-    screen.drawText(25,45,1,"!Hello KoNaR!");
-
-    //screen.drawLine(0,63,127,0,1);
-
-    screen.draw();
+    screen.drawText(0,0,1,"Kebab");
 
     oled_modes::Page * current_page = oled_modes::pages[0];
 
@@ -358,6 +344,8 @@ void oled_loop(void *arg)
     bool mode_click = false;
 
     uint8_t transition_counter = 0;
+
+    screen.draw();
 
     while(true)
     {
