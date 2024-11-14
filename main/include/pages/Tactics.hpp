@@ -43,7 +43,7 @@ namespace oled_modes
 
             screen.setFont(ssd1306xled_font6x8);
 
-            screen.drawText(65,0,1,tactics->name());
+            screen.drawText(65,8,1,tactics->name());
 
             const char* description = tactics->descritpion();   
 
@@ -54,7 +54,7 @@ namespace oled_modes
 
             while(description[i])
             {
-                screen.drawChar(65+(x*6),9+(y*8),1,description[i]);
+                screen.drawChar(65+(x*6),16+(y*8),1,description[i]);
 
                 x++;
 
